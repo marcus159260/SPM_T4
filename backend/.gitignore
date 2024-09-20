@@ -1,0 +1,9 @@
+venv
+
+.env
+
+controllers/__pycache__
+
+routes/__pycache__
+
+.DS_Store
