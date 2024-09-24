@@ -8,7 +8,8 @@
 ## Setup Instructions
 
 1. Clone this repository
-2. Go to terminal in the VSCode repo, `cd frontend` then `npm install` / `npm i` to install vue packages
+2. Go to terminal in the VSCode repo, `cd frontend` then `npm install` / `npm i` to install vue packages. Select 'No' for everything EXCEPT Vue Router ('Yes'). 
+If you did not manage to select 'Yes' to install Vue Router, install with the command `npm install vue-router@4` in terminal instead.
 3. `npm run dev` to get vue frontend server up. It should be running on `http://localhost:5173/`
 4. Open new terminal, `cd frontend`, `npm i axios` to install Axios library if you haven't already
 5. Open a new terminal, `cd backend` to go into backend folder, run `python3 -m venv venv` (MacOS, it should also work on Windows) to setup Python virtual environment. Windows users can refer to this link, https://python.land/virtual-environments/virtualenv
