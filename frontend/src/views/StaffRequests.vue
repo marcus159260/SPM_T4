@@ -18,14 +18,15 @@
             <tr v-for="request in requestsData" :key="request.request_id">
                 <th scope="row">{{ request.request_id }}</th>
                 <td>{{ request.request_type}}</td>
-                <td>{{ request.status}}</td>
+                <td>
+                    <span :class="{'badge rounded-pill text-bg-success': request.status === 'Accepted','badge rounded-pill text-bg-warning': request.status === 'Pending','badge rounded-pill text-bg-danger': request.status === 'Rejected'}">{{ request.status}}</span></td>
                 <td>{{ formatDate(request.start_date) }}</td>
                 <td>{{ formatDate(request.end_date) }}</td>
                 <td>{{ request.reason }}</td>
                 <td>{{ formatDate(request.application_date) }}</td>
                 <td>{{ request.approver }}</td>
             </tr>
-            </tbody>
+        </tbody>
         </table>
     </div>
 </template>
@@ -78,6 +79,20 @@ export default {
                     end_date: "2024-10-01",
                     reason: "Leave me alone, I wanna WFH",
                     application_date: "2024-09-25T10:30:00",
+                    approver: "Beata"
+                },
+                {
+                    request_id: 4,
+                    staff_id: 150076,
+                    staff_fname: 'Oliver',
+                    staff_lname: 'Chan',
+                    status: "Pending",
+                    time: "FULL",
+                    request_type: "Adhoc",
+                    start_date: "2024-10-22",
+                    end_date: "2024-10-22",
+                    reason: "Give me my WFH already plzzzz",
+                    application_date: "2024-09-27T10:30:00",
                     approver: "Beata"
                 }
             ]
