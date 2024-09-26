@@ -12,6 +12,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/team-schedule">My Team Schedule</RouterLink>
         <RouterLink to = "/staffrequests"> View own requests</RouterLink>
       </nav>
+    </div>
   </header>
 
   <RouterView />
