@@ -3,20 +3,16 @@ from routes.user_routes import user_bp
 from dotenv import load_dotenv
 import os
 
+from flask_cors import CORS
+
+
 # Load environment variables from the .env file
 load_dotenv()
 
-# Access the Supabase URL and keys
-supabase_url = os.getenv("SUPABASE_URL")
-supabase_key = os.getenv("SUPABASE_KEY")
-
-# Now you can use these variables in your application
-print(f"Supabase URL: {supabase_url}")
-print(f"Supabase Key: {supabase_key}")
-
 app = Flask(__name__)
+CORS(app)
 
-app.register_blueprint(user_bp, url_prefix='/api/users/')
+app.register_blueprint(user_bp, url_prefix='/api/users/') #url_prefix is the url that you call to see the data
 
 @app.route("/")
 def index(): 
