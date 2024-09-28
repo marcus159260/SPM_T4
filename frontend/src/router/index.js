@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import StaffRequests from '@/views/StaffRequests.vue'
+import TeamScheduleView from '../views/TeamScheduleView.vue';
+import ManagerScheduleView from '../views/ManagerScheduleView.vue';
+import HRScheduleView from '../views/HRScheduleView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,14 +13,28 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
+    
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    }
+      path:"/staffrequests", //change to ownrequest
+      name:"staffrequests",
+      component:StaffRequests
+    },
+    {
+      path: '/team-schedule',
+      name: 'TeamSchedule',
+      component: TeamScheduleView
+    },
+    {
+      path: '/manager-schedule',
+      name: 'ManagerSchedule',
+      component: ManagerScheduleView
+    },
+    {
+      path: '/hr-schedule',
+      name: 'HRSchedule',
+      component: HRScheduleView
+
+    },
   ]
 })
 
