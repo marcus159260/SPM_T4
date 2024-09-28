@@ -87,72 +87,21 @@
                 <p class="fw-normal mb-1">{{ staff.Manager_Name }}</p>
               </td>
             </tr>
-
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="https://mdbootstrap.com/img/new/avatars/6.jpg" class="rounded-circle" alt=""
-                    style="width: 45px; height: 45px" />
-                  <div class="ms-3">
-                    <p class="fw-bold mb-1">Alex Ray</p>
-                    <p class="text-muted mb-0">alex.ray@gmail.com</p>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <p class="fw-normal mb-1">Consultant</p>
-                <p class="text-muted mb-0">Finance</p>
-              </td>
-              <td>
-                <span class="text-black badge badge-primary rounded-pill d-inline">Onboarding</span>
-              </td>
-              <td>Junior</td>
-              <td>
-                <button type="button" class="btn btn-link btn-rounded btn-sm fw-bold" data-mdb-ripple-color="dark">
-                  Edit
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <img src="https://mdbootstrap.com/img/new/avatars/7.jpg" class="rounded-circle" alt=""
-                    style="width: 45px; height: 45px" />
-                  <div class="ms-3">
-                    <p class="fw-bold mb-1">Kate Hunington</p>
-                    <p class="text-muted mb-0">kate.hunington@gmail.com</p>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <p class="fw-normal mb-1">Designer</p>
-                <p class="text-muted mb-0">UI/UX</p>
-              </td>
-              <td>
-                <span class="text-black badge badge-warning rounded-pill d-inline">Awaiting</span>
-              </td>
-              <td>Senior</td>
-              <td>
-                <button type="button" class="btn btn-link btn-rounded btn-sm fw-bold" data-mdb-ripple-color="dark">
-                  Edit
-                </button>
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
       <!-- End of View Staff Schedules-->
 
       <!--Pending WFH-->
-      <h6 id="pending-header" v-if="filteredEmployee" class="mt-10">
-        Manager Name: <span>{{ filteredEmployee.Manager_Name }}</span> <br />
-        Manager ID: <span>{{ filteredEmployee.Reporting_Manager }}</span> <br>
-        In charge of: <br>
-        &emsp;Dept -> <span>{{ filteredEmployee.Dept }}</span> <br>
-        &emsp;Position -> <span>{{ filteredEmployee.Position }}</span>
-      </h6>
-
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+        <h6 id="pending-header" v-if="filteredEmployee" class="mt-10">
+          Manager Name: <span>{{ filteredEmployee.Manager_Name }}</span> <br />
+          Manager ID: <span>{{ filteredEmployee.Reporting_Manager }}</span> <br>
+          In charge of: <br>
+          &emsp;Dept -> <span>{{ filteredEmployee.Dept }}</span> <br>
+          &emsp;Position -> <span>{{ filteredEmployee.Position }}</span>
+        </h6>
+
         <table class="table align-middle mt-10 bg-white" v-if="hasPendingRequests">
           <thead class="bg-light">
             <tr>
@@ -160,7 +109,7 @@
               <th>Name</th>
               <th>Department & Position</th>
               <th>Country</th>
-              <th>Approval</th>
+              <th>Pending WFH Approval</th>
             </tr>
           </thead>
 
@@ -270,7 +219,7 @@ export default {
     },
   },
   methods: {
-    
+
     get_employees_by_dept() {
       axios.get('http://localhost:5000/api/users/by-dept-employees')
         .then(response => {
