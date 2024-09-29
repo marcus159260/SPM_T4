@@ -1,6 +1,19 @@
 <template>
     <div>
         <h6 class="mt-5">Name: {{ staff_fname }} {{staff_lname}}</h6>
+
+        <div class="filter-container mb-3">
+            <label for="statusFilter">Filter by Status</label>
+            <select id="statusFilter" v-model="selectedStatus">
+                <option value="">All</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Pending">Pending</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Withdrawn">Withdrawn</option>
+            </select>
+        </div>
+
+
         <table class="table">
         <thead>
             <tr>
@@ -15,11 +28,14 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="request in requestsData" :key="request.request_id">
+            <tr v-for="request in filteredRequests" :key="request.request_id">
                 <th scope="row">{{ request.request_id }}</th>
                 <td>{{ request.request_type}}</td>
                 <td>
-                    <span :class="{'badge rounded-pill text-bg-success': request.status === 'Accepted','badge rounded-pill text-bg-warning': request.status === 'Pending','badge rounded-pill text-bg-danger': request.status === 'Rejected',
+                    <span :class="{
+                        'badge rounded-pill text-bg-success': request.status === 'Accepted',
+                        'badge rounded-pill text-bg-warning': request.status === 'Pending',
+                        'badge rounded-pill text-bg-danger': request.status === 'Rejected',
                         'badge rounded-pill text-bg-light': request.status === 'Withdrawn'
                     }">{{ request.status}}</span></td>
                 <td>{{ formatDate(request.start_date) }}</td>
@@ -40,6 +56,7 @@ export default {
         return{
             staff_fname: "Oliver",
             staff_lname: "Chan",
+            selectedStatus: "",
             requestsData : [
                 {
                     request_id: 1,
@@ -114,6 +131,14 @@ export default {
             ]
         }
     },
+    computed: {
+    filteredRequests() {
+      if (this.selectedStatus) {
+        return this.requestsData.filter(request => request.status === this.selectedStatus);
+      }
+      return this.requestsData;
+    }
+  },
     methods: {
         formatDate(dateString) {
       const date = new Date(dateString);
@@ -121,7 +146,7 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
       const year = date.getFullYear();
       return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
-    }
+    }, 
     }
 }
 </script>
