@@ -15,7 +15,7 @@ const router = createRouter({
     },
     
     {
-      path:"/staffrequests",
+      path:"/staffrequests", //change to ownrequest
       name:"staffrequests",
       component:StaffRequests
     },
@@ -34,7 +34,7 @@ const router = createRouter({
       name: 'HRSchedule',
       component: HRScheduleView
 
-    }
+    },
   ]
 })
 
