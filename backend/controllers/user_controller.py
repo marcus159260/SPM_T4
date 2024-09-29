@@ -11,3 +11,10 @@ def get_all_users_names():
     ]
     return full_names
 
+def get_user_by_id(staff_id):
+    response = supabase.table('employee').select('*').eq('Staff_ID', staff_id).execute()
+    
+    if response.data:
+        return response.data[0]
+    else:
+        return None
