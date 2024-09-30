@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from routes.user_routes import user_bp
 from flask_cors import CORS
+
 from util.db import supabase
 
 app = Flask(__name__)
