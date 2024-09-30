@@ -27,3 +27,5 @@ def get_employees_by_dept():
         return jsonify({"status": "success", "data": user}), 200
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
+    
+#-----

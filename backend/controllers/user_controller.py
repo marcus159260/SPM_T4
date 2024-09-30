@@ -50,3 +50,5 @@ def get_employees_by_dept_data():
             employee['Manager_Name'] = manager_dict.get(manager_id, 'No Manager')
 
     return employees
+
+#-----
