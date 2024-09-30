@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import StaffRequests from '@/views/StaffRequests.vue'
 import TeamScheduleView from '../views/TeamScheduleView.vue';
 import ManagerScheduleView from '../views/ManagerScheduleView.vue';
 import HRScheduleView from '../views/HRScheduleView.vue';
@@ -11,6 +12,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    
+    {
+      path:"/staffrequests", //change to ownrequest
+      name:"staffrequests",
+      component:StaffRequests
     },
     {
       path: '/team-schedule',
@@ -26,7 +33,8 @@ const router = createRouter({
       path: '/hr-schedule',
       name: 'HRSchedule',
       component: HRScheduleView
-    }
+
+    },
   ]
 })
 
