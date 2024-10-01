@@ -10,7 +10,12 @@
   },
   "dependencies": {
     "@daypilot/daypilot-lite-vue": "^3.26.0",
+    "@material/ripple": "^14.0.0",
     "axios": "^1.7.7",
+    "bootstrap": "^5.3.3",
+    "frontend": "file:",
+    "jquery": "^3.7.1",
+    "mdb-ui-kit": "^8.0.0",
     "preact": "^10.24.0",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
