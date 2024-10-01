@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Filter WFH Requests</h1>
+    <h1>All WFH Requests</h1>
 
     <label for="status">Status:</label>
     <select v-model="selectedStatus">
@@ -10,7 +10,7 @@
       <option value="rejected">Rejected</option>
     </select>
 
-    <button @click="applyFilter">Apply Filter</button>
+    <button @click="applyFilter">Apply</button>
 
     <div v-if="filteredRequests.length > 0">
       <h2>Filtered Requests</h2>
