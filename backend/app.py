@@ -3,7 +3,6 @@ from routes.user_routes import user_bp
 from routes.requests import wfh_bp
 from flask_cors import CORS
 from dotenv import load_dotenv
-from util.db import supabase
 
 # Load environment variables from the .env file
 load_dotenv()

@@ -6,14 +6,12 @@ wfh_bp = Blueprint('wfh_bp', __name__)
 
 @wfh_bp.route('/requests', methods=['GET'])
 def get_wfh_requests():
-    try:
         # Fetch WFH requests from Supabase
-        data, error = supabase.from_('request').select('*').execute()
+        response = supabase.table('request').select('*').execute()
 
-        if error[0] != 'count':
-            return jsonify({"error": f"Error connecting to Supabase: {error}"}), 500
+        if response.data is not None:
+            return jsonify(response.data),200
         else:
-            return jsonify(data[1])  # Return the actual data
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+            return jsonify({"error":response.error}),400 # Return the actual data
+
 
