@@ -192,7 +192,7 @@ export default {
   data() {
     return {
       employees: [], //initialize
-      managerId: 150245
+      managerId: 151408
     }
   },
   computed: {
@@ -205,6 +205,7 @@ export default {
           staff.Reporting_Manager === this.managerId
       );
     },
+
     filteredPendingEmployees() {
       // Filter employees based on manager ID, department, and position
       return this.employees.filter(
