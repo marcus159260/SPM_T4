@@ -1,14 +1,8 @@
 from flask import Flask, jsonify
 from routes.user_routes import user_bp
-from dotenv import load_dotenv
-import os
-
 from flask_cors import CORS
 from util.db import supabase
 
-
-# Load environment variables from the .env file
-load_dotenv()
 
 
 app = Flask(__name__)
