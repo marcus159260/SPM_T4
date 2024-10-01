@@ -13,7 +13,6 @@
     <button @click="applyFilter">Apply</button>
 
     <div v-if="filteredRequests.length > 0">
-      <h2>Filtered Requests</h2>
       <ul>
         <li v-for="request in filteredRequests" :key="request.Request_ID">
           <p><strong>Request ID:</strong> {{ request.Request_ID }}</p>
