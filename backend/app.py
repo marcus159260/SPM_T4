@@ -8,12 +8,9 @@ from util.db import supabase
 # Load environment variables from the .env file
 load_dotenv()
 
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
 
 app = Flask(__name__)
 CORS(app,resources={r"/*":{'origins':"*"}})
-
 
 
 app.register_blueprint(user_bp, url_prefix='/api/users/') #url_prefix is the url that you call to see the data
