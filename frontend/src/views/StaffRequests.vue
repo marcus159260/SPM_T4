@@ -6,7 +6,7 @@
             <label for="statusFilter">Filter by Status</label>
             <select id="statusFilter" v-model="selectedStatus">
                 <option value="">All</option>
-                <option value="Accepted">Accepted</option>
+                <option value="Approved">Approved</option>
                 <option value="Pending">Pending</option>
                 <option value="Rejected">Rejected</option>
                 <option value="Withdrawn">Withdrawn</option>
@@ -22,6 +22,7 @@
             <th scope="col">Status</th>
             <th scope="col">Start Date</th>
             <th scope="col">End Date</th>
+            <th scope="col">Time</th>
             <th scope="col">Reason</th>
             <th scope="col">Application Date</th>
             <th scope="col">Approver</th>
@@ -33,102 +34,37 @@
                 <td>{{ request.request_type}}</td>
                 <td>
                     <span :class="{
-                        'badge rounded-pill text-bg-success': request.status === 'Accepted',
+                        'badge rounded-pill text-bg-success': request.status === 'Approved',
                         'badge rounded-pill text-bg-warning': request.status === 'Pending',
                         'badge rounded-pill text-bg-danger': request.status === 'Rejected',
                         'badge rounded-pill text-bg-light': request.status === 'Withdrawn'
                     }">{{ request.status}}</span></td>
                 <td>{{ formatDate(request.start_date) }}</td>
                 <td>{{ formatDate(request.end_date) }}</td>
+                <td>{{ request.time }}</td>
                 <td>{{ request.reason }}</td>
                 <td>{{ formatDate(request.application_date) }}</td>
-                <td>{{ request.approver }}</td>
+                <td>{{ request.approver_fname }} {{request.approver_lname }}</td>
             </tr>
         </tbody>
         </table>
+        <p>{{ filteredRequests }}</p>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+// import { mapState } from 'vuex'; // If you're using Vuex to manage the logged-in user state
+
 export default {
     name: "StaffRequests",
     data(){
         return{
-            staff_fname: "Oliver",
-            staff_lname: "Chan",
+            staff_fname: "",
+            staff_lname: "",
             selectedStatus: "",
-            requestsData : [
-                {
-                    request_id: 1,
-                    staff_id: 150076,
-                    staff_fname: 'Oliver',
-                    staff_lname: 'Chan',
-                    status: "Accepted",
-                    time: "AM",
-                    request_type: "Adhoc",
-                    start_date: "2024-09-25",
-                    end_date: "2024-09-25",
-                    reason: "Accompanying my mother to the clinic",
-                    application_date: "2024-09-25T10:30:00",
-                    approver: "Beata"
-                },
-                {
-                    request_id: 2,
-                    staff_id: 150076,
-                    staff_fname: 'Oliver',
-                    staff_lname: 'Chan',
-                    status: "Pending",
-                    time: "AM",
-                    request_type: "Adhoc",
-                    start_date: "2024-09-26",
-                    end_date: "2024-09-26",
-                    reason: "Lazy",
-                    application_date: "2024-09-25T10:30:00",
-                    approver: "Beata"
-                },
-                {
-                    request_id: 3,
-                    staff_id: 150076,
-                    staff_fname: 'Oliver',
-                    staff_lname: 'Chan',
-                    status: "Rejected",
-                    time: "AM",
-                    request_type: "Adhoc",
-                    start_date: "2024-10-01",
-                    end_date: "2024-10-01",
-                    reason: "Leave me alone, I wanna WFH",
-                    application_date: "2024-09-25T10:30:00",
-                    approver: "Beata"
-                },
-                {
-                    request_id: 4,
-                    staff_id: 150076,
-                    staff_fname: 'Oliver',
-                    staff_lname: 'Chan',
-                    status: "Pending",
-                    time: "FULL",
-                    request_type: "Adhoc",
-                    start_date: "2024-10-22",
-                    end_date: "2024-10-22",
-                    reason: "Give me my WFH already plzzzz",
-                    application_date: "2024-09-27T10:30:00",
-                    approver: "Beata"
-                },
-                {
-                    request_id: 5,
-                    staff_id: 150076,
-                    staff_fname: 'Oliver',
-                    staff_lname: 'Chan',
-                    status: "Withdrawn",
-                    time: "PM",
-                    request_type: "Adhoc",
-                    start_date: "2024-10-23",
-                    end_date: "2024-10-23",
-                    reason: "Queuing for concert, leave me alone",
-                    application_date: "2024-09-27T10:30:00",
-                    approver: "Beata"
-                }
-            ]
+            staffId: null,
+            requestsData : []
         }
     },
     computed: {
@@ -147,6 +83,41 @@ export default {
       const year = date.getFullYear();
       return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
     }, 
-    }
+        async fetchRequests() {
+        try {
+            // Get staffId from route params (if using Vue Router) or from a state
+            const staffId = this.$route.params.staffId || 140929; 
+            const response = await axios.get(`http://localhost:5000/api/requests/${staffId}`);
+            console.log("API Response:", response.data);
+            if (response.data.length > 0) {
+                this.requestsData = response.data;
+                console.log("requestsData:", this.requestsData);
+                // Assuming that all requests have the same staff_fname and staff_lname
+                this.staff_fname = this.requestsData[0].staff_fname;
+                this.staff_lname = this.requestsData[0].staff_lname;
+            } else {
+            console.log("No data found for this staff ID");
+            }
+        } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+        }
+    },
+    mounted() {
+    this.fetchRequests();
+    const staffId = this.$route.params.staff_id; // Get the staff_id from the route
+
+    // Fetch data from backend
+    axios.get(`http://localhost:5000/api/requests/${staffId}`)
+      .then(response => {
+        this.requestsData = response.data; // Store the API response in requestsData
+        console.log(response.data); // Log the data for debugging
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error); // Handle any errors
+      });
+  }
+
+
 }
 </script>

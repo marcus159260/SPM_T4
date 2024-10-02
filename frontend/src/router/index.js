@@ -15,7 +15,7 @@ const router = createRouter({
     },
     
     {
-      path:"/staffrequests", //change to ownrequest
+      path:"/staffrequests/:staff_id", //change to ownrequest
       name:"staffrequests",
       component:StaffRequests
     },
