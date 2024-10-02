@@ -1,16 +1,28 @@
 <template>
-    <div>
-      <Calendar :title="'My Team Schedule'" />
-    </div>
-  </template>
-  
-  <script>
-  import Calendar from '../components/Calendar.vue';
-  
-  export default {
-    components: {
-      Calendar
-    },
-  };
-  </script>
-  
+  <div>
+    <teamCalendar
+      :title="'My Team Schedule'"
+    />
+  </div>
+</template>
+
+<script>
+import teamCalendar from '../components/teamCalendar.vue';
+// import { getTeamEvents, getTeamResources } from '../services/apiService';
+
+export default {
+  components: {
+    teamCalendar,
+  },
+  data() {
+    return {
+      teamEvents: [],
+      teamResources: [],
+    };
+  },
+  // async created() {
+  //   this.teamResources = await getTeamResources();
+  //   this.teamEvents = await getTeamEvents();
+  // },
+};
+</script>
