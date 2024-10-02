@@ -29,13 +29,7 @@ props: {
         type: Array,
         default: () => []
     },
-    // events: [],
-    // resources: []
     events: {
-        type: Array,
-        default: () => [],
-    },
-    employees: {
         type: Array,
         default: () => [],
     },
@@ -53,14 +47,13 @@ setup(props) {
       skipMonths: 3,
       selectMode: "Day",
       startDate: DayPilot.Date.today(),
-      selectionDay: "2024-31-12",
       onTimeRangeSelected: args => {
         calendarConfig.startDate = args.day;
       }
     };
 
     const calendarConfig = reactive({
-        viewType: "Resources",  // View type set to resources for team scheduling
+        viewType: "Week", 
         durationBarVisible: true,  
         startDate: DayPilot.Date.today(),
         businessBeginsHour: 9,  
@@ -69,28 +62,16 @@ setup(props) {
         timeRangeSelectedHandling: "Enabled",
     });
 
-    const loadResources = () => {
-        // const columns = [
-        //     {name: "John", id: "John"},
-        //     {name: "Alice", id: "Alice"},
-        //     {name: "Muhammad", id: "Muhammad"},
-        //     {name: "Victor", id: "Victor"},
-        //     {name: "Rachel", id: "Rachel"},
-        // ];
-        calendar.value.control.update({columns: props.employees});
-        navigator.value.control.update({columns: props.employees});
-    };
-
     const loadEvents = () => {
     //   const events = [
-        // {
-        //   id: 1,
-        //   start: "2024-09-28T10:00:00",
-        //   end: "2024-09-28T11:00:00",
-        //   resource: "John",
-        //   text: "Event 1",
-        //   barColor: "#6aa84f",
-        // },
+    //     {
+    //       id: 1,
+    //       start: "2024-09-28T10:00:00",
+    //       end: "2024-09-28T11:00:00",
+    //       resource: "John",
+    //       text: "Event 1",
+    //       barColor: "#6aa84f",
+    //     },
     //     {
     //       id: 2,
     //       start: "2024-09-30T13:00:00",
@@ -113,7 +94,6 @@ setup(props) {
     };
 
     onMounted(() => {
-        loadResources();
         loadEvents()
     });
 
@@ -122,7 +102,6 @@ setup(props) {
     calendarConfig,
     calendar,
     navigator,
-    loadResources,
     loadEvents
     };
 }
