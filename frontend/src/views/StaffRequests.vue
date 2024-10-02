@@ -6,7 +6,7 @@
             <label for="statusFilter">Filter by Status</label>
             <select id="statusFilter" v-model="selectedStatus">
                 <option value="">All</option>
-                <option value="Accepted">Accepted</option>
+                <option value="Approved">Approved</option>
                 <option value="Pending">Pending</option>
                 <option value="Rejected">Rejected</option>
                 <option value="Withdrawn">Withdrawn</option>
@@ -33,7 +33,7 @@
                 <td>{{ request.request_type}}</td>
                 <td>
                     <span :class="{
-                        'badge rounded-pill text-bg-success': request.status === 'Accepted',
+                        'badge rounded-pill text-bg-success': request.status === 'Approved',
                         'badge rounded-pill text-bg-warning': request.status === 'Pending',
                         'badge rounded-pill text-bg-danger': request.status === 'Rejected',
                         'badge rounded-pill text-bg-light': request.status === 'Withdrawn'
@@ -63,7 +63,7 @@ export default {
                     staff_id: 150076,
                     staff_fname: 'Oliver',
                     staff_lname: 'Chan',
-                    status: "Accepted",
+                    status: "Approved",
                     time: "AM",
                     request_type: "Adhoc",
                     start_date: "2024-09-25",
