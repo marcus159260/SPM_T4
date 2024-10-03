@@ -13,6 +13,7 @@
     "@material/ripple": "^14.0.0",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
+    "daypilot-pro-vue": "https://npm.daypilot.org/daypilot-pro-vue/trial/2024.4.6180.tar.gz",
     "frontend": "file:",
     "jquery": "^3.7.1",
     "mdb-ui-kit": "^8.0.0",

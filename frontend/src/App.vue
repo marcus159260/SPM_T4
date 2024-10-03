@@ -15,6 +15,13 @@ import { RouterLink, RouterView } from 'vue-router'
                   <RouterLink to="/">Home</RouterLink>
                 </a>
               </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <RouterLink to="/my-schedule">My Schedule</RouterLink>
+                </a>
+              </li>
+
               <li class="nav-item">
                 <a class="nav-link" href="#">
                   <RouterLink to="/team-schedule">My Team Schedule</RouterLink>
@@ -23,7 +30,13 @@ import { RouterLink, RouterView } from 'vue-router'
 
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <RouterLink to="/staffrequests"> (staff) View own requests</RouterLink>
+                  <RouterLink to="/hr-schedule">HR Schedule</RouterLink>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <RouterLink to="/staff-requests"> (staff) View own requests</RouterLink>
                 </a>
               </li>
 
