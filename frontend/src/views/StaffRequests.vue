@@ -14,6 +14,7 @@
         </div>
 
 
+
         <table class="table">
         <thead>
             <tr>
@@ -29,26 +30,26 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="request in filteredRequests" :key="request.request_id">
-                <th scope="row">{{ request.request_id }}</th>
-                <td>{{ request.request_type}}</td>
+            <tr v-for="request in filteredRequests" :key="request.Request_ID">
+                <th scope="row">{{ request.Request_ID }}</th>
+                <td>{{ request.Request_Type}}</td>
                 <td>
                     <span :class="{
-                        'badge rounded-pill text-bg-success': request.status === 'Approved',
-                        'badge rounded-pill text-bg-warning': request.status === 'Pending',
-                        'badge rounded-pill text-bg-danger': request.status === 'Rejected',
-                        'badge rounded-pill text-bg-light': request.status === 'Withdrawn'
-                    }">{{ request.status}}</span></td>
-                <td>{{ formatDate(request.start_date) }}</td>
-                <td>{{ formatDate(request.end_date) }}</td>
-                <td>{{ request.time }}</td>
-                <td>{{ request.reason }}</td>
-                <td>{{ formatDate(request.application_date) }}</td>
+                        'badge rounded-pill text-bg-success': request.Status === 'Approved',
+                        'badge rounded-pill text-bg-warning': request.Status === 'Pending',
+                        'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
+                        'badge rounded-pill text-bg-light': request.Status === 'Withdrawn'
+                    }">{{ request.Status}}</span></td>
+                <td>{{ formatDate(request.Start_Date) }}</td>
+                <td>{{ formatDate(request.End_Date) }}</td>
+                <td>{{ request.Time }}</td>
+                <td>{{ request.Reason }}</td>
+                <td>{{ formatDate(request.Application_Date) }}</td>
                 <td>{{ request.approver_fname }} {{request.approver_lname }}</td>
             </tr>
         </tbody>
         </table>
-        <p>{{ filteredRequests }}</p>
+        
     </div>
 </template>
 
@@ -63,59 +64,48 @@ export default {
             staff_fname: "",
             staff_lname: "",
             selectedStatus: "",
-            staffId: null,
+            staffId: 150076,
             requestsData : []
         }
     },
     computed: {
-    filteredRequests() {
-      if (this.selectedStatus) {
-        return this.requestsData.filter(request => request.status === this.selectedStatus);
+      filteredRequests() {
+        if (Array.isArray(this.requestsData) && this.selectedStatus) {
+        return this.requestsData.filter(
+          (request) => request.Status === this.selectedStatus
+        );
       }
       return this.requestsData;
-    }
+      }
   },
     methods: {
-        formatDate(dateString) {
+      formatDate(dateString) {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
       const year = date.getFullYear();
       return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
     }, 
-        async fetchRequests() {
+      async fetchRequests() {
         try {
             // Get staffId from route params (if using Vue Router) or from a state
-            const staffId = this.$route.params.staffId || 140929; 
-            const response = await axios.get(`http://localhost:5000/api/requests/${staffId}`);
-            console.log("API Response:", response.data);
-            if (response.data.length > 0) {
-                this.requestsData = response.data;
-                console.log("requestsData:", this.requestsData);
-                // Assuming that all requests have the same staff_fname and staff_lname
-                this.staff_fname = this.requestsData[0].staff_fname;
-                this.staff_lname = this.requestsData[0].staff_lname;
-            } else {
+            const staffId = this.$route.params.staffId || 150076; 
+            const response = await axios.get(`http://localhost:5000/api/wfh/${staffId}`);
+            if(response.data){
+              console.log("API Response first load:", response.data);
+              this.requestsData = response.data.data
+            }
+            else {
             console.log("No data found for this staff ID");
             }
         } catch (error) {
         console.error("Error fetching requests:", error);
       }
-        }
+    }
     },
+
     mounted() {
     this.fetchRequests();
-    const staffId = this.$route.params.staff_id; // Get the staff_id from the route
-
-    // Fetch data from backend
-    axios.get(`http://localhost:5000/api/requests/${staffId}`)
-      .then(response => {
-        this.requestsData = response.data; // Store the API response in requestsData
-        console.log(response.data); // Log the data for debugging
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error); // Handle any errors
-      });
   }
 
 
