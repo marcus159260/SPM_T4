@@ -4,6 +4,7 @@ import StaffRequests from '@/views/StaffRequests.vue'
 import TeamScheduleView from '../views/TeamScheduleView.vue';
 import ManagerScheduleView from '../views/ManagerScheduleView.vue';
 import HRScheduleView from '../views/HRScheduleView.vue';
+import MyScheduleView from '@/views/MyScheduleView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +19,11 @@ const router = createRouter({
       path:"/staff-requests", //change to ownrequest
       name:"StaffRequests",
       component:StaffRequests
+    },
+    {
+      path: '/my-schedule',
+      name: 'MySchedule',
+      component: MyScheduleView
     },
     {
       path: '/team-schedule',
