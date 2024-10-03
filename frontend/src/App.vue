@@ -23,7 +23,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <RouterLink to="/staffrequests"> (staff) View own requests</RouterLink>
+                  <RouterLink to="/staff-requests"> (staff) View own requests</RouterLink>
                 </a>
               </li>
 
