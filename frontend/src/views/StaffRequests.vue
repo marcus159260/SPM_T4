@@ -1,9 +1,11 @@
 <template>
-    <div>
-        <h6 class="mt-5">Name: {{ staff_fname }} {{staff_lname}}</h6>
+    <div class="content-wrapper">
+    <div v-if="requests.length > 0">
+        <h2>Your Requests</h2>
+        <h3 class="mt-5">{{ requests[0].Staff_Name }}</h3>
 
         <div class="filter-container mb-3">
-            <label for="statusFilter">Filter by Status</label>
+            <label for="statusFilter">Status</label>
             <select id="statusFilter" v-model="selectedStatus">
                 <option value="">All</option>
                 <option value="Approved">Approved</option>
@@ -12,67 +14,77 @@
                 <option value="Withdrawn">Withdrawn</option>
             </select>
         </div>
-
-
+        
         <table class="table">
-        <thead>
-            <tr>
-            <th scope="col">Request ID</th>
-            <th scope="col">Request Type</th>
-            <th scope="col">Status</th>
-            <th scope="col">Start Date</th>
-            <th scope="col">End Date</th>
-            <th scope="col">Time</th>
-            <th scope="col">Reason</th>
-            <th scope="col">Application Date</th>
-            <th scope="col">Approver</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="request in filteredRequests" :key="request.request_id">
-                <th scope="row">{{ request.request_id }}</th>
-                <td>{{ request.request_type}}</td>
-                <td>
-                    <span :class="{
-                        'badge rounded-pill text-bg-success': request.status === 'Approved',
-                        'badge rounded-pill text-bg-warning': request.status === 'Pending',
-                        'badge rounded-pill text-bg-danger': request.status === 'Rejected',
-                        'badge rounded-pill text-bg-light': request.status === 'Withdrawn'
-                    }">{{ request.status}}</span></td>
-                <td>{{ formatDate(request.start_date) }}</td>
-                <td>{{ formatDate(request.end_date) }}</td>
-                <td>{{ request.time }}</td>
-                <td>{{ request.reason }}</td>
-                <td>{{ formatDate(request.application_date) }}</td>
-                <td>{{ request.approver_fname }} {{request.approver_lname }}</td>
-            </tr>
-        </tbody>
+            <thead>
+                <tr>
+                    <th scope="col">Request ID</th>
+                    <th scope="col">Request Type</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Reason</th>
+                    <th scope="col">Application Date</th>
+                    <th scope="col">Approver</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="request in filteredRequests" :key="request.Request_ID">
+                    <th scope="row">{{ request.Request_ID }}</th>
+                    <td>{{ request.Request_Type }}</td>
+                    <td>
+                        <span :class="{
+                            'badge rounded-pill text-bg-success': request.Status === 'Approved',
+                            'badge rounded-pill text-bg-warning': request.Status === 'Pending',
+                            'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
+                            'badge rounded-pill text-bg-light': request.Status === 'Withdrawn'
+                        }">
+                            {{ request.Status }}
+                        </span>
+                    </td>
+                    <td>{{ formatDate(request.Start_Date) }}</td>
+                    <td>{{ formatDate(request.End_Date) }}</td>
+                    <td>{{ request.Reason }}</td>
+                    <td>{{ formatDate(request.Application_Date) }}</td>
+                    <td>{{ request.Approver }}</td>       
+                </tr>
+            </tbody>
         </table>
-        <p>{{ filteredRequests }}</p>
     </div>
+    <div v-else>
+      <p>No requests available.</p>
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
-// import { mapState } from 'vuex'; // If you're using Vuex to manage the logged-in user state
-
 export default {
     name: "StaffRequests",
     data(){
         return{
-            staff_fname: "",
-            staff_lname: "",
+            // test
+            requests: [],
             selectedStatus: "",
-            staffId: null,
-            requestsData : []
         }
     },
+    mounted() {
+    // Fetch the requests data when the component is mounted
+    axios
+      .get('http://127.0.0.1:5000/api/wfh/requests')
+      .then((response) => {
+        this.requests = response.data;
+      })
+      .catch((error) => {
+        console.error('Error fetching requests:', error);
+      });
+  },
     computed: {
     filteredRequests() {
       if (this.selectedStatus) {
-        return this.requestsData.filter(request => request.status === this.selectedStatus);
+        return this.requests.filter(request => request.Status === this.selectedStatus);
       }
-      return this.requestsData;
+      return this.requests;
     }
   },
     methods: {
@@ -121,3 +133,9 @@ export default {
 
 }
 </script>
+
+<style>
+    .content-wrapper {
+        padding-left: 20px;
+    }
+</style>
