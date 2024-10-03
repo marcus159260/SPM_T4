@@ -12,7 +12,7 @@
       </li>
       <li class="nav-item" role="presentation">
         <a data-mdb-tab-init class="nav-link" id="ex1-tab-3" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
-          aria-selected="false">Approved</a>
+          aria-selected="false">All Requests</a>
       </li>
     </ul>
     <!-- Tabs navs -->
@@ -157,11 +157,11 @@
       </div>
       <!--End of Pending WFH-->
 
-      <!--Approved-->
+      <!--All Requests-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        No approved requests.
+        <FilterRequests />
       </div>
-      <!--End of Approved-->
+      <!--End of All Requests-->
 
     </div>
     <!-- Tabs content -->
@@ -173,6 +173,7 @@ import axios from 'axios';
 import { Tab, initMDB } from "mdb-ui-kit";
 import { MDCRipple } from '@material/ripple';
 import 'jquery';
+import FilterRequests from '/src/components/FilterRequests.vue';
 
 export default {
   name: "ManagerView",
@@ -192,7 +193,7 @@ export default {
   data() {
     return {
       employees: [], //initialize
-      managerId: 150245
+      managerId: 151408
     }
   },
   computed: {
@@ -205,6 +206,7 @@ export default {
           staff.Reporting_Manager === this.managerId
       );
     },
+
     filteredPendingEmployees() {
       // Filter employees based on manager ID, department, and position
       return this.employees.filter(
@@ -229,9 +231,16 @@ export default {
         .catch(error => {
           console.error("Error fetching schedules:", error);
         });
+      
+        
     }
-  }
+  },
+  components: {
+    FilterRequests,
+  },
 }
+
+
 </script>
 
 <style>

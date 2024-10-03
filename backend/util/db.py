@@ -8,7 +8,8 @@ load_dotenv()
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '..', '.env'))
+if not url or not key:
+    raise ValueError("Supabase URL or Key is missing")
+
 
 supabase: Client = create_client(url, key)
