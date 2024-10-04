@@ -11,7 +11,7 @@
           <th>WFH_End_Date</th>
           <th>Reason of Application</th>
           <th>Status</th>
-          <th>Approver</th>
+          <th>Approval</th>
         </tr>
       </thead>
 
@@ -46,17 +46,17 @@
           <td>
             <p class="mb-1">{{ staff.Status }}</p>
           </td>
-          <td>
-            <p class="mb-1">{{ staff.Approver }}</p>
-          </td>
           <!-- <td>
+            <p class="mb-1">{{ staff.Approver }}</p>
+          </td> -->
+          <td>
             <a href="#" class="d-inline-block">
               <img style="width:30px; height:30px" src="../../assets/checked.png">
             </a>
             <a href="#" class="d-inline-block ms-2">
               <img style="width:30px; height:30px" src="../../assets/x-button.png">
             </a>
-          </td> -->
+          </td>
         </tr>
 
       </tbody>
