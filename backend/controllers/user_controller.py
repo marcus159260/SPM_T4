@@ -1,4 +1,10 @@
 from util.db import supabase
+from util.helpers import (
+    get_employee_level,
+    group_employees_by_department,
+    create_employee_node,
+    build_department_hierarchy
+)
 
 def get_all_users_names():
     response = supabase.table('employee').select('Staff_ID, Staff_FName, Staff_LName').execute()
@@ -67,3 +73,33 @@ def get_employees_by_dept_data():
             employee['Manager_Name'] = manager_dict.get(manager_id, 'No Manager')
 
     return employees
+
+def get_resources():
+    try:
+        response = supabase.table('employee').select(
+            'Dept',
+            'Position',
+            'Staff_ID',
+            'Staff_FName',
+            'Staff_LName'
+        ).execute()
+        data = response.data
+    except Exception as e:
+        print(f"Error fetching employee data: {e}")
+        return None
+
+    resources = build_resource_tree(data)
+    return resources
+
+def build_resource_tree(data):
+    departments = group_employees_by_department(data)
+    resources = []
+    for dept_name, employees in departments.items():
+        dept_node = {
+            'name': dept_name,
+            'id': f"D_{dept_name}",
+            'expanded': True,
+            'children': build_department_hierarchy(employees)
+        }
+        resources.append(dept_node)
+    return resources
