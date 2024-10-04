@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "daypilot-pro-angular": "https://npm.daypilot.org/daypilot-pro-angular/trial/2024.4.6180.tar.gz",
+    "daypilot-pro-vue": "https://npm.daypilot.org/daypilot-pro-vue/trial/2024.4.6180.tar.gz"
+  }
+}

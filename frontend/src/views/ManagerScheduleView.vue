@@ -94,67 +94,17 @@
 
       <!--Pending WFH-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <h6 id="pending-header" v-if="filteredEmployee" class="mt-10">
-          Manager Name: <span>{{ filteredEmployee.Manager_Name }}</span> <br />
-          Manager ID: <span>{{ filteredEmployee.Reporting_Manager }}</span> <br>
-          In charge of: <br>
-          &emsp;Dept -> <span>{{ filteredEmployee.Dept }}</span> <br>
-          &emsp;Position -> <span>{{ filteredEmployee.Position }}</span>
-        </h6>
-
-        <table class="table align-middle mt-10 bg-white" v-if="hasPendingRequests">
-          <thead class="bg-light">
-            <tr>
-              <th>Staff_ID</th>
-              <th>Name</th>
-              <th>Department & Position</th>
-              <th>Country</th>
-              <th>Pending WFH Approval</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            <tr v-for="staff in filteredPendingEmployees" :key="staff.Staff_ID">
-              <td>
-                <p class="mb-1">{{ staff.Staff_ID }}</p>
-              </td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <div class="ms-3">
-                    <p class="fw-bold mb-1">{{ staff.Staff_FName }} {{ staff.Staff_LName }}</p>
-                    <p class="text-muted mb-0">{{ staff.Email }}</p>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <div class="ms-3">
-                    <p class="fw-bold mb-1">{{ staff.Dept }}</p>
-                    <p class="text-muted mb-0">{{ staff.Position }}</p>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <p class="fw-normal mb-1">{{ staff.Country }}</p>
-              </td>
-              <td>
-                <a href="#" class="d-inline-block">
-                  <img style="width:30px; height:30px" src="../assets/checked.png">
-                </a>
-                <a href="#" class="d-inline-block ms-2">
-                  <img style="width:30px; height:30px" src="../assets/x-button.png">
-                </a>
-              </td>
-            </tr>
-
-          </tbody>
-        </table>
-
-        <div v-else class="text-center mt-3">
-          <p>No pending requests.</p>
-        </div>
+        <!-- <ViewPendingRequestsDB
+          v-if="employees.length > 0" 
+          :filteredEmployee="filteredEmployee" 
+          :filteredPendingEmployees="filteredPendingEmployees" 
+          :hasPendingRequests="hasPendingRequests" 
+        /> -->
+        <ViewPendingRequests
+          
+        />
       </div>
+
       <!--End of Pending WFH-->
 
       <!--All Requests-->
@@ -173,7 +123,10 @@ import axios from 'axios';
 import { Tab, initMDB } from "mdb-ui-kit";
 import { MDCRipple } from '@material/ripple';
 import 'jquery';
-import FilterRequests from '/src/components/FilterRequests.vue';
+// import ViewPendingRequestsDB from '../components/ManagerScheduleView/ViewPendingRequestsDB.vue';
+import ViewPendingRequests from '../components/ManagerScheduleView/ViewPendingRequests.vue';
+
+import FilterRequests from '../components/ManagerScheduleView/FilterRequests.vue';
 
 export default {
   name: "ManagerView",
@@ -193,27 +146,31 @@ export default {
   data() {
     return {
       employees: [], //initialize
-      managerId: 151408
+      managerId: 151408,
+      isLoading: true // Add loading state
     }
   },
   computed: {
     filteredEmployee() {
       // Filter employees based on Dept and Position
-      return this.employees.find(
-        (staff) =>
-          staff.Dept === "Engineering" &&
-          staff.Position === "Call Centre" &&
-          staff.Reporting_Manager === this.managerId
+      return (
+        this.employees.find(
+          (staff) =>
+            staff.Dept === "Engineering" &&
+            staff.Position === "Call Centre" &&
+            staff.Reporting_Manager === this.managerId
+        ) || {}
       );
     },
 
     filteredPendingEmployees() {
       // Filter employees based on manager ID, department, and position
-      return this.employees.filter(
+      return (this.employees.filter(
         (staff) =>
           staff.Dept === "Engineering" &&
           staff.Position === "Call Centre" &&
           staff.Reporting_Manager === this.managerId
+        ) || []
       );
     },
     hasPendingRequests() {
@@ -227,16 +184,20 @@ export default {
         .then(response => {
           this.employees = response.data.data; // Assign fetched data to the staffSchedules array
           console.log(this.employees)
+          this.isLoading = false;
         })
         .catch(error => {
           console.error("Error fetching schedules:", error);
+          this.isLoading = false;
         });
       
         
     }
   },
   components: {
-    FilterRequests,
+    // ViewPendingRequestsDB,
+    ViewPendingRequests,
+    FilterRequests
   },
 }
 
@@ -251,7 +212,4 @@ export default {
   margin-bottom: 200px;
 }
 
-#pending-header span {
-  color: green;
-}
 </style>
