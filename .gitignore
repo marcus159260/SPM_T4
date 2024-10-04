@@ -1,3 +1,5 @@
 .DS_Store
 
 .env
+*.pyc
+backend/util/__pycache__/db.cpython-312.pyc

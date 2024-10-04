@@ -36,3 +36,10 @@ def get_employees_by_dept():
         return jsonify({"status": "success", "data": user}), 200
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
+    
+@user_bp.route('/resources', methods=['GET'])
+def get_resources_endpoint():
+    resources = get_resources()
+    if resources is None:
+        return jsonify({'error': 'Failed to fetch employee data'}), 500
+    return jsonify(resources)
