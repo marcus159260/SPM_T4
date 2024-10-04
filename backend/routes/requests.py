@@ -1,7 +1,7 @@
 # routes/wfh_routes.py
 from flask import Blueprint, jsonify
 from controllers.requests_controller import *
-from config import supabase  # Import the Supabase client from config
+# from config import supabase  # Import the Supabase client from config
 from util.db import supabase 
 
 wfh_bp = Blueprint('wfh_bp', __name__)
@@ -25,4 +25,4 @@ def get_staff_requests(user_id):
     if requests:
         return jsonify({"status": "success", "data": requests}), 200
     else:
-        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 404
+        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
