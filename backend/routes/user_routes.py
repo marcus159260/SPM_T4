@@ -36,3 +36,22 @@ def get_employees_by_dept():
         return jsonify({"status": "success", "data": user}), 200
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
+    
+@user_bp.route('/resources', methods=['GET'])
+def get_resources_endpoint():
+    resources = get_resources()
+    if resources is None:
+        return jsonify({'error': 'Failed to fetch employee data'}), 500
+    return jsonify(resources)
+
+@user_bp.route('/by-team-employees/<int:reporting_manager_id>', methods=['GET']) #test-case: 140894
+def get_employees_by_team(reporting_manager_id):
+    team = get_employees_by_reporting_manager(reporting_manager_id) 
+    resources = []
+    for emp in team:
+        resources.append({"name":emp['Staff_FName']+" " +emp['Staff_LName'],"id":emp['Staff_ID'],"Dept":emp['Dept'],"Position":emp['Position']})
+
+    if team:
+        return jsonify({"status": "success", "data": resources}), 200
+    else:
+        return jsonify({"status": "error", "message": "User not found"}), 404

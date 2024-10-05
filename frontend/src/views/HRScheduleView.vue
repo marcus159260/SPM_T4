@@ -2,13 +2,14 @@
   <div>
     <hrCalendar
       :title="'HR Schedule'"
+      :resources="resources"
     />
   </div>
 </template>
 
 <script>
 import hrCalendar from '../components/hrCalendar.vue';
-// import apiService from '../services/apiService';
+import axios from 'axios';
 
 export default {
   components: {
@@ -18,6 +19,7 @@ export default {
     return {
       allEvents: [],
       employees: [],
+      resources: []
     };
   },
   // async created() {
@@ -35,5 +37,16 @@ export default {
   //   }
 
   // },
+  mounted() {
+    axios
+      .get('http://127.0.0.1:5000/api/users/resources')
+      .then((response) => {
+        this.resources = response.data;
+        console.log("Loaded resources:", this.resources);
+      })
+      .catch((error) => {
+        console.error('Error fetching requests:', error);
+      });
+  },
 };
 </script>

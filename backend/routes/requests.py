@@ -1,7 +1,10 @@
 # routes/wfh_routes.py
 from flask import Blueprint, jsonify
 from controllers.requests_controller import *
-from util.db import supabase
+
+# from config import supabase  # Import the Supabase client from config
+from util.db import supabase 
+
 
 wfh_bp = Blueprint('wfh_bp', __name__)
 
