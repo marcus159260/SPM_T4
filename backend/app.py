@@ -18,6 +18,7 @@ app.register_blueprint(wfh_bp, url_prefix='/api/wfh/') #to see requests data
 @app.route("/")
 def index(): 
     return "Homepage for Website"
+
     
 if __name__ == '__main__':
     app.run(debug=True)
