@@ -3,14 +3,12 @@
     <h1>All WFH Requests</h1>
 
     <label for="status">Status:</label>
-    <select v-model="selectedStatus">
+    <select v-model="selectedStatus" @change="applyFilter">
       <option value="">All</option>
       <option value="approved">Approved</option>
       <option value="pending">Pending</option>
       <option value="rejected">Rejected</option>
     </select>
-
-    <button @click="applyFilter">Apply</button>
 
     <div v-if="filteredRequests.length > 0">
       <ul>
@@ -59,14 +57,18 @@ export default {
           request => request.Status && request.Status.toLowerCase() === this.selectedStatus.toLowerCase()
         );
       }
+      console.log('Filtered Requests:', this.filteredRequests);
     },
     fetchRequests() {
       // Fetch WFH requests using Axios
-      axios.get('http:/127.0.0.1:5000/api/wfh/requests')
+      axios.get('http://localhost:5000/api/wfh/requests')
         .then(response => {
           this.allRequests = response.data;
           this.filteredRequests = response.data;  // Initially show all requests
-          console.log(response.data)
+          console.log('All Requests:', response.data);
+
+          // Apply filter once data is fetched
+          this.applyFilter();
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
@@ -76,7 +78,6 @@ export default {
   mounted() {
     // Fetch requests when the component is mounted
     this.fetchRequests();
-    console.log(this.filteredRequests)
   },
 };
 </script>
