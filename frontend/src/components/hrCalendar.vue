@@ -4,10 +4,14 @@
 
 <script setup>
 import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
-import { ref, reactive, onMounted, watch, defineProps } from 'vue';
+import { ref, reactive, watch, defineProps } from 'vue';
 
 const props = defineProps({
   resources: {
+    type: Array,
+    required: true,
+  },
+  events: {
     type: Array,
     required: true,
   },
@@ -17,33 +21,35 @@ const config = reactive({
   timeHeaders: [{"groupBy":"Month"},{"groupBy":"Day","format":"d"},{"groupBy":"Cell","format":"tt"}],
   scale: "CellDuration",
   cellDuration: 720,
-  days: DayPilot.Date.today().daysInMonth(),
+  // days: DayPilot.Date.today().daysInMonth(),
+  days: 7,
   startDate: DayPilot.Date.today().firstDayOfMonth(),
   timeRangeSelectedHandling: "Disabled",
   eventClickHandling: "Disabled",
   treeEnabled: true,
   resources: [],
+  events: []
 });
 const schedulerRef = ref(null);
 
-const loadEvents = () => {
-  const events = [
-    { id: 1, start: "2024-10-01T00:00:00", end: "2024-10-05T00:00:00", text: "WFH", resource: "R1" },
-    { id: 2, start: DayPilot.Date.today(), end: DayPilot.Date.today().addDays(5), text: "WFO", resource: "R2" }
-  ];
-  config.events = events;
-};
-
+// Watch for changes in resources prop
 watch(
   () => props.resources,
   (newResources) => {
-    console.log('Resources updated in hrCalendar.vue:', newResources);
+    // console.log('Resources updated in hrCalendar.vue:', newResources);
     config.resources = newResources;
   },
   { immediate: true }
 );
 
-onMounted(() => {
-  loadEvents();
-});
+// Watch for changes in events prop
+watch(
+  () => props.events,
+  (newEvents) => {
+    // console.log('Events updated in hrCalendar.vue:', newEvents);
+    config.events = newEvents;
+  },
+  { immediate: true }
+);
+
 </script>
