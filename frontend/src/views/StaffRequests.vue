@@ -96,7 +96,7 @@ export default {
         try {
             // Get staffId from route params (if using Vue Router) or from a state
             const staffId = this.$route.params.staffId || 150076; 
-            const response = await axios.get(`http://localhost:5000/api/wfh/${staffId}`);
+            const response = await axios.get(`http://127.0.0.1:5000/api/wfh/${staffId}`);
             if(response.data){
               console.log("API Response first load:", response.data);
               this.requestsData = response.data.data
