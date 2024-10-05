@@ -3,3 +3,5 @@
 .env
 *.pyc
 backend/util/__pycache__/db.cpython-312.pyc
+
+backend/test_helpers.py
