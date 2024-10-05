@@ -47,7 +47,7 @@
                 <td>{{ request.Time }}</td>
                 <td>{{ request.Reason }}</td>
                 <td>{{ formatDate(request.Application_Date) }}</td>
-                <td>{{ request.approver_fname }} {{request.approver_lname }}</td>
+                <td>{{ approverName }}</td>
             </tr>
         </tbody>
         </table>
@@ -71,6 +71,8 @@ export default {
             staff_lname: "",
             selectedStatus: "",
             staffId: 150076,
+            approverId: 151408,
+            approverName: "",
             requestsData : []
         }
     },
@@ -83,7 +85,7 @@ export default {
       }
       return this.requestsData;
       }
-  },
+    },
     methods: {
       formatDate(dateString) {
       const date = new Date(dateString);
@@ -98,7 +100,6 @@ export default {
             const staffId = this.$route.params.staffId || 150076; 
             const response = await axios.get(`http://localhost:5000/api/wfh/${staffId}`);
             if(response.data){
-              console.log("API Response first load:", response.data);
               this.requestsData = response.data.data
             }
             else {
@@ -107,15 +108,22 @@ export default {
         } catch (error) {
         console.error("Error fetching requests:", error);
       }
-    }
-    },
+      try{
+        const response = await axios.get(`http://localhost:5000/api/users/${this.approverId}`);
+        if(response.data){
+          this.approverName = response.data.data.Staff_FName + " " + response.data.data.Staff_LName
+        }
+      }catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    }},
 
     mounted() {
     this.fetchRequests();
   }
 
 
-}
+    }
 </script>
 
 <style>
