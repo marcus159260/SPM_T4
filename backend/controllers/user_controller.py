@@ -116,7 +116,9 @@ def get_employees_by_reporting_manager(reporting_manager_id:int):
         .execute()
     )
 
+    manager_response = (supabase.table("employee").select("*").eq("Staff_ID", reporting_manager_id).execute())
+
    
     # Return the list of employees
     # print(str(team_response.data))
-    return team_response.data
+    return team_response.data+ manager_response.data

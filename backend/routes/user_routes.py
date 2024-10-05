@@ -49,7 +49,7 @@ def get_employees_by_team(reporting_manager_id):
     team = get_employees_by_reporting_manager(reporting_manager_id) 
     resources = []
     for emp in team:
-        resources.append({"name":emp['Staff_FName']+" " +emp['Staff_LName'],"id":emp['Staff_ID']})
+        resources.append({"name":emp['Staff_FName']+" " +emp['Staff_LName'],"id":emp['Staff_ID'],"Dept":emp['Dept'],"Position":emp['Position']})
 
     if team:
         return jsonify({"status": "success", "data": resources}), 200
