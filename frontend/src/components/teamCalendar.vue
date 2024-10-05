@@ -102,7 +102,7 @@
               if (data.data){
                 // console.log(data.data);
                 for(let e of data.data){
-                  let bubbleHtml = `<ul><li>Start Date: `+e.Start_Date+`</li><li>End Date: `+ e.End_Date+ `</li><li>Status: `+e.Status+`</li><li>Request Type: `+ e.Request_Type+`</li></ul>`;
+                  let bubbleHtml = `<ul><li>Start Date: `+e.Start_Date+`</li><li>End Date: `+ e.End_Date+ `</li><li>Status: `+e.Status+`</li><li>Request Type: `+ e.Request_Type+`</li><li>Department: `+emp.Dept+`</li><li>Position: `+emp.Position+`</li></ul>`;
                   console.log(bubbleHtml);
                   config.events.push({resource:e.Staff_ID,id:e.Request_ID,start: e.Start_Date, end:e.End_Date, time:e.Time, status:e.Status, text:"WFH", bubbleHtml:bubbleHtml});
                 }
