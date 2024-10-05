@@ -180,7 +180,7 @@ export default {
   methods: {
 
     get_employees_by_dept() {
-      axios.get('http://localhost:5000/api/users/by-dept-employees')
+      axios.get('http://127.0.0.1:5000/api/users/by-dept-employees')
         .then(response => {
           this.employees = response.data.data; // Assign fetched data to the staffSchedules array
           console.log(this.employees)

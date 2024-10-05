@@ -62,7 +62,7 @@ export default {
     },
     fetchRequests() {
       // Fetch WFH requests using Axios
-      axios.get('http://localhost:5000/api/wfh/requests')
+      axios.get('http:/127.0.0.1:5000/api/wfh/requests')
         .then(response => {
           this.allRequests = response.data;
           this.filteredRequests = response.data;  // Initially show all requests
