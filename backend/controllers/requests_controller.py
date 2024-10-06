@@ -68,13 +68,13 @@ def build_events(data):
 
         for single_date in date_range:
             if time_slot == 'AM':
-                start_time = '08:00:00'
-                end_time = '12:00:00'
+                start_time = '09:00:00'
+                end_time = '13:00:00'
             elif time_slot == 'PM':
-                start_time = '13:00:00'
+                start_time = '14:00:00'
                 end_time = '18:00:00'
             elif time_slot == 'Full Day':
-                start_time = '08:00:00'
+                start_time = '09:00:00'
                 end_time = '18:00:00'
             # else:
             #     print(f"Unknown time slot: {time_slot}")
