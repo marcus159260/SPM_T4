@@ -1,40 +1,57 @@
 <template>
-    <div>
-      <myCalendar
-        :title="'My Schedule'"
-      />
-    </div>
-  </template>
-  
-  <script>
-  import myCalendar from '../components/myCalendar.vue';
-  // import apiService from '../services/apiService';
-  
-  export default {
-    components: {
-      myCalendar,
+  <div>
+    <myCalendar
+      :title="'My Schedule'"
+      :events="events"
+      :resources="resources"
+    />
+  </div>
+</template>
+
+<script>
+import myCalendar from '../components/myCalendar.vue';
+import axios from 'axios';
+
+export default {
+  components: {
+    myCalendar,
+  },
+  data() {
+    return {
+      events: [],
+      resources: [],
+      // hardcoded for now
+      staff_id: "150076"
+    };
+  },
+
+  mounted() {
+    var url = "http://127.0.0.1:5000/api/users/" + this.staff_id;
+      axios.get(url).then((response) => {
+        const staffData = response.data.data;
+        this.resources = [
+          {
+            name: `${staffData.Staff_FName} ${staffData.Staff_LName}`,
+            id: `E_${staffData.Staff_ID}`,
+            expanded: true,
+          },
+        ];
+        this.loadEvents();
+      }).catch((error) => {
+        console.error('Error fetching staff data:', error);
+      });
+  },
+
+  methods: {
+    loadEvents() {
+      var url = "http://127.0.0.1:5000/api/wfh/events/" + this.staff_id;
+      axios.get(url).then((response) => {
+        this.events = response.data;
+      }).catch((error) => {
+        console.error('Error fetching events:', error);
+      });
     },
-    data() {
-      return {
-        allEvents: [],
-        employees: [],
-      };
-    },
-    // async created() {
-    //   try {
-    //     const response = await apiService.getAllEmployeesNames();
-    //     console.log('Employees data:', response.data);
-  
-    //     this.employees = response.data.map((employee) => ({
-    //       name: employee.Full_Name,
-    //       id: employee.Staff_ID.toString(),
-    //     }));
-    //     console.log('Formatted employees:', this.employees);
-    //   } catch (error) {
-    //     console.error('Error fetching employees:', error);
-    //   }
-  
-    // },
-  };
-  </script>
-  
+  }
+
+};
+</script>
