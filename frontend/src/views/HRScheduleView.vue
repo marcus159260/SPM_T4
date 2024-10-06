@@ -38,7 +38,7 @@ export default {
   methods: {
     loadEvents() {
       axios
-        .get('http://127.0.0.1:5000/api/wfh/events')
+        .get('http://127.0.0.1:5000/api/wfh/all_events')
         .then((response) => {
           this.events = response.data;
           // console.log('Loaded events:', this.events);

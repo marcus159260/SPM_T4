@@ -14,9 +14,9 @@ def users():
 
 @user_bp.route('/', methods=['GET'])
 def get_all_users():
-    user_data = get_all_users_data()  # Fetch user data from Supabase
+    user_data = get_all_users_data()  
     if user_data:
-        return jsonify({"status": "success", "data": user_data}), 200  # Return JSON response with the user data
+        return jsonify({"status": "success", "data": user_data}), 200 
     else:
         return jsonify({"status": "error", "message": "No data found"}), 404
 

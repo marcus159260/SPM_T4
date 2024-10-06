@@ -10,8 +10,26 @@ def get_staff_requests_data(user_id):
         return result
     else:
         return None
-    
-def get_staff_events_data():
+
+def get_staff_events_data(staff_id):
+    try:
+        response = supabase.table('request').select(
+            'Request_ID',
+            'Staff_ID',
+            'Start_Date',
+            'End_Date',
+            'Time',
+            'Status'
+        ).eq('Staff_ID', staff_id).execute()
+        data = response.data
+    except Exception as e:
+        print(f"Error fetching events data: {e}")
+        return None
+
+    events = build_events(data)
+    return events
+
+def get_all_events_data():
     try:
         response = supabase.table('request').select(
             'Request_ID',
