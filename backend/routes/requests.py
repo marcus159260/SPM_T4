@@ -45,3 +45,19 @@ def get_events_for_current_user(staff_id):
     if events is None:
         return jsonify({'error': 'Failed to fetch events data'}), 500
     return jsonify(events)
+
+@wfh_bp.route('/requests/<int:user_id>', methods=['GET'])
+def get_user_req(user_id):
+    try:
+        # Call the Supabase stored procedure with the user_id as a parameter
+        response = supabase.rpc('get_user_requests', {"p_staff_id": user_id}).execute()
+
+        # Check if the response has errors based on the 'status' or 'data'
+        if response.data:
+            return jsonify(response.data), 200
+        else:
+            # Handle cases where there is an error or no data
+            return jsonify({"error": response.error.message if response.error else "No data found"}), 500
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
