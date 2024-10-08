@@ -28,13 +28,58 @@ def get_user_data_by_id(user_id):
         return response.data[0]
     else:
         return None
+    
+  
+def get_manager_details_data(manager_id: int):
+    # Query to get manager details by Staff_ID (which is manager_id)
+    response = (
+        supabase.table('employee')
+        .select('Staff_ID, Staff_FName, Staff_LName, Dept, Position, Country')
+        .eq('Staff_ID', manager_id)
+        .execute()
+    )
+    
+    if response.data:
+        # Return the first result (since Staff_ID is unique)
+        manager_data = response.data[0]
+        
+        # Query to get all employees reporting to this manager
+        reporting_response = (
+            supabase.table('employee')
+            .select('Dept, Position, Country')
+            .eq('Reporting_Manager', manager_id)  # Assuming 'Reporting_Manager' is the correct column
+            .execute()
+        )
+        
+        # Prepare in-charge-of details as a set to ensure uniqueness
+        in_charge_of_combinations = set()  # Use a set to avoid duplicates
+        if reporting_response.data:
+            for employee in reporting_response.data:
+                combination = f"{employee['Dept']} - {employee['Position']} - {employee['Country']}"
+                in_charge_of_combinations.add(combination)  # Add combination to set
+        
+        # Convert the set to a list of lists
+        in_charge_of_list = [[combination] for combination in in_charge_of_combinations]
+
+        return {
+            'Staff_ID': manager_data['Staff_ID'],
+            'Full_Name': f"{manager_data['Staff_FName']} {manager_data['Staff_LName']}",
+            'Department': manager_data['Dept'],
+            'Position': manager_data['Position'],
+            'Country': manager_data['Country'],
+            'In_Charge_Of': in_charge_of_list  # Store as a list of lists
+        }
+    else:
+        return None
+
 
 def get_employees_by_dept_data():
-    # Step 1: Query employees from Engineering department
+    # Step 1: Query employees from Engineering department and Call Centre Position
     employee_response = (
         supabase.table('employee')
         .select('*')
         .eq('Dept', 'Engineering')
+        .eq('Position', 'Call Centre')
         .execute()
     )
     
