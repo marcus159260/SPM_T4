@@ -6,7 +6,7 @@
                 <div class="card-body">
                     <h3>Application form you've been waiting for...</h3>
                     <form @submit.prevent>
-                        <!-- TC1 (application): If selected adhoc & start date, autopopulate end date = start date -->
+                        <!-- ATC1 : If selected adhoc & start date, autopopulate end date = start date -->
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
                             <label class="form-check-label" for="flexRadioDefault1">
@@ -21,25 +21,35 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" v-model="startDate" @input = "checkPeriod">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="StartDate" aria-describedby="emailHelp" v-model="startDate" @input = "checkPeriod">
                             <span class="text-danger" v-if="validPeriod == false">Girl, it's 2 months back, 3 months forward for start date periodT</span>
                         </div>
 
                         <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="exampleInputPassword1" v-model="endDate">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" v-model="endDate">
                         </div>
-                        <!-- TC4 (application): Start date must be earlier or equal to end date -->
+                        <!-- ATC4 (application): Start date must be earlier or equal to end date -->
                         <span class="text-danger" v-if="startEndDate == false">Your end date can't be earlier than start date</span>
 
                         <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Request Reason</label>
-                            <input type="textarea" class="form-control" id="exampleInputPassword1" v-model="requestReason">
+                            <label for="wfhTime" class="form-label">WFH time</label>
+                            <select class="form-select" aria-label="wfhTime" v-model="wfhTime">
+                                <option selected value="AM"> AM (9am - 1pm)</option>
+                                <option value="PM">PM (2pm - 6pm)</option>
+                                <option value="FULL">FULL (9am - 6pm)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="requestReason" class="form-label">Request Reason</label>
+                            <input type="textarea" class="form-control" id="requestReason" v-model="requestReason">
                         </div>
 
 
                         <button type="submit" class="btn btn-primary" :disabled = "canSubmit == false">Submit</button>
+                    
                         
                 </form>
                 </div>
@@ -61,6 +71,7 @@ export default{
             approver_id: 151408, //need to do some mounted function where we fetch staff_id + reporting mgr
             startDate: null,
             endDate: null,
+            wfhTime: 'AM',
             requestReason: null,
             validPeriod: null
         }

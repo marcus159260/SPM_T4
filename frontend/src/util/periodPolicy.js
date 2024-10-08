@@ -44,8 +44,8 @@ export function check90Days(currentDate, checkDate){
     return true;
 }
 
-// TC2 (application): If startDate is older than currentDate (backdate), check for 60 days
-// TC3 (application): If startDate is later than currentDate (future), check for 90 days
+// ATC2 (application): If startDate is older than currentDate (backdate), check for 60 days
+// ATC3 (application): If startDate is later than currentDate (future), check for 90 days
 export function PeriodChecker(checkDate){
     const currentDate = formatDate(new Date());
     if(checkDate < currentDate){
