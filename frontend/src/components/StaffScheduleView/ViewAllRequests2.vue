@@ -1,55 +1,54 @@
 <template>
     <div class="content-wrapper">
-    <div v-if="requestsData?.length > 0">
-        <h3 class="mt-5">{{ requestsData[0].Staff_Name }}</h3>
+      <div v-if="requestsData?.length > 0">
+        <h2 class="mt-4">{{ requestsData[0].Staff_Name }}</h2>
 
         <div class="filter-container mb-3">
-            <label for="statusFilter">Status</label>
-            <select id="statusFilter" v-model="selectedStatus">
-                <option value="">All</option>
-                <option value="Approved">Approved</option>
-                <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Withdrawn">Withdrawn</option>
-            </select>
-        </div>
+        <label for="statusFilter" class="status-label">Status</label>
+        <select id="statusFilter" v-model="selectedStatus" class="status-dropdown">
+          <option value="">All</option>
+          <option value="Approved">Approved</option>
+          <option value="Pending">Pending</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Withdrawn">Withdrawn</option>
+        </select>
+      </div>
 
 
-
-        <table class="table">
-        <thead>
-            <tr>
-            <th scope="col">Request ID</th>
-            <th scope="col">Request Type</th>
-            <th scope="col">Status</th>
-            <th scope="col">Start Date</th>
-            <th scope="col">End Date</th>
-            <th scope="col">Time</th>
-            <th scope="col">Reason</th>
-            <th scope="col">Application Date</th>
-            <th scope="col">Approver</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="request in filteredRequests" :key="request.Request_ID">
-                <th scope="row">{{ request.Request_ID }}</th>
-                <td>{{ request.Request_Type}}</td>
-                <td>
-                    <span :class="{
-                        'badge rounded-pill text-bg-success': request.Status === 'Approved',
-                        'badge rounded-pill text-bg-warning': request.Status === 'Pending',
-                        'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
-                        'badge rounded-pill text-bg-light': request.Status === 'Withdrawn'
-                    }">{{ request.Status}}</span></td>
-                <td>{{ formatDate(request.Start_Date) }}</td>
-                <td>{{ formatDate(request.End_Date) }}</td>
-                <td>{{ request.Time }}</td>
-                <td>{{ request.Reason }}</td>
-                <td>{{ formatDate(request.Application_Date) }}</td>
-                <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
-            </tr>
-        </tbody>
-        </table>
+      <table class="table">
+      <thead>
+          <tr>
+          <th scope="col">Request ID</th>
+          <th scope="col">Request Type</th>
+          <th scope="col">Status</th>
+          <th scope="col">Start Date</th>
+          <th scope="col">End Date</th>
+          <th scope="col">Time</th>
+          <th scope="col">Reason</th>
+          <th scope="col">Application Date</th>
+          <th scope="col">Approver</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr v-for="request in filteredRequests" :key="request.Request_ID">
+              <th scope="row">{{ request.Request_ID }}</th>
+              <td>{{ request.Request_Type}}</td>
+              <td>
+                  <span :class="{
+                      'badge rounded-pill text-bg-success': request.Status === 'Approved',
+                      'badge rounded-pill text-bg-warning': request.Status === 'Pending',
+                      'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
+                      'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
+                  }">{{ request.Status}}</span></td>
+              <td>{{ formatDate(request.Start_Date) }}</td>
+              <td>{{ formatDate(request.End_Date) }}</td>
+              <td>{{ request.Time }}</td>
+              <td>{{ request.Reason }}</td>
+              <td>{{ formatDate(request.Application_Date) }}</td>
+              <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
+          </tr>
+      </tbody>
+      </table>
         
     </div>
     <div v-else>
@@ -116,7 +115,36 @@ export default {
 </script>
 
 <style>
-    .content-wrapper {
-        padding-left: 20px;
-    }
+  .filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds space between label and dropdown */
+  }
+
+  .status-label {
+    font-weight: bold;
+    margin-left: 25px;
+    margin-right: 10px;
+  }
+
+  .status-dropdown {
+    padding: 3px;
+    font-size: 14px;
+  }
+
+  /* Increase the row height */
+  tr {
+    height: 80px;
+  }
+
+  td, th {
+    vertical-align: middle; /* Center content vertically in rows */
+    padding: 15px; /* Add more padding for increased row size */
+    text-align: center;
+  }
+
+  h2 {
+    padding:8px;
+    font-weight: bolder;
+  }
 </style>
