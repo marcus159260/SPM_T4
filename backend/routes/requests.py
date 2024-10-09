@@ -70,3 +70,4 @@ def withdraw_request():
     staff_id = data.get('Staff_ID'); 
     result, status_code = withdraw_request_controller(request_id, rejection_reason, staff_id)
     return jsonify(result), status_code
+

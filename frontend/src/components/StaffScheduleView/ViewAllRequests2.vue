@@ -71,7 +71,7 @@ export default {
             staff_fname: "",
             staff_lname: "",
             selectedStatus: "",
-            staffId: 150076,
+            staff_id: 150076,
             approverName: "",
             requestsData : []
         }
@@ -97,8 +97,8 @@ export default {
       async fetchRequests() {
         try {
             // Get staffId from route params (if using Vue Router) or from a state
-            const staffId = this.$route.params.staffId || 150076; 
-            const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${staffId}`);
+            const staffId = this.$route.params.staff_id || 150076; 
+            const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${staff_id}`);
             if(response.data){
               this.requestsData = response.data
             }
