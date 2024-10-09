@@ -46,12 +46,6 @@ import { RouterLink, RouterView } from 'vue-router'
                 </a>
               </li>
 
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <RouterLink to="/application"> (Staff) Application </RouterLink>
-                </a>
-              </li>
-
             </ul>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">

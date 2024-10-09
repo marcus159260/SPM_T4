@@ -5,7 +5,6 @@ import TeamScheduleView from '../views/TeamScheduleView.vue';
 import ManagerScheduleView from '../views/ManagerScheduleView.vue';
 import HRScheduleView from '../views/HRScheduleView.vue';
 import MyScheduleView from '@/views/MyScheduleView.vue';
-import Application from '@/views/Application.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,13 +40,8 @@ const router = createRouter({
       name: 'HRSchedule',
       component: HRScheduleView
 
-    },
-    {
-      path: '/application',
-      name: 'Application',
-      component: Application
-
     }
+    
   ]
 })
 
