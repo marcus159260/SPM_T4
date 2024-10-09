@@ -1,5 +1,5 @@
 # routes/wfh_routes.py
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from controllers.requests_controller import *
 from util.db import supabase 
 
@@ -61,3 +61,12 @@ def get_user_req(user_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@wfh_bp.route('/requests/withdraw', methods=['POST'])
+def withdraw_request():
+    data = request.get_json()
+    request_id = data.get('Request_ID')
+    rejection_reason = data.get('Rejection_Reason')
+    staff_id = data.get('Staff_ID'); 
+    result, status_code = withdraw_request_controller(request_id, rejection_reason, staff_id)
+    return jsonify(result), status_code

@@ -96,3 +96,33 @@ def build_events(data):
             events.append(event)
 
     return events
+
+def withdraw_request_controller(request_id, rejection_reason, staff_id):
+
+    if not request_id or not rejection_reason:
+        return {'error': 'Invalid input'}, 400
+
+    response = supabase.table('request').select('*').eq('Request_ID', request_id).single().execute()
+    request_data = response.data
+
+    if not request_data:
+        return {'error': 'Request not found'}, 404
+
+    if request_data['Staff_ID'] != staff_id:
+        return {'error': 'Unauthorized' }, 403
+
+    start_date = datetime.strptime(request_data['Start_Date'], '%Y-%m-%d').date()
+    end_date = datetime.strptime(request_data['End_Date'], '%Y-%m-%d').date()
+    today = datetime.today().date()
+    two_weeks_ago = today - timedelta(days=14)
+    two_weeks_later = today + timedelta(days=14)
+
+    if not (two_weeks_ago <= start_date <= two_weeks_later):
+        return {'error': 'Cannot withdraw request outside the allowed time frame'}, 400
+
+    supabase.table('request').update({
+        'Status': 'Withdrawn',
+        'Rejection_Reason': rejection_reason
+    }).eq('Request_ID', request_id).execute()
+
+    return {'message': 'Request withdrawn successfully'}, 200
