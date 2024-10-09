@@ -80,21 +80,23 @@
             </a>
           </td> -->
 
-          <td>
-            <button @click="approveRequest(staff.Request_ID)" class="d-inline-block">
-              <img style="width:30px; height:30px" src="../../assets/checked.png">
+
+          <td class="d-flex align-items-center">
+            <button @click="approveRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
+              <img src="../../assets/checked.png" alt="Approve">
             </button>
-            <button @click="rejectRequest(staff.Request_ID)" class="d-inline-block ms-2">
-              <img style="width:30px; height:30px" src="../../assets/x-button.png">
+            <button @click="rejectRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
+              <img src="../../assets/x-button.png" alt="Reject">
             </button>
           </td>
+
           <!--End of Approve/Reject buttons-->
         </tr>
 
       </tbody>
     </table>
 
-    <div v-else class="text-center mt-3">
+    <div v-if="pendingRequests.length === 0" class="text-center mt-3">
       <p>No pending requests.</p>
     </div>
   </div>
@@ -156,27 +158,37 @@ export default {
         });
     },
     approveRequest(requestId) {
-      // Update request status to 'Approved'
-      axios.patch(`http://localhost:5000/api/wfh/requests/${requestId}`, { Status: 'Approved' })
+      // console.log("Request ID clicked:", requestId); 
+      axios.put(`http://localhost:5000/api/wfh/requests/${requestId}`, { Status: 'Approved' })
         .then(response => {
-          // Optionally, refresh the pending requests
-          this.fetchRequests(); // Re-fetch all requests or implement a more specific refresh
+          const approvedRequest = this.allRequests.find(request => request.Request_ID === requestId);
+          if (approvedRequest) {
+            console.log(111)
+            approvedRequest.Status = 'Approved';
+            
+          }
+          this.fetchRequests();
         })
         .catch(error => {
           console.error('Error approving request:', error);
         });
     },
+
     rejectRequest(requestId) {
-      // Update request status to 'Rejected'
-      axios.patch(`http://localhost:5000/api/wfh/requests/${requestId}`, { Status: 'Rejected' })
+      // Try changing PATCH to PUT or POST depending on what the API expects
+      axios.put(`http://localhost:5000/api/wfh/requests/${requestId}`, { Status: 'Rejected' }) // Changed to PUT
         .then(response => {
-          // Optionally, refresh the pending requests
-          this.fetchRequests(); // Re-fetch all requests or implement a more specific refresh
+          const rejectedRequest = this.allRequests.find(request => request.Request_ID === requestId);
+          if (rejectedRequest) {
+            rejectedRequest.Status = 'Rejected';
+          }
+          this.fetchRequests();
         })
         .catch(error => {
           console.error('Error rejecting request:', error);
         });
     },
+
   },
   mounted() {
     // Fetch requests when the component is mounted
@@ -190,5 +202,30 @@ export default {
 /* Add your styles here */
 #pending-header span {
   color: green;
+}
+
+.icon-button {
+  background: none;
+  /* Remove default button background */
+  border: none;
+  /* Remove button border */
+  padding: 0;
+  /* Remove default padding */
+  margin: 0 5px;
+  /* Add space between buttons */
+  cursor: pointer;
+  /* Change cursor to pointer on hover */
+  display: inline-block;
+  /* Make sure buttons are side by side */
+}
+
+.icon-button img {
+  width: 30px;
+  height: 30px;
+}
+
+.icon-button:focus {
+  outline: none;
+  /* Remove focus outline */
 }
 </style>
