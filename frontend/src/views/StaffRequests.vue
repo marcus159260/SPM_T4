@@ -46,14 +46,13 @@
 
       <!--Create Request-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        <h1>Create Request here</h1>
+        <CreateRequest />
       </div>
       <!--End of All Requests-->
 
       <!--Pending WFH-->
       <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-        <ViewPendingRequests  
-        />
+        <ViewPendingRequests />
       </div>
 
       <!--End of Pending WFH-->
@@ -79,7 +78,7 @@
 import { Tab, initMDB } from "mdb-ui-kit";
 import { MDCRipple } from '@material/ripple';
 import 'jquery';
-// import ViewPendingRequestsDB from '../components/ManagerScheduleView/ViewPendingRequestsDB.vue';
+import CreateRequest from '../components/StaffScheduleView/CreateRequest.vue';
 import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequests.vue';
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
 import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests2.vue';
@@ -103,6 +102,7 @@ export default {
     }
   },
   components: {
+    CreateRequest,
     ViewPendingRequests,
     ViewApprovedRequests,
     ViewAllRequests2
