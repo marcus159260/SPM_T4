@@ -1,11 +1,10 @@
 <template>
     <div >
-        <h1>werk from home application</h1>
         <div class = "d-flex justify-content-center">
             <div class="card w-75 h-100 align-items-center">
                 <div class="card-body w-75">
-                    <h1>{{ staff_name }}</h1>
-                    <h3>{{endDate}}</h3>
+                    <h4>{{ staff_name }}</h4>
+                   
                     <form @submit.prevent>
 
                         <!-- ATC1 : If selected adhoc & start date, autopopulate end date = start date -->
@@ -26,7 +25,7 @@
                         <div class="mb-3">
                             <label for="startDate" class="form-label">Start Date</label>
                             <input type="date" class="form-control" id="StartDate" aria-describedby="emailHelp" v-model="startDate" @input = "checkPeriod">
-                            <span class="text-danger" v-if="validPeriod == false">Girl, it's 2 months back, 3 months forward for start date periodT</span>
+                            <span class="text-danger" v-if="validPeriod == false">Start date can only be 2 months back and 3 months forward</span>
                         </div>
 
                         <div class="mb-3">
@@ -67,7 +66,7 @@ import axios from 'axios';
 import { formatDate, PeriodChecker } from '@/util/periodPolicy';
 
 export default{
-    name: 'Application',
+    name: "ApplicationForm",
     data(){
         return{
             staff_id: 150076, //Oliver Chan werking it again!,
