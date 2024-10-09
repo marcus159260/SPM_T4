@@ -56,7 +56,7 @@
         
     </div>
     <div v-else>
-      <p>No requests.</p>
+      <p>No requests available.</p>
     </div>
   </div>
 </template>
@@ -127,7 +127,7 @@ export default {
 
   .status-label {
     font-weight: bold;
-    margin-left: 15px;
+    margin-left: 25px;
     margin-right: 10px;
   }
 
@@ -147,9 +147,8 @@ export default {
     text-align: center;
   }
 
-  h2,p {
+  h2 {
     padding:8px;
     font-weight: bolder;
-    margin-left: 8px;
   }
 </style>

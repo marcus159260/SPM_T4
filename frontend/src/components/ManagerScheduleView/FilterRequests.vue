@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper">
-    <h2 class="mt-4">{{ approverName }}</h2> 
+    <h2 class="mt-4">All WFH Requests</h2>
 
     <div class="filter-container mb-3">
       <label for="statusFilter" class="status-label">Status</label>
@@ -61,7 +61,7 @@
     </div>
 
     <div v-else>
-      <p>No requests.</p>
+      <p>No requests found.</p>
     </div>
   </div>
 </template>
@@ -72,52 +72,35 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      selectedStatus: '', // Holds the value selected in the dropdown
-      approverName: 'Jaclyn Lee', // Set this to the name you want to filter by
-      allRequests: [], // All WFH requests fetched from the API
-      filteredRequests: [], // The filtered WFH requests
+      selectedStatus: '',  // Holds the value selected in the dropdown
+      allRequests: [],     // All WFH requests fetched from the API
+      filteredRequests: [],  // The filtered WFH requests
     };
   },
   methods: {
     applyFilter() {
-      const today = new Date(); // Current date
-
-      // Calculate the date 2 months back and 3 months ahead
-      const twoMonthsBack = new Date(today);
-      const threeMonthsAhead = new Date(today);
-
-      // Adjust months, ensuring correct date ranges
-      twoMonthsBack.setMonth(today.getMonth() - 2);
-      threeMonthsAhead.setMonth(today.getMonth() + 3);
-
-      // Filter the WFH requests based on status, date range, and approver's name
-      this.filteredRequests = this.allRequests.filter(request => {
-        const requestStartDate = new Date(request.Start_Date);
-        const isWithinDateRange = requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
-
-        // Check if the request matches the selected status and approver's name
-        const matchesStatus = this.selectedStatus === '' || (request.Status && request.Status.toLowerCase() === this.selectedStatus.toLowerCase());
-        const matchesApprover = request.Approver && request.Approver.toLowerCase().includes(this.approverName.toLowerCase());
-
-        // Return true if within date range, matches status, and matches approver
-        return isWithinDateRange && matchesStatus && matchesApprover;
-      });
-
-      console.log('Filtered Requests:', this.filteredRequests); // Log for debugging
+      // Filter the WFH requests based on the selected status
+      if (this.selectedStatus === '') {
+        // If no status is selected (i.e., "All"), show all requests
+        this.filteredRequests = this.allRequests;
+      } else {
+        // Filter requests by the selected status
+        this.filteredRequests = this.allRequests.filter(
+          request => request.Status && request.Status.toLowerCase() === this.selectedStatus.toLowerCase()
+        );
+      }
     },
-
     fetchRequests() {
       // Fetch WFH requests using Axios
       axios.get('http://127.0.0.1:5000/api/wfh/requests')
-      .then(response => {
-        this.allRequests = response.data;
-        this.applyFilter();  // Apply both date and status filtering immediately after fetching data
-      })
-      .catch(error => {
-        console.error('Error fetching requests:', error);
-      });
+        .then(response => {
+          this.allRequests = response.data;
+          this.filteredRequests = response.data;  // Initially show all requests
+        })
+        .catch(error => {
+          console.error('Error fetching requests:', error);
+        });
     },
-
     formatDate(dateString) {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, '0');
@@ -149,7 +132,7 @@ export default {
 
   .status-label {
     font-weight: bold;
-    margin-left: 15px;
+    margin-left: 25px;
     margin-right: 10px;
   }
 
@@ -169,9 +152,8 @@ export default {
     text-align: center;
   }
 
-  h2,p {
+  h2 {
     padding:8px;
     font-weight: bolder;
-    margin-left: 8px;
   }
 </style>
