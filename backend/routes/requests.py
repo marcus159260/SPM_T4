@@ -126,8 +126,9 @@ def create_request():
         }).execute()
 
         # Check if there's an error in the response
-        if response.data[1][0] == "Request created successfully":
-            return jsonify({'message': response.data[1][0]}), 200
+        print(response.data)
+        if response.data == "Request created successfully":
+            return jsonify({'message': response.data}), 200
 
         return jsonify({'error': 'Unable to create request'}), 401
 
