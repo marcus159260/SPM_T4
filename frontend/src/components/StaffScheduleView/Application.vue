@@ -7,7 +7,6 @@
                    
                     <form @submit.prevent>
 
-                        <!-- ATC1 : If selected adhoc & start date, autopopulate end date = start date -->
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="ADHOC" v-model="requestType" checked>
                             <label class="form-check-label" for="flexRadioDefault1">
@@ -15,7 +14,7 @@
                             </label>
                         </div>
 
-                            <div class="form-check">
+                        <div class="form-check">
                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="RECURRING" v-model="requestType">
                             <label class="form-check-label" for="flexRadioDefault2">
                                 Recurring
@@ -24,11 +23,11 @@
 
                         <div class="mb-3">
                             <label for="startDate" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="StartDate" aria-describedby="emailHelp" v-model="startDate" @input = "checkPeriod">
+                            <input type="date" class="form-control" id="StartDate" v-model="startDate" @input = "checkPeriod">
                             <span class="text-danger" v-if="validPeriod == false">Start date can only be 2 months back and 3 months forward</span>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3" v-if="requestType === 'RECURRING'">
                             <label for="endDate" class="form-label">End Date</label>
                             <input type="date" class="form-control" id="endDate" v-model="endDate">
                         </div>
@@ -50,7 +49,7 @@
                         </div>
 
 
-                        <button type="submit" class="btn btn-primary" :disabled = "canSubmit == false">Submit</button>
+                        <button type="submit" class="btn btn-primary" :disabled = "canSubmit == false" @click="submitRequest">Submit</button>
                     
                         
                 </form>
@@ -64,14 +63,15 @@
 <script>
 import axios from 'axios';
 import { formatDate, PeriodChecker } from '@/util/periodPolicy';
+import { generateRecurringDates } from '@/util/recurringDates';
 
 export default{
     name: "ApplicationForm",
     data(){
         return{
-            staff_id: 150076, //Oliver Chan werking it again!,
+            staffId: 150076, //Oliver Chan werking it again!,
             staff_name: "",
-            approver_name: "", //need to do some mounted function where we fetch staff_id + reporting mgr
+            approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
             startDate: null,
             endDate: null,
             wfhTime: 'AM',
@@ -83,33 +83,70 @@ export default{
     methods:{
         async getStaffApprover(){
             try{
-                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.staff_id}`);
+                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.staffId}`);
                 if(response.data){
                     this.staff_name = response.data.data.Staff_FName + " " + response.data.data.Staff_LName;
-                    this.approver_name = response.data.data.Reporting_Manager;
+                    this.approverId = response.data.data.Reporting_Manager;
+                    
                 }
                 else{
                     console.log("No data found for this staff ID");
                 }
             } catch(error){
-                console.error("Error fetching requests:", error);
+                console.error("Error fetching staff details:", error);
             }
         },
         checkPeriod(){
             this.validPeriod = PeriodChecker(this.startDate);
         },
+        async submitRequest() {
+            try {
+                const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
+                const payload = {
+                    staff_id: this.staffId,
+                    start_date: this.startDate, // Ensure it's formatted as 'YYYY-MM-DD'
+                    end_date: formattedEndDate,     // Ensure it's formatted as 'YYYY-MM-DD'
+                    time_of_day: this.wfhTime,    // AM/PM/FULL from dropdown
+                    request_type: this.requestType,
+                    status: 'Pending',          // Default status
+                    reason: this.requestReason,
+                    approver_id: this.approverId,
+                    requested_dates: this.requestType === "ADHOC" ? [`${this.startDate}`] : generateRecurringDates(this.startDate, this.endDate)
+                };
+                console.log(payload);
+
+                const response = await axios.post('http://127.0.0.1:5000/api/wfh/requests', payload);
+                console.log("Request submitted:", response.data);
+                this.clearFields();
+            } catch (error) {
+                console.error("Error submitting request:", error.response);
+            }
+        },
+        clearFields(){
+            this.staffId = null;
+            this.startDate = null;
+            this.endDate = null;
+            this.wfhTime = null;
+            this.requestType = "ADHOC";
+            this.requestReason = null;
+            this.validPeriod = null;
+        }
 
     },
     computed:{
         canSubmit(){
-            if(this.requestReason && this.requestReason.length > 10 && this.checkPeriod && this.startEndDate){
+            if(this.requestReason && this.requestReason.length > 10 && this.validPeriod && this.startEndDate == true){
                 return true;
             } return false;
         },
         startEndDate(){
-            if(this.startDate <= this.endDate){
+            if(this.requestType == "RECURRING" && this.endDate !== null && this.startDate <= this.endDate){
+                return true;
+            }
+            else if(this.requestType == "ADHOC" && this.startDate !== null){
                 return true
-            } return false;
+            }
+            return false;
         }
     },
     mounted(){
