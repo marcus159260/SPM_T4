@@ -125,6 +125,8 @@
       <!--All Requests-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
         <AllRequests />
+      </div>
+
       <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
         <FilterRequests />
       </div>
@@ -143,9 +145,7 @@ import { MDCRipple } from '@material/ripple';
 import 'jquery';
 // import ViewPendingRequestsDB from '../components/ManagerScheduleView/ViewPendingRequestsDB.vue';
 import ViewPendingRequests from '../components/ManagerScheduleView/ViewPendingRequests.vue';
-
 import AllRequests from '../components/ManagerScheduleView/AllRequests.vue';
-import FilterRequests from '../components/ManagerScheduleView/FilterRequests.vue';
 
 export default {
   name: "ManagerView",
@@ -217,8 +217,6 @@ export default {
     // ViewPendingRequestsDB,
     ViewPendingRequests,
     AllRequests,
-    FilterRequests
-    
   },
 }
 

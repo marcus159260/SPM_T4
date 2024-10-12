@@ -228,4 +228,5 @@ export default {
   outline: none;
   /* Remove focus outline */
 }
+
 </style>
