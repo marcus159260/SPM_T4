@@ -19,6 +19,31 @@ def get_wfh_requests():
             return jsonify(data[1])  # Return the actual data
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@wfh_bp.route('/requests/<int:request_id>', methods=['PUT'])
+def update_request(request_id):
+    print(request_id)
+    try:
+        # Get the status from the request body
+        request_data = request.json
+        status = request_data.get('Status')  # Get the 'Status' value from the request body
+        print(status)
+
+        # Assuming you have a Supabase method for updating the request status
+        response = supabase.from_('request').update({'Status': status}).eq('Request_ID', request_id).execute()
+
+        print(response)
+        if response.error:
+            return jsonify({"error": response.error.message}), 500
+        
+        return jsonify({"status": "success", "data": response.data}), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+   
+#------------------------------------------------------------------------------
    
 @wfh_bp.route('/<int:user_id>', methods=['GET']) 
 def get_staff_requests(user_id):
