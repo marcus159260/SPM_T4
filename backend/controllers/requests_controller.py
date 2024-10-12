@@ -73,12 +73,12 @@ def build_events(data):
             elif time_slot == 'PM':
                 start_time = '14:00:00'
                 end_time = '18:00:00'
-            elif time_slot == 'Full Day':
+            elif time_slot == 'FULL DAY':
                 start_time = '09:00:00'
                 end_time = '18:00:00'
-            # else:
-            #     print(f"Unknown time slot: {time_slot}")
-            #     continue
+            else:
+                print(f"Unknown time slot: {time_slot}")
+                continue
 
             date_str = single_date.strftime('%Y-%m-%d')
             start = f"{date_str}T{start_time}"
