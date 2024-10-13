@@ -134,3 +134,19 @@ def create_request():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+@wfh_bp.route('/requests/cancel', methods=['POST'])
+def cancel_request():
+    data = request.get_json()
+    request_id = data.get('Request_ID')
+    reason = data.get('Withdrawal_Reason')
+    date_to_cancel = data.get('dateToCancel')  # Optional, only for recurring requests
+    staff_id = data.get('Staff_id')
+
+    if not request_id or not reason:
+        return jsonify({'error': 'Request ID and reason are required.'}), 400
+
+    # Call the controller to handle the business logic
+    result = cancel_wfh_request(request_id, reason, staff_id, date_to_cancel)
+    
+    return jsonify(result), result['status']
