@@ -5,6 +5,7 @@
 I'm using Jest for my JavaScript tests
 
 ### Jest installation
+1. Under root dir, in your terminal: npm install --save-dev jest @babel/preset-env @babel/register @babel/core babel-jest
 1. In your terminal: cd test
 2. In your terminal: 
 ```sh
