@@ -101,7 +101,6 @@ export default {
         return isWithinDateRange && matchesStatus && matchesApprover;
       });
 
-      console.log('Filtered Requests:', this.filteredRequests); // Log filtered requests
     },
     fetchRequests() {
       axios.get('http://127.0.0.1:5000/api/wfh/requests')

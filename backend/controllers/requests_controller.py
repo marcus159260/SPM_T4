@@ -113,10 +113,10 @@ def withdraw_request_controller(request_id, rejection_reason, staff_id):
     start_date = datetime.strptime(request_data['Start_Date'], '%Y-%m-%d').date()
     end_date = datetime.strptime(request_data['End_Date'], '%Y-%m-%d').date()
     today = datetime.today().date()
-    two_weeks_ago = today - timedelta(days=14)
-    two_weeks_later = today + timedelta(days=14)
+    two_weeks_ago = start_date - timedelta(days=14)
+    two_weeks_later = end_date + timedelta(days=14)
 
-    if not (two_weeks_ago <= start_date <= two_weeks_later):
+    if not (two_weeks_ago <= today <= two_weeks_later):
         return {'error': 'Cannot withdraw request outside the allowed time frame'}, 400
 
     supabase.table('request').update({
