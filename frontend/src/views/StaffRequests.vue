@@ -1,133 +1,128 @@
 <template>
-    <div class="content-wrapper">
-    <div v-if="requestsData.length > 0">
-        <h2>Your Requests</h2>
-        <h3 class="mt-5">{{ requestsData[0].Staff_Name }}</h3>
+  <div class="manager-wrapper">
+    <!-- Tabs navs -->
+    <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a data-mdb-tab-init class="nav-link active" id="ex1-tab-1" href="#ex1-tabs-1" role="tab"
+          aria-controls="ex1-tabs-1" aria-selected="true">View My Schedule</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-2" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
+          aria-selected="false">View My Team Schedule</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-3" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
+          aria-selected="false">Create Request</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-4" href="#ex1-tabs-4" role="tab" aria-controls="ex1-tabs-4"
+          aria-selected="false">Pending</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-5" href="#ex1-tabs-5" role="tab" aria-controls="ex1-tabs-5"
+          aria-selected="false">Approved</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-6" href="#ex1-tabs-6" role="tab" aria-controls="ex1-tabs-6"
+          aria-selected="false">All Requests</a>
+      </li>
+    </ul>
+    <!-- Tabs navs -->
 
-        <div class="filter-container mb-3">
-            <label for="statusFilter">Status</label>
-            <select id="statusFilter" v-model="selectedStatus">
-                <option value="">All</option>
-                <option value="Approved">Approved</option>
-                <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Withdrawn">Withdrawn</option>
-            </select>
-        </div>
+    <!-- Tabs content -->
+    <div class="tab-content" id="ex1-content">
 
+      <!--View My Schedule-->
+      <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+        <h1>Insert Staff View Own Schedule here</h1>
+      </div>
+      <!-- End of View My Schedule-->
 
+      <!--View My Team Schedule-->
+      <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+        <h1>Insert Staff View My Team Schedule here</h1>
+      </div>
+      <!--End of All Requests-->
 
-        <table class="table">
-        <thead>
-            <tr>
-            <th scope="col">Request ID</th>
-            <th scope="col">Request Type</th>
-            <th scope="col">Status</th>
-            <th scope="col">Start Date</th>
-            <th scope="col">End Date</th>
-            <th scope="col">Time</th>
-            <th scope="col">Reason</th>
-            <th scope="col">Application Date</th>
-            <th scope="col">Approver</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="request in filteredRequests" :key="request.Request_ID">
-                <th scope="row">{{ request.Request_ID }}</th>
-                <td>{{ request.Request_Type}}</td>
-                <td>
-                    <span :class="{
-                        'badge rounded-pill text-bg-success': request.Status === 'Approved',
-                        'badge rounded-pill text-bg-warning': request.Status === 'Pending',
-                        'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
-                        'badge rounded-pill text-bg-light': request.Status === 'Withdrawn'
-                    }">{{ request.Status}}</span></td>
-                <td>{{ formatDate(request.Start_Date) }}</td>
-                <td>{{ formatDate(request.End_Date) }}</td>
-                <td>{{ request.Time }}</td>
-                <td>{{ request.Reason }}</td>
-                <td>{{ formatDate(request.Application_Date) }}</td>
-                <td>{{ approverName }}</td>
-            </tr>
-        </tbody>
-        </table>
-        
+      <!--Create Request-->
+      <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+        <ApplicationForm />
+        <CreateRequest />
+      </div>
+      <!--End of All Requests-->
+
+      <!--Pending WFH-->
+      <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+        <ViewPendingRequests />
+      </div>
+
+      <!--End of Pending WFH-->
+
+      <!--Approved Requests-->
+      <div class="tab-pane fade" id="ex1-tabs-5" role="tabpanel" aria-labelledby="ex1-tab-5">
+        <ViewApprovedRequests />
+      </div>
+      <!--End of Approved Requests-->
+
+      <!--All Requests-->
+      <div class="tab-pane fade" id="ex1-tabs-6" role="tabpanel" aria-labelledby="ex1-tab-6">
+        <ViewAllRequests2 />
+      </div>
+      <!--End of All Requests-->
+
     </div>
-    <div v-else>
-      <p>No requests available.</p>
-    </div>
+    <!-- Tabs content -->
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-// import { mapState } from 'vuex'; // If you're using Vuex to manage the logged-in user state
+import { Tab, initMDB } from "mdb-ui-kit";
+import { MDCRipple } from '@material/ripple';
+import 'jquery';
+
+import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequests.vue';
+import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
+import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests2.vue';
+import ApplicationForm from '../components/StaffScheduleView/Application.vue';
+import CreateRequest from "@/components/StaffScheduleView/CreateRequest.vue";
+
 
 export default {
-    name: "StaffRequests",
-    data(){
-        return{
-            staff_fname: "",
-            staff_lname: "",
-            selectedStatus: "",
-            staffId: 150076,
-            approverId: 151408,
-            approverName: "",
-            requestsData : []
-        }
-    },
-    computed: {
-      filteredRequests() {
-        if (Array.isArray(this.requestsData) && this.selectedStatus) {
-        return this.requestsData.filter(
-          (request) => request.Status === this.selectedStatus
-        );
-      }
-      return this.requestsData;
-      }
-    },
-    methods: {
-      formatDate(dateString) {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-      const year = date.getFullYear();
-      return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
-    }, 
-      async fetchRequests() {
-        try {
-            // Get staffId from route params (if using Vue Router) or from a state
-            const staffId = this.$route.params.staffId || 150076; 
-            const response = await axios.get(`http://127.0.0.1:5000/api/wfh/${staffId}`);
-            if(response.data){
-              this.requestsData = response.data.data
-            }
-            else {
-            console.log("No data found for this staff ID");
-            }
-        } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-      try{
-        const response = await axios.get(`http://localhost:5000/api/users/${this.approverId}`);
-        if(response.data){
-          this.approverName = response.data.data.Staff_FName + " " + response.data.data.Staff_LName
-        }
-      }catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    }},
+  name: "StaffView",
+  mounted() {
+    initMDB({ Tab }); // Initialize the MDB tabs when the component is mounted
+    // Initialize Ripple
+    const rippleSurface = Array.prototype.slice.call(document.querySelectorAll('.ripple-surface'))
+    rippleSurface.map(s => {
+      return new MDCRipple(s)
+    })
+  },
 
-    mounted() {
-    this.fetchRequests();
-  }
-
-
+  data() {
+    return {
+      employees: [], //initialize
+      managerId: 151408,
+      isLoading: true // Add loading state
     }
+  },
+  components: {
+    ViewPendingRequests,
+    ViewApprovedRequests,
+    ViewAllRequests2,
+    ApplicationForm,
+    CreateRequest
+  },
+}
+
+
 </script>
 
 <style>
-    .content-wrapper {
-        padding-left: 20px;
-    }
+.manager-wrapper {
+  margin-top: 100px;
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-bottom: 200px;
+}
+
 </style>

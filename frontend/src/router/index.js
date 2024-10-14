@@ -40,7 +40,8 @@ const router = createRouter({
       name: 'HRSchedule',
       component: HRScheduleView
 
-    },
+    }
+    
   ]
 })
 

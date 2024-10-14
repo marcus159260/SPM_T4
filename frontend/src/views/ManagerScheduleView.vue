@@ -12,6 +12,10 @@
       </li>
       <li class="nav-item" role="presentation">
         <a data-mdb-tab-init class="nav-link" id="ex1-tab-3" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
+          aria-selected="false">Approved</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-4" href="#ex1-tabs-4" role="tab" aria-controls="ex1-tabs-4"
           aria-selected="false">All Requests</a>
       </li>
     </ul>
@@ -100,22 +104,38 @@
           :filteredPendingEmployees="filteredPendingEmployees" 
           :hasPendingRequests="hasPendingRequests" 
         /> -->
-        <ViewPendingRequests
-          
-        />
+        <ViewPendingRequests/>
       </div>
-
       <!--End of Pending WFH-->
+      
+
+      <!--Approved WFH-->
+      <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+        <!-- <ViewPendingRequestsDB
+          v-if="employees.length > 0" 
+          :filteredEmployee="filteredEmployee" 
+          :filteredPendingEmployees="filteredPendingEmployees" 
+          :hasPendingRequests="hasPendingRequests" 
+        /> -->
+        <ApprovedRequests/>
+      </div>
+      <!--End of Approved WFH-->
+
 
       <!--All Requests-->
-      <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        <FilterRequests />
+      <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-3">
+        <AllRequests />
       </div>
+
+      <!-- <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+        <FilterRequests/>
+      </div> -->
       <!--End of All Requests-->
 
     </div>
     <!-- Tabs content -->
   </div>
+
 </template>
 
 <script>
@@ -125,8 +145,8 @@ import { MDCRipple } from '@material/ripple';
 import 'jquery';
 // import ViewPendingRequestsDB from '../components/ManagerScheduleView/ViewPendingRequestsDB.vue';
 import ViewPendingRequests from '../components/ManagerScheduleView/ViewPendingRequests.vue';
-
-import FilterRequests from '../components/ManagerScheduleView/FilterRequests.vue';
+import AllRequests from '../components/ManagerScheduleView/AllRequests.vue';
+import ApprovedRequests from '@/components/ManagerScheduleView/ApprovedRequests.vue';
 
 export default {
   name: "ManagerView",
@@ -146,7 +166,7 @@ export default {
   data() {
     return {
       employees: [], //initialize
-      managerId: 151408,
+      managerId: 140001,
       isLoading: true // Add loading state
     }
   },
@@ -167,23 +187,22 @@ export default {
       // Filter employees based on manager ID, department, and position
       return (this.employees.filter(
         (staff) =>
-          staff.Dept === "Engineering" &&
-          staff.Position === "Call Centre" &&
+          // staff.Dept === "Engineering" &&
+          // staff.Position === "Call Centre" &&
           staff.Reporting_Manager === this.managerId
         ) || []
       );
     },
+
     hasPendingRequests() {
       return this.filteredPendingEmployees.length > 0; // Returns true if there are pending requests
     },
   },
   methods: {
-
     get_employees_by_dept() {
       axios.get('http://127.0.0.1:5000/api/users/by-dept-employees')
         .then(response => {
           this.employees = response.data.data; // Assign fetched data to the staffSchedules array
-          console.log(this.employees)
           this.isLoading = false;
         })
         .catch(error => {
@@ -197,7 +216,9 @@ export default {
   components: {
     // ViewPendingRequestsDB,
     ViewPendingRequests,
-    FilterRequests
+    AllRequests,
+    ApprovedRequests,
+
   },
 }
 

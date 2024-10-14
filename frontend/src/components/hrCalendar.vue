@@ -23,7 +23,7 @@ const config = reactive({
   cellDuration: 720,
   // days: DayPilot.Date.today().daysInMonth(),
   days: 7,
-  startDate: DayPilot.Date.today().firstDayOfMonth(),
+  startDate: DayPilot.Date.today(),
   timeRangeSelectedHandling: "Disabled",
   eventClickHandling: "Disabled",
   treeEnabled: true,
@@ -32,21 +32,17 @@ const config = reactive({
 });
 const schedulerRef = ref(null);
 
-// Watch for changes in resources prop
 watch(
   () => props.resources,
   (newResources) => {
-    // console.log('Resources updated in hrCalendar.vue:', newResources);
     config.resources = newResources;
   },
   { immediate: true }
 );
 
-// Watch for changes in events prop
 watch(
   () => props.events,
   (newEvents) => {
-    // console.log('Events updated in hrCalendar.vue:', newEvents);
     config.events = newEvents;
   },
   { immediate: true }

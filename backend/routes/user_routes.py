@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from controllers.user_controller import *
+from datetime import datetime, timedelta
 
 user_bp = Blueprint('user_bp', __name__)
 
@@ -14,9 +15,9 @@ def users():
 
 @user_bp.route('/', methods=['GET'])
 def get_all_users():
-    user_data = get_all_users_data()  # Fetch user data from Supabase
+    user_data = get_all_users_data()  
     if user_data:
-        return jsonify({"status": "success", "data": user_data}), 200  # Return JSON response with the user data
+        return jsonify({"status": "success", "data": user_data}), 200 
     else:
         return jsonify({"status": "error", "message": "No data found"}), 404
 
@@ -29,7 +30,15 @@ def get_user_by_id(user_id):
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
     
-@user_bp.route('by-dept-employees', methods=['GET']) #test-case: 150245
+@user_bp.route('get-manager/<int:manager_id>', methods=['GET'])
+def get_manager_details(manager_id):
+    manager = get_manager_details_data(manager_id)
+    if manager:
+        return jsonify({"status": "success", "data": manager}), 200
+    else:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+    
+@user_bp.route('by-dept-employees', methods=['GET'])
 def get_employees_by_dept():
     user = get_employees_by_dept_data() 
     if user:
