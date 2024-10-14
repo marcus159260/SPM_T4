@@ -127,9 +127,9 @@
         <AllRequests />
       </div>
 
-      <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-        <FilterRequests />
-      </div>
+      <!-- <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+        <FilterRequests/>
+      </div> -->
       <!--End of All Requests-->
 
     </div>
@@ -146,6 +146,7 @@ import 'jquery';
 // import ViewPendingRequestsDB from '../components/ManagerScheduleView/ViewPendingRequestsDB.vue';
 import ViewPendingRequests from '../components/ManagerScheduleView/ViewPendingRequests.vue';
 import AllRequests from '../components/ManagerScheduleView/AllRequests.vue';
+import ApprovedRequests from '@/components/ManagerScheduleView/ApprovedRequests.vue';
 
 export default {
   name: "ManagerView",
@@ -199,10 +200,9 @@ export default {
   },
   methods: {
     get_employees_by_dept() {
-      axios.get('http://localhost:5000/api/users/by-dept-employees')
+      axios.get('http://127.0.0.1:5000/api/users/by-dept-employees')
         .then(response => {
           this.employees = response.data.data; // Assign fetched data to the staffSchedules array
-          console.log(this.employees)
           this.isLoading = false;
         })
         .catch(error => {
@@ -217,6 +217,8 @@ export default {
     // ViewPendingRequestsDB,
     ViewPendingRequests,
     AllRequests,
+    ApprovedRequests,
+
   },
 }
 

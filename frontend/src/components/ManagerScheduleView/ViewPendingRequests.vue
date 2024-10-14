@@ -137,10 +137,9 @@ export default {
 
   methods: {
     get_manager_details(managerId) {
-      axios.get(`http://localhost:5000/api/users/get-manager/${managerId}`)
+      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
         .then(response => {
           this.managerDetails = response.data.data; // Store manager details
-          console.log(this.managerDetails)
         })
         .catch(error => {
           console.error("Error fetching manager details:", error);
@@ -151,7 +150,6 @@ export default {
       axios.get('http://127.0.0.1:5000/api/wfh/requests')
         .then(response => {
           this.allRequests = response.data;
-          console.log(this.allRequests)
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
@@ -159,7 +157,7 @@ export default {
     },
     approveRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.put(`http://localhost:5000/api/wfh/requests/${requestId}`, { Status: 'Approved' })
+      axios.put(`http://127.0.0.1:5000/api/wfh/requests/${requestId}`, { Status: 'Approved' })
         .then(response => {
           const approvedRequest = this.allRequests.find(request => request.Request_ID === requestId);
           if (approvedRequest) {
@@ -176,7 +174,7 @@ export default {
 
     rejectRequest(requestId) {
       // Try changing PATCH to PUT or POST depending on what the API expects
-      axios.put(`http://localhost:5000/api/wfh/requests/${requestId}`, { Status: 'Rejected' }) // Changed to PUT
+      axios.put(`http://127.0.0.1:5000/api/wfh/requests/${requestId}`, { Status: 'Rejected' }) // Changed to PUT
         .then(response => {
           const rejectedRequest = this.allRequests.find(request => request.Request_ID === requestId);
           if (rejectedRequest) {
