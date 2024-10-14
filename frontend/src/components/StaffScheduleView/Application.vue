@@ -24,7 +24,7 @@
                         <div class="mb-3">
                             <label for="startDate" class="form-label">Start Date</label>
                             <input type="date" class="form-control" id="StartDate" v-model="startDate" @input = "checkPeriod">
-                            <span class="text-danger" v-if="validPeriod == false">Start date can only be 2 months back and 3 months forward</span>
+                            <span class="text-danger" v-if="validPeriod == false">Start date can only be 2 months back or 3 months forward</span>
                         </div>
 
                         <div class="mb-3" v-if="requestType === 'RECURRING'">
