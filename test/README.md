@@ -2,7 +2,7 @@
 
 ## Frontend JavaScript tests - Jest
 
-I'm using Jest for my JavaScript tests
+I'm using Jest for my JavaScript function tests
 https://jestjs.io/docs/getting-started
 
 ### Jest installation
