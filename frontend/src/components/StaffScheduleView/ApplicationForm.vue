@@ -106,7 +106,7 @@ export default{
                     staff_id: this.staffId,
                     start_date: this.startDate, // Ensure it's formatted as 'YYYY-MM-DD'
                     end_date: formattedEndDate,     // Ensure it's formatted as 'YYYY-MM-DD'
-                    time_of_day: this.wfhTime,    // AM/PM/FULL from dropdown
+                    time_of_day: this.wfhTime,    
                     request_type: this.requestType,
                     status: 'Pending',          // Default status
                     reason: this.requestReason,
