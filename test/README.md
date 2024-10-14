@@ -6,7 +6,7 @@ I'm using Jest for my JavaScript tests
 https://jestjs.io/docs/getting-started
 
 ### Jest installation
-1. Under root dir, in your terminal:
+1. Under root dir, install Jest and the Babel stuff:
 ```sh
 npm install --save-dev jest @babel/preset-env @babel/register @babel/core babel-jest 
 ```
