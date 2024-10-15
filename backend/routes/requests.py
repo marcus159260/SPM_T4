@@ -104,16 +104,15 @@ def create_request():
 
         # Parse and validate date fields
         staff_id = data.get('staff_id')
-        start_date = str(datetime.strptime(data.get('start_date'), '%Y-%m-%d').date())
-        end_date = str(datetime.strptime(data.get('end_date'), '%Y-%m-%d').date())
+        start_date = str(data.get('start_date'))
+        end_date = str(data.get('end_date'))
         time_of_day = data.get('time_of_day')
         request_type = data.get('request_type')
         status = data.get('status')
-        reason = data.get('reason').replace("'", "''")  # Escape single quotes
+        reason = data.get('reason').replace("'", "''") 
         approver_id = data.get('approver_id')
-        requested_dates = [str(datetime.strptime(date, '%Y-%m-%d').date()) for date in data.get('requested_dates')]
+        requested_dates = [str(date) for date in data.get('requested_dates')]
 
-        # Call the stored procedure with the validated data
         response = supabase.rpc('create_request', {
             'p_staff_id': staff_id,
             'p_start_date': start_date,
@@ -123,17 +122,17 @@ def create_request():
             'p_status': status,
             'p_reason': reason,
             'p_approver_id': approver_id,
-            'p_requested_date': requested_dates
+            'p_requested_dates': requested_dates 
         }).execute()
 
-        # Check if there's an error in the response
         if response.data == "Request created successfully":
             return jsonify({'message': response.data}), 201
-
+        
         return jsonify({'error': 'Unable to create request'}), 401
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 
 @wfh_bp.route('/requests/cancel', methods=['POST'])

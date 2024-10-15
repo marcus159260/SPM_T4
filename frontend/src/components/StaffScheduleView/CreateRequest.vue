@@ -40,9 +40,9 @@
         requestType: "ADHOC",
         startDate: "",
         endDate: "",
-        timeOfDay: "",  // Holds the value from dropdown
+        timeOfDay: "",  
         reason: "",
-        approverId: 151408,  // Approver ID, can be fetched dynamically
+        approverId: 151408,
       };
     },
     methods: {
@@ -53,11 +53,11 @@
             const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
             const payload = {
                 staff_id: this.staffId,
-                start_date: this.startDate, // Ensure it's formatted as 'YYYY-MM-DD'
-                end_date: formattedEndDate,     // Ensure it's formatted as 'YYYY-MM-DD'
-                time_of_day: this.timeOfDay,    // AM/PM/FULL from dropdown
+                start_date: this.startDate, 
+                end_date: formattedEndDate,    
+                time_of_day: this.timeOfDay,   
                 request_type: this.requestType,
-                status: 'Pending',          // Default status
+                status: 'Pending',   
                 reason: this.reason,
                 approver_id: this.approverId,
                 requested_dates: this.requestType === "ADHOC" ? [`${this.startDate}`] : this.generateRecurringDates()
@@ -70,14 +70,13 @@
         }
     },
   
-      // For RECURRING requests, generate dates (assuming recurring Mondays logic)
       generateRecurringDates() {
         const dates = [];
         let current = new Date(this.startDate);
   
         while (current <= new Date(this.endDate)) {
-          dates.push(current.toISOString().split('T')[0]);  // Get YYYY-MM-DD format
-          current.setDate(current.getDate() + 7);  // Move to next Monday
+          dates.push(current.toISOString().split('T')[0]);  
+          current.setDate(current.getDate() + 7); 
         }
   
         return dates;
