@@ -176,3 +176,27 @@ def cancel_wfh_request(request_id, reason, staff_id, date_to_cancel=None):
 
     except Exception as e:
         return {'error': str(e), 'status': 500}
+    
+def reject_wfh_request(request_id, reason, date_to_cancel=None):
+    try:
+        # Fetch the request details by ID
+        response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
+        request_data = response.data[0]
+
+        if not request_data:
+            return {'error': 'Request not found.', 'status': 404}
+        
+        if reason == '':
+            return {'error': 'Reason cannot be empty.', 'status': 404}
+        # Handle adhoc vs recurring request
+        update_response = supabase.table('request').update({
+        'Status': 'Rejected',
+        'Rejection_Reason': reason
+        }).eq('Request_ID', request_id).execute()
+        
+        print(update_response)  # Check if update was successful
+
+        return {'message': 'Request cancelled successfully.', 'status': 200}
+
+    except Exception as e:
+        return {'error': str(e), 'status': 500}

@@ -27,14 +27,15 @@ def update_request(request_id):
         # Get the status from the request body
         request_data = request.json
         status = request_data.get('Status')  # Get the 'Status' value from the request body
-        print(status)
+        # print(status)
 
         # Assuming you have a Supabase method for updating the request status
         response = supabase.from_('request').update({'Status': status}).eq('Request_ID', request_id).execute()
 
-        print(response)
-        if response.error:
-            return jsonify({"error": response.error.message}), 500
+        # print(response.error, 'hiii')
+        # if response.error not in ['Approved', 'Rejected']:
+            
+        #     return jsonify({"error": response.error.message}), 500
         
         return jsonify({"status": "success", "data": response.data}), 200
     
@@ -150,3 +151,12 @@ def cancel_request():
     result = cancel_wfh_request(request_id, reason, staff_id, date_to_cancel)
     
     return jsonify(result), result['status']
+
+@wfh_bp.route('/requests/reject', methods=['POST'])
+def reject_request():
+    data = request.get_json()
+    request_id = data.get('Request_ID')
+    rejection_reason = data.get('Rejection_Reason')
+    staff_id = data.get('Staff_ID'); 
+    result, status_code = reject_wfh_request(request_id, rejection_reason, staff_id)
+    return jsonify(result), status_code

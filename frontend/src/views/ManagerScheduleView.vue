@@ -105,6 +105,7 @@
           :hasPendingRequests="hasPendingRequests" 
         /> -->
         <ViewPendingRequests/>
+        
       </div>
       <!--End of Pending WFH-->
       
@@ -147,6 +148,7 @@ import 'jquery';
 import ViewPendingRequests from '../components/ManagerScheduleView/ViewPendingRequests.vue';
 import AllRequests from '../components/ManagerScheduleView/AllRequests.vue';
 import ApprovedRequests from '@/components/ManagerScheduleView/ApprovedRequests.vue';
+import PopupWrapper from '@/components/PopupWrapper.vue';
 
 export default {
   name: "ManagerView",
@@ -218,6 +220,7 @@ export default {
     ViewPendingRequests,
     AllRequests,
     ApprovedRequests,
+    PopupWrapper
 
   },
 }
@@ -232,5 +235,56 @@ export default {
   margin-right: 100px;
   margin-bottom: 200px;
 }
+#popup {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  /* -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; */
+  /* text-align: center; */
+  color: #2c3e50;
+  background-color: white;
+  /* border: 1px black solid; */
+  border-radius: 5px;
+  position: fixed; /* Fixes the popup to the viewport */
+  z-index: 1; /* Ensures it appears above other content */
+  left: 50%; /* Move to the middle of the screen */
+  top: 50%; /* Move to the middle of the screen */
+  transform: translate(-50%, -50%); /* Offset by half its width and height */
+  /* background: #3794ff; */
+  color: #fff;
+  width: 500px; /* Set width */
+  min-height: min-content; /* Set height */
+  display: none; /* Enables flexbox for centering content */
+  padding:0px;
+  /* align-items: center; Vertically center content */
+  /* justify-content: center; Horizontally center content */
+}
 
+
+/* .popover {
+  margin: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  background: #fff;
+  color: #3794ff;
+  padding: 2px 2px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.popover:hover {
+  background: #2b2b2b;
+  color: #fff;
+}
+
+.popover-content {
+  position: absolute;
+  background: #fff;
+  border-radius: 1px;
+  margin-top: 4px;
+  padding: 2px;
+  color: #333;
+  min-width: 200px;
+  text-align: left;
+} */
 </style>
