@@ -63,7 +63,7 @@
 
 <script>
 import axios from 'axios';
-import { formatDate, PeriodChecker, ReasonChecker} from '@/util/periodPolicy';
+import { PeriodChecker} from '@/util/periodPolicy';
 import { generateRecurringDates } from '@/util/recurringDates';
 
 export default{
