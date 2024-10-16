@@ -1,6 +1,15 @@
 <template>
     <div>
-        <h5 class="mt-4">Approved Requests</h5>
+        <h6 id="pending-header" v-if="managerDetails" class="mt-10">
+            Manager Name: <span>{{ managerDetails.Full_Name }}</span> <br />
+            Manager ID: <span>{{ managerDetails.Staff_ID }}</span> <br>
+            Department: <span>{{ managerDetails.Department }}</span> <br />
+            Position: <span>{{ managerDetails.Position }}</span> <br />
+            <!-- In charge of: <br>
+          &emsp;Dept -> <span>{{ managerDetails.Department }}</span> <br>
+          &emsp;Position -> <span>{{ managerDetails.Position }}</span> -->
+        </h6>
+        <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
         <table v-if="approvedRequests.length > 0" class="table align-middle mt-10 bg-white">
             <thead class="bg-light">
                 <tr>
@@ -15,7 +24,6 @@
                     <th>Status</th>
                 </tr>
             </thead>
-
             <tbody v-for="staff in approvedRequests" :key="staff.Staff_ID">
                 <tr>
                     <td>
@@ -58,47 +66,83 @@
                 </tr>
             </tbody>
         </table>
-
+        <div v-if="approvedRequests.length === 0" class="text-center mt-3">
+            <p>No Approved requests.</p>
+        </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-    props: {
-        approvedRequests: {
-            type: Array,
-            default: () => [],
+    data() {
+        return {
+            allRequests: [], // Holds the data fetched from the API
+            managerDetails: [],
+            managerId: 151408,
+            // refreshInterval: null
+        };
+    },
+    methods: {
+        get_manager_details(managerId) {
+            axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
+                .then(response => {
+                    this.managerDetails = response.data.data; // Store manager details
+                })
+                .catch(error => {
+                    console.error("Error fetching manager details:", error);
+                });
         },
+        fetchRequests() {
+            // Fetch WFH requests using Axios
+            axios.get('http://127.0.0.1:5000/api/wfh/requests')
+                .then(response => {
+                    console.log(123);
+                    this.allRequests = response.data;
+                })
+                .catch(error => {
+                    console.error('Error fetching requests:', error);
+                });
+        },
+        // startAutoRefresh() {
+        //     // Set the refresh interval (e.g., every 30 seconds)
+        //     this.refreshInterval = setInterval(() => {
+        //         this.fetchRequests();  // Auto-refresh requests
+        //     }, 5000); // 2 seconds
+        // },
+        // stopAutoRefresh() {
+        //     // Clear the interval when no longer needed
+        //     if (this.refreshInterval) {
+        //         clearInterval(this.refreshInterval);
+        //     }
+        // },
     },
     computed: {
-        computed: {
-            pendingRequests() {
-                return this.allRequests
-                    .filter(request => {
-                        const applicationDate = new Date(request.Application_Date);
-                        const threeMonthsFromApplicationDate = new Date(applicationDate);
-                        threeMonthsFromApplicationDate.setMonth(threeMonthsFromApplicationDate.getMonth() + 3);
-
-                        return (
-                            request.Status === 'Pending' &&
-                            request.Approver_ID === this.managerId &&
-                            new Date() <= threeMonthsFromApplicationDate
-                        );
-                    })
-                    .sort((a, b) => a.Request_ID - b.Request_ID);
-            },
-
-            approvedRequests() {
-                return this.allRequests
-                    .filter(request => request.Status === 'Approved')
-                    .sort((a, b) => a.Request_ID - b.Request_ID); // Sort by Request_ID
-            },
-        },
-
-    }
+        approvedRequests() {
+            // Filter for approved requests
+            return this.allRequests.filter(request => 
+            request.Status === 'Approved' && 
+            request.Approver_ID === this.managerId
+            );
+        }
+    },
+    mounted() {
+        // Fetch requests when the component is mounted
+        this.fetchRequests();
+        this.get_manager_details(this.managerId);
+        // this.startAutoRefresh();
+    },
+    // beforeDestroy() {
+    //     // Stop the auto-refresh when the component is destroyed
+    //     this.stopAutoRefresh();
+    // },
 };
 </script>
 
 <style scoped>
 /* Add your styles here */
+#pending-header span {
+    color: green;
+}
 </style>

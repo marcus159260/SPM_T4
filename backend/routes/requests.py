@@ -10,8 +10,11 @@ wfh_bp = Blueprint('wfh_bp', __name__)
 @wfh_bp.route('/requests', methods=['GET'])
 def get_wfh_requests():
     try:
+        auto_reject_pending_requests()
+        
         # Call the function to fetch the data
         data, error = supabase.rpc('get_requests').execute()
+
 
         if error[0] != 'count':
             return jsonify({"error": f"Error fetching data: {error}"}), 500
@@ -20,27 +23,6 @@ def get_wfh_requests():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@wfh_bp.route('/requests/<int:request_id>', methods=['PUT'])
-def update_request(request_id):
-    print(request_id)
-    try:
-        # Get the status from the request body
-        request_data = request.json
-        status = request_data.get('Status')  # Get the 'Status' value from the request body
-        # print(status)
-
-        # Assuming you have a Supabase method for updating the request status
-        response = supabase.from_('request').update({'Status': status}).eq('Request_ID', request_id).execute()
-
-        # print(response.error, 'hiii')
-        # if response.error not in ['Approved', 'Rejected']:
-            
-        #     return jsonify({"error": response.error.message}), 500
-        
-        return jsonify({"status": "success", "data": response.data}), 200
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
    
@@ -134,7 +116,6 @@ def create_request():
         return jsonify({'error': str(e)}), 500
 
 
-
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():
     data = request.get_json()
@@ -151,6 +132,23 @@ def cancel_request():
     
     return jsonify(result), result['status']
 
+@wfh_bp.route('/requests/approve', methods=['POST'])
+def update_request():
+    try:
+        request_data = request.json
+        print(request_data)
+        request_id = request_data.get('Request_ID')
+        status = request_data.get('request_Status')
+        # print(request_id, status)
+        if not request_id or not status:
+            return jsonify({"error": "Missing request ID or status"}), 400
+        result, status_code = approve_wfh_request(request_id, status)
+        print("line 143:", result, status_code)
+        return jsonify(result), status_code
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @wfh_bp.route('/requests/reject', methods=['POST'])
 def reject_request():
     data = request.get_json()
