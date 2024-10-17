@@ -80,16 +80,23 @@ describe('PeriodChecker testing', () => {
     });
 
 
-    const currentDate = formatDate(new Date());
     test('If the start date is earlier than today, invoke check60Days', () =>{
 
-        // const currentDate = formatDate(new Date());
+        const currentDate = formatDate(new Date());
         const checkDate = "2024-09-15"
-        const result = PeriodChecker(checkDate)
+        PeriodChecker(currentDate, checkDate)
 
         expect(mockCheck60Days).toHaveBeenCalledWith(currentDate, checkDate);
 
+    })
 
+    test('If the start date is later than today, invoke check90Days', () =>{
+
+        const currentDate = formatDate(new Date());
+        const checkDate = "2024-11-15"
+        PeriodChecker(currentDate, checkDate)
+
+        expect(mockCheck90Days).toHaveBeenCalledWith(currentDate, checkDate);
 
     })
 

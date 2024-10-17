@@ -63,7 +63,7 @@
 
 <script>
 import axios from 'axios';
-import { PeriodChecker} from '@/util/periodPolicy';
+import { formatDate, PeriodChecker} from '@/util/periodPolicy';
 import { generateRecurringDates } from '@/util/recurringDates';
 
 export default{
@@ -99,7 +99,8 @@ export default{
             }
         },
         checkPeriod(){
-            this.validPeriod = PeriodChecker(this.startDate);
+            const currentDate = formatDate(new Date());
+            this.validPeriod = PeriodChecker(currentDate, this.startDate);
         },
         validateRequestReason() {
             this.isRequestReasonValid = this.requestReason.length > 10 ;

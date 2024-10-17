@@ -47,14 +47,15 @@ export function check90Days(currentDate, checkDate){
 }
 
 
-export function PeriodChecker(checkDate){
-    const currentDate = formatDate(new Date());
+export function PeriodChecker(currentDate, checkDate){
+    console.log("CURRENT DATE === " + currentDate)
+    console.log("CHECK DATE === " + checkDate)
     if(checkDate < currentDate){
         console.log("60 DAYS: " + check60Days(currentDate, checkDate))
         return check60Days(currentDate, checkDate);
     }
     else{
-        console.log("90 DAYS: " + check60Days(currentDate, checkDate))
+        console.log("90 DAYS: " + check90Days(currentDate, checkDate))
         return check90Days(currentDate, checkDate);
     }
 }
