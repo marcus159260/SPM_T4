@@ -49,19 +49,6 @@
         <div v-if="showCancelModal" class="modal">
             <div class="modal-content">
                 <h4>Cancel Request</h4>
-                <!-- <p v-if="isRecurringRequest">Select the date to cancel for the recurring request:</p>
-                <ul v-if="isRecurringRequest">
-                    <li v-for="date in selectedRequest.Requested_Date" :key="date">
-                        <input
-                            type="radio"
-                            v-model="selectedDateToCancel"
-                            :value="date"
-                            name="cancel-date"
-                        />
-                        {{ formatDate(date) }}
-                    </li>
-                </ul> -->
-
                 <p>Reason for cancellation:</p>
                 <textarea v-model="cancellationReason"></textarea>
 
@@ -104,9 +91,7 @@ export default {
             showCancelModal: false, // Track modal visibility
             showSuccessModal: false, // Track success modal visibility
             selectedRequest: null, // Track the selected request
-            selectedDateToCancel: null, // For selecting a single date to cancel
             cancellationReason: "", // Capture the reason
-            isRecurringRequest: false, // Track if the request is recurring
         };
     },
 
@@ -157,8 +142,6 @@ export default {
 
         openCancelModal(request) {
             this.selectedRequest = request;
-            // this.isRecurringRequest = request.Request_Type === "RECURRING";
-            // this.selectedDateToCancel = null; // Reset selected date
             this.cancellationReason = "";
             this.showCancelModal = true;
         },
@@ -173,15 +156,9 @@ export default {
                 return;
             }
 
-            // if (this.isRecurringRequest && !this.selectedDateToCancel) {
-            //     // Optionally handle this case without an alert
-            //     return;
-            // }
-
             axios.post('http://127.0.0.1:5000/api/wfh/requests/cancel', {
                     Request_ID: this.selectedRequest.Request_ID,
                     Withdrawal_Reason: this.cancellationReason,
-                    dateToCancel: this.selectedDateToCancel,
                     Staff_id: this.staffId
                 }).then((response) => {
                     this.showCancelModal = false;
@@ -200,14 +177,8 @@ export default {
         },
 
         canSubmitCancellation() {
-            // if (this.isRecurringRequest) {
-            //     // For recurring requests, both the date and reason are required
-            //     return this.selectedDateToCancel && this.cancellationReason.trim().length > 0;
-            // } else {
-                // For adhoc requests, only the cancellation reason is required
-                return this.cancellationReason.trim().length > 0;
-            }
-        // }
+            return this.cancellationReason.trim().length > 0;
+        }
     },
     mounted() {
         this.fetchRequests();

@@ -22,14 +22,14 @@
             <th scope="col">Department</th>
             <th scope="col">Position</th>
             <th scope="col">Status</th>
-            <th scope="col">Start Date</th>
-            <th scope="col">End Date</th>
+            <th scope="col">Requested Date</th>
             <th scope="col">Time</th>
             <th scope="col">Request Type</th>
             <th scope="col">Request Reason</th>
             <th scope="col">Application Date</th>
             <th scope="col">Approver</th>
             <th scope="col">Rejection Reason</th>
+            <th scope="col">Withdrawal Reason</th>
           </tr>
         </thead>
 
@@ -48,13 +48,13 @@
               }">{{ request.Status }}</span>
             </td>
             <td>{{ formatDate(request.Start_Date) }}</td>
-            <td>{{ formatDate(request.End_Date) }}</td>
             <td>{{ request.Time }}</td>
             <td>{{ request.Request_Type }}</td>
             <td>{{ request.Reason }}</td>
             <td>{{ formatDate(request.Application_Date) }}</td>
             <td>{{ request.Approver }}</td>
             <td>{{ request.Rejection_Reason }}</td>
+            <td>{{ request.Withdrawal_Reason }}</td>
           </tr>
         </tbody>
       </table>
