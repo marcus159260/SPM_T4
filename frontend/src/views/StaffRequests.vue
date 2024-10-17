@@ -82,7 +82,7 @@ import 'jquery';
 import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequests.vue';
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
 import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vue';
-import ApplicationForm from '../components/StaffScheduleView/Application.vue';
+import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
 
 
 export default {

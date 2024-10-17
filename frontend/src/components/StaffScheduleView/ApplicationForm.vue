@@ -45,8 +45,8 @@
 
                         <div class="mb-3">
                             <label for="requestReason" class="form-label">Request Reason</label>
-                            <input type="textarea" class="form-control" id="requestReason" v-model="requestReason" @input="validateRequestReason">
-                            <small v-if="!isRequestReasonValid" class="text-danger">Request reason must be more than 10 characters long.</small>
+                            <input type="textarea" class="form-control" id="requestReason" v-model="requestReason">
+                            <!-- <small v-if="!isRequestReasonValid" class="text-danger">Request reason must be more than 10 characters long.</small> -->
                         </div>
 
 
@@ -102,7 +102,7 @@ export default{
             this.validPeriod = PeriodChecker(this.startDate);
         },
         validateRequestReason() {
-            this.isRequestReasonValid = this.requestReason.length > 10 ;
+            this.isRequestReasonValid = this.requestReason.length > 0 ;
             console.log(this.isRequestReasonValid);
         },
         async submitRequest() {
@@ -143,7 +143,7 @@ export default{
     },
     computed:{
         canSubmit(){
-            if(this.requestReason && this.requestReason.length > 10 && this.validPeriod && this.startEndDate == true){
+            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
                 return true;
             } return false;
         },
