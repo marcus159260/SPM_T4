@@ -45,7 +45,8 @@
 
                         <div class="mb-3">
                             <label for="requestReason" class="form-label">Request Reason</label>
-                            <input type="textarea" class="form-control" id="requestReason" v-model="requestReason">
+                            <input type="textarea" class="form-control" id="requestReason" v-model="requestReason" @input="validateRequestReason">
+                            <small v-if="!isRequestReasonValid" class="text-danger">Request reason must be more than 10 characters long.</small>
                         </div>
 
 
@@ -62,14 +63,14 @@
 
 <script>
 import axios from 'axios';
-import { formatDate, PeriodChecker } from '@/util/periodPolicy';
+import { PeriodChecker} from '@/util/periodPolicy';
 import { generateRecurringDates } from '@/util/recurringDates';
 
 export default{
     name: "ApplicationForm",
     data(){
         return{
-            staffId: 150076, //Oliver Chan werking it again!,
+            staffId: 150076, 
             staff_name: "",
             approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
             startDate: null,
@@ -77,7 +78,8 @@ export default{
             wfhTime: 'AM',
             requestReason: null,
             requestType: "ADHOC",
-            validPeriod: null
+            validPeriod: null,
+            isRequestReasonValid: true,
         }
     },
     methods:{
@@ -99,16 +101,20 @@ export default{
         checkPeriod(){
             this.validPeriod = PeriodChecker(this.startDate);
         },
+        validateRequestReason() {
+            this.isRequestReasonValid = this.requestReason.length > 10 ;
+            console.log(this.isRequestReasonValid);
+        },
         async submitRequest() {
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
                 const payload = {
                     staff_id: this.staffId,
-                    start_date: this.startDate, // Ensure it's formatted as 'YYYY-MM-DD'
-                    end_date: formattedEndDate,     // Ensure it's formatted as 'YYYY-MM-DD'
-                    time_of_day: this.wfhTime,    
+                    start_date: this.startDate,
+                    end_date: formattedEndDate,  
+                    time_of_day: this.wfhTime, 
                     request_type: this.requestType,
-                    status: 'Pending',          // Default status
+                    status: 'Pending', 
                     reason: this.requestReason,
                     approver_id: this.approverId,
                     requested_dates: this.requestType === "ADHOC" ? [`${this.startDate}`] : generateRecurringDates(this.startDate, this.endDate)
@@ -117,8 +123,10 @@ export default{
 
                 const response = await axios.post('http://127.0.0.1:5000/api/wfh/requests', payload);
                 console.log("Request submitted:", response.data);
+                alert('Request submitted successfully!');
                 this.clearFields();
             } catch (error) {
+                alert("Error submitting request");
                 console.error("Error submitting request:", error.response);
             }
         },

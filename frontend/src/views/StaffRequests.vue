@@ -47,7 +47,6 @@
       <!--Create Request-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
         <ApplicationForm />
-        <CreateRequest />
       </div>
       <!--End of All Requests-->
 
@@ -82,9 +81,8 @@ import 'jquery';
 
 import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequests.vue';
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
-import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests2.vue';
+import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vue';
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
-import CreateRequest from "@/components/StaffScheduleView/CreateRequest.vue";
 
 
 export default {
@@ -109,8 +107,7 @@ export default {
     ViewPendingRequests,
     ViewApprovedRequests,
     ViewAllRequests2,
-    ApplicationForm,
-    CreateRequest
+    ApplicationForm
   },
 }
 

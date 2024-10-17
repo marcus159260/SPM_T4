@@ -10,8 +10,11 @@ wfh_bp = Blueprint('wfh_bp', __name__)
 @wfh_bp.route('/requests', methods=['GET'])
 def get_wfh_requests():
     try:
+        auto_reject_pending_requests()
+        
         # Call the function to fetch the data
         data, error = supabase.rpc('get_requests').execute()
+
 
         if error[0] != 'count':
             return jsonify({"error": f"Error fetching data: {error}"}), 500
@@ -20,26 +23,6 @@ def get_wfh_requests():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@wfh_bp.route('/requests/<int:request_id>', methods=['PUT'])
-def update_request(request_id):
-    print(request_id)
-    try:
-        # Get the status from the request body
-        request_data = request.json
-        status = request_data.get('Status')  # Get the 'Status' value from the request body
-        print(status)
-
-        # Assuming you have a Supabase method for updating the request status
-        response = supabase.from_('request').update({'Status': status}).eq('Request_ID', request_id).execute()
-
-        print(response)
-        if response.error:
-            return jsonify({"error": response.error.message}), 500
-        
-        return jsonify({"status": "success", "data": response.data}), 200
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
    
@@ -103,16 +86,15 @@ def create_request():
 
         # Parse and validate date fields
         staff_id = data.get('staff_id')
-        start_date = str(datetime.strptime(data.get('start_date'), '%Y-%m-%d').date())
-        end_date = str(datetime.strptime(data.get('end_date'), '%Y-%m-%d').date())
+        start_date = str(data.get('start_date'))
+        end_date = str(data.get('end_date'))
         time_of_day = data.get('time_of_day')
         request_type = data.get('request_type')
         status = data.get('status')
-        reason = data.get('reason').replace("'", "''")  # Escape single quotes
+        reason = data.get('reason').replace("'", "''") 
         approver_id = data.get('approver_id')
-        requested_dates = [str(datetime.strptime(date, '%Y-%m-%d').date()) for date in data.get('requested_dates')]
+        requested_dates = [str(date) for date in data.get('requested_dates')]
 
-        # Call the stored procedure with the validated data
         response = supabase.rpc('create_request', {
             'p_staff_id': staff_id,
             'p_start_date': start_date,
@@ -122,13 +104,12 @@ def create_request():
             'p_status': status,
             'p_reason': reason,
             'p_approver_id': approver_id,
-            'p_requested_date': requested_dates
+            'p_requested_dates': requested_dates 
         }).execute()
 
-        # Check if there's an error in the response
         if response.data == "Request created successfully":
             return jsonify({'message': response.data}), 201
-
+        
         return jsonify({'error': 'Unable to create request'}), 401
 
     except Exception as e:
@@ -150,3 +131,29 @@ def cancel_request():
     result = cancel_wfh_request(request_id, reason, staff_id, date_to_cancel)
     
     return jsonify(result), result['status']
+
+@wfh_bp.route('/requests/approve', methods=['POST'])
+def update_request():
+    try:
+        request_data = request.json
+        print(request_data)
+        request_id = request_data.get('Request_ID')
+        status = request_data.get('request_Status')
+        # print(request_id, status)
+        if not request_id or not status:
+            return jsonify({"error": "Missing request ID or status"}), 400
+        result, status_code = approve_wfh_request(request_id, status)
+        print("line 143:", result, status_code)
+        return jsonify(result), status_code
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@wfh_bp.route('/requests/reject', methods=['POST'])
+def reject_request():
+    data = request.get_json()
+    request_id = data.get('Request_ID')
+    rejection_reason = data.get('Rejection_Reason')
+    staff_id = data.get('Staff_ID'); 
+    result, status_code = reject_wfh_request(request_id, rejection_reason, staff_id)
+    return jsonify(result), status_code

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="main">
     <h6 id="pending-header" v-if="managerDetails" class="mt-10">
       Manager Name: <span>{{ managerDetails.Full_Name }}</span> <br />
       Manager ID: <span>{{ managerDetails.Staff_ID }}</span> <br>
@@ -85,10 +85,12 @@
             <button @click="approveRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/checked.png" alt="Approve">
             </button>
-            <button @click="rejectRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
+            <button @click="rejectRequestPopup(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/x-button.png" alt="Reject">
             </button>
+
           </td>
+
 
           <!--End of Approve/Reject buttons-->
         </tr>
@@ -99,11 +101,33 @@
     <div v-if="pendingRequests.length === 0" class="text-center mt-3">
       <p>No pending requests.</p>
     </div>
+
+    <div>
+      <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
+        @update:visible="isPopupVisible = $event">
+        <template #content>
+          <div width="100%" class="justify-content-center">
+            <h3 class="my-4" style="color:black">Reason for Rejection</h3>
+            <form>
+              <textarea style='width:400px;height:150px' class="form-control" v-model="rejectionReason"
+                placeholder="Enter reason for rejection" />
+              <div class="d-flex flex-column my-2">
+                <p id="errormsg" class="text-danger mx-0"></p>
+                <button type="button" class="btn btn-primary" @click="rejectRequest(selectedRequestId)">Submit</button>
+              </div>
+            </form>
+          </div>
+        </template>
+      </PopupWrapper>
+    </div>
   </div>
+
+
 </template>
 
 <script>
 import axios from 'axios';
+import PopupWrapper from '../PopupWrapper.vue';
 
 export default {
   data() {
@@ -111,7 +135,12 @@ export default {
       allRequests: [],     // All WFH requests fetched from the API
       managerDetails: [],
       managerId: 151408,
+      isPopupVisible: false,
+      rejectionReason: ''
     };
+  },
+  components: {
+    PopupWrapper
   },
   computed: {
     pendingRequests() {
@@ -149,6 +178,7 @@ export default {
       // Fetch WFH requests using Axios
       axios.get('http://127.0.0.1:5000/api/wfh/requests')
         .then(response => {
+          console.log(123);
           this.allRequests = response.data;
         })
         .catch(error => {
@@ -157,30 +187,43 @@ export default {
     },
     approveRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.put(`http://127.0.0.1:5000/api/wfh/requests/${requestId}`, { Status: 'Approved' })
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
-          const approvedRequest = this.allRequests.find(request => request.Request_ID === requestId);
-          if (approvedRequest) {
-            console.log(111)
-            approvedRequest.Status = 'Approved';
-            
+          console.log('response.data', response.data);
+          if (response.data == 'error') {
+            alert("Cannot approve request as less than 50% of the team will be in the office")
           }
-          this.fetchRequests();
+          else {
+            this.fetchRequests();
+          }
         })
         .catch(error => {
-          console.error('Error approving request:', error);
+          console.error('Error rejecting request:', error);
         });
     },
 
+    rejectRequestPopup(requestId) {
+      this.selectedRequestId = requestId; // Store the request ID for rejection
+      this.isPopupVisible = true; // Show the popup
+      document.getElementById('popup').style.display = 'flex';
+      document.getElementById('popup').style.border = '1px black solid';
+    },
     rejectRequest(requestId) {
-      // Try changing PATCH to PUT or POST depending on what the API expects
-      axios.put(`http://127.0.0.1:5000/api/wfh/requests/${requestId}`, { Status: 'Rejected' }) // Changed to PUT
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
         .then(response => {
-          const rejectedRequest = this.allRequests.find(request => request.Request_ID === requestId);
-          if (rejectedRequest) {
-            rejectedRequest.Status = 'Rejected';
+          console.log('response.data', response.data);
+          if (response.data == 'error') {
+            // console.log(response.data.error);
+            console.log('error from popup: no error msg');
+            document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;
+
           }
-          this.fetchRequests();
+          else {
+            this.fetchRequests();
+            this.isPopupVisible = false; // Hide the popup after submission
+            document.getElementById('popup').style.border = '';
+
+          }
         })
         .catch(error => {
           console.error('Error rejecting request:', error);
@@ -226,5 +269,4 @@ export default {
   outline: none;
   /* Remove focus outline */
 }
-
 </style>

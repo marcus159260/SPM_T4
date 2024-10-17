@@ -176,3 +176,82 @@ def cancel_wfh_request(request_id, reason, staff_id, date_to_cancel=None):
 
     except Exception as e:
         return {'error': str(e), 'status': 500}
+    
+def auto_reject_pending_requests():
+    try:
+        current_date = datetime.now().date()
+
+        # Define the threshold date (2 months before the current date)
+        threshold_date = current_date - timedelta(days=60)
+
+        # Fetch pending requests older than 2 months
+        response = supabase.table('request').select("*").eq('Status', 'Pending').execute()
+        pending_requests = response.data
+
+        # Loop through the pending requests and auto-reject them if they exceed 2 months
+        for request in pending_requests:
+            application_date = request['Application_Date'] 
+            if datetime.strptime(application_date, "%Y-%m-%d").date() < threshold_date:
+                supabase.table('request').update({'Status': 'Rejected', 'Rejection_Reason': 'Auto-rejected after 2 months'}).eq('Request_ID', request['Request_ID']).execute()
+
+    except Exception as e:
+        print("Error in auto-rejecting requests:", str(e))
+
+def approve_wfh_request(request_id, status):
+    try:
+        response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
+        request_data = response.data[0] if response.data else None
+        print(request_data)
+        if not request_data:
+            return {'error': 'Request not found.', 'status': 404}
+
+        # current_date = datetime.now().date()
+    # Check how many are currently approved for WFH between start_date and end_date
+        # approved_wfh_response = supabase.table('request').select("*")\
+        #     .eq('Status', 'Approved')\
+        #     .lte('Start_Date', current_date)\
+        #     .gte('End_Date', current_date).execute()
+        
+        # approved_wfh_count_db = len(approved_wfh_response.data)
+        # print(approved_wfh_count_db)
+
+        approved_wfh_count = 5
+        # print("approved count:", approved_wfh_count)
+        
+        current_working_in_office = 10 #hardcode 
+        validation = (approved_wfh_count + 1) / current_working_in_office
+        # print("validation:", validation)
+        if validation > 0.5:
+            return {'error': 'Cannot approve request as less than 50% of the team will be in the office.', 'status': 400}   
+
+        else:
+            update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
+            print("Update response:", update_response)
+            return {"message": "Request approved successfully."}, 200
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+def reject_wfh_request(request_id, reason, date_to_cancel=None):
+    try:
+        # Fetch the request details by ID
+        response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
+        request_data = response.data[0]
+
+        if not request_data:
+            return {'error': 'Request not found.', 'status': 404}
+        
+        if reason == '':
+            return {'error': 'Reason cannot be empty.', 'status': 404}
+        # Handle adhoc vs recurring request
+        update_response = supabase.table('request').update({
+        'Status': 'Rejected',
+        'Rejection_Reason': reason
+        }).eq('Request_ID', request_id).execute()
+        
+        print(update_response)  # Check if update was successful
+
+        return {'message': 'Request cancelled successfully.', 'status': 200}
+
+    except Exception as e:
+        return {'error': str(e), 'status': 500}
