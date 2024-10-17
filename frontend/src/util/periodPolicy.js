@@ -8,7 +8,7 @@ export function formatDate(date) {
 }
 
 // find the difference between currentDate and checkDate
-function getDaysDifference(date1Str, date2Str) {
+export function getDaysDifference(date1Str, date2Str) {
     // Convert the date strings to Date objects
     const date1 = new Date(date1Str);
     const date2 = new Date(date2Str);
@@ -44,9 +44,9 @@ export function check90Days(currentDate, checkDate){
     return true;
 }
 
-// ATC2 (application): If startDate is older than currentDate (backdate), check for 60 days
-// ATC3 (application): If startDate is later than currentDate (future), check for 90 days
+
 export function PeriodChecker(checkDate){
+    console.log(new Date())
     const currentDate = formatDate(new Date());
     if(checkDate < currentDate){
         return check60Days(currentDate, checkDate);
@@ -54,6 +54,4 @@ export function PeriodChecker(checkDate){
     else{
         return check90Days(currentDate, checkDate);
     }
-
-
 }
