@@ -29,6 +29,7 @@ export function getDaysDifference(date1Str, date2Str) {
 
 // dates YYYY-MM-DD, use formatDate() to format your date objects first
 export function check60Days(currentDate, checkDate){
+    console.log("60 DAYS IS TRIGGERED")
     console.log(getDaysDifference(currentDate, checkDate))
     if(getDaysDifference(currentDate, checkDate) > 61){
         return false;
@@ -37,6 +38,7 @@ export function check60Days(currentDate, checkDate){
 }
 
 export function check90Days(currentDate, checkDate){
+    console.log("90 DAYS IS TRIGGERED")
     console.log(getDaysDifference(checkDate, currentDate))
     if(getDaysDifference(checkDate, currentDate) > 92){
         return false;
@@ -45,13 +47,15 @@ export function check90Days(currentDate, checkDate){
 }
 
 
-export function PeriodChecker(checkDate){
-    console.log(new Date())
-    const currentDate = formatDate(new Date());
+export function PeriodChecker(currentDate, checkDate){
+    console.log("CURRENT DATE === " + currentDate)
+    console.log("CHECK DATE === " + checkDate)
     if(checkDate < currentDate){
+        console.log("60 DAYS: " + check60Days(currentDate, checkDate))
         return check60Days(currentDate, checkDate);
     }
     else{
+        console.log("90 DAYS: " + check90Days(currentDate, checkDate))
         return check90Days(currentDate, checkDate);
     }
 }
