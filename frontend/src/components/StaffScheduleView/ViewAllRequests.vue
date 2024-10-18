@@ -21,7 +21,7 @@
           <th scope="col">Request ID</th>
           <th scope="col">Request Type</th>
           <th scope="col">Status</th>
-          <th scope="col">Requested Date(s)</th>
+          <th scope="col">Requested Date</th>
           <th scope="col">Time</th>
           <th scope="col">Reason</th>
           <th scope="col">Application Date</th>
@@ -39,13 +39,7 @@
                       'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
                       'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
                   }">{{ request.Status}}</span></td>
-              <td>
-                  <ul>
-                      <li v-for="date in request.Requested_Date" :key="date">
-                      {{ formatDate(date) }}
-                      </li>
-                  </ul>
-              </td>
+              <td>{{ formatDate(request.Start_Date) }}</td>
               <td>{{ request.Time }}</td>
               <td>{{ request.Reason }}</td>
               <td>{{ formatDate(request.Application_Date) }}</td>
