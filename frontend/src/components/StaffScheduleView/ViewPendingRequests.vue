@@ -13,6 +13,7 @@
                         <th scope="col">Reason</th>
                         <th scope="col">Application Date</th>
                         <th scope="col">Approver</th>
+                        <th scope="col">Withdrawal Reason</th>
                         <th scope="col">Cancel Request</th>
                     </tr>
                 </thead>
@@ -28,6 +29,7 @@
                         <td>{{ request.Reason }}</td>
                         <td>{{ formatDate(request.Application_Date) }}</td>
                         <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
+                        <td>{{ request.Withdrawal_Reason }}</td>
                         <td>
                             <button @click="openCancelModal(request)">Cancel</button>
                         </td>
