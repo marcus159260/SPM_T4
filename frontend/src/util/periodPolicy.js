@@ -36,7 +36,7 @@ export function check60Days(currentDate, checkDate){
 }
 
 export function check90Days(currentDate, checkDate){
-    if(getDaysDifference(checkDate, currentDate) > 92){
+    if(getDaysDifference(checkDate, currentDate) > 91){
         return false;
     }
     return true;
