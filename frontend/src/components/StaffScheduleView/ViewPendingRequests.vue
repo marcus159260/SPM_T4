@@ -94,18 +94,18 @@ export default {
     computed: {
         filteredRequests() {
             const currentDate = new Date();
-            const minus60Days = new Date(currentDate);
-            minus60Days.setDate(currentDate.getDate() - 60); // 60 days ago
+            const minus61Days = new Date(currentDate);
+            minus61Days.setDate(currentDate.getDate() - 61);
 
-            const plus90Days = new Date(currentDate);
-            plus90Days.setDate(currentDate.getDate() + 90); // 90 days forward
+            const plus91Days = new Date(currentDate);
+            plus91Days.setDate(currentDate.getDate() + 91);
 
             return this.requestsData.filter((request) => {
                 const endDate = new Date(request.End_Date);
                 return (
                     request.Status === "Pending" &&
-                    endDate >= minus60Days &&
-                    endDate <= plus90Days
+                    endDate >= minus61Days &&
+                    endDate <= plus91Days
                 );
             });
         }
