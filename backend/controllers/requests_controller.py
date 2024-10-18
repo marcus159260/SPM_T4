@@ -1,5 +1,6 @@
 from util.db import supabase
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 
 # Get all the requests from a specific user id (staff)
@@ -96,6 +97,7 @@ def build_events(data):
 
     return events
 
+
 def withdraw_request_controller(request_id, rejection_reason, staff_id):
 
     if not request_id or not rejection_reason:
@@ -155,7 +157,7 @@ def auto_reject_pending_requests():
         current_date = datetime.now().date()
 
         # Define the threshold date (2 months before the current date)
-        threshold_date = current_date - timedelta(days=60)
+        threshold_date = current_date - relativedelta(months=2)
 
         # Fetch pending requests older than 2 months
         response = supabase.table('request').select("*").eq('Status', 'Pending').execute()
@@ -163,8 +165,8 @@ def auto_reject_pending_requests():
 
         # Loop through the pending requests and auto-reject them if they exceed 2 months
         for request in pending_requests:
-            application_date = request['Application_Date'] 
-            if datetime.strptime(application_date, "%Y-%m-%d").date() < threshold_date:
+            start_date = request['Start_Date'] 
+            if datetime.strptime(start_date, "%Y-%m-%d").date() < threshold_date:
                 supabase.table('request').update({'Status': 'Rejected', 'Rejection_Reason': 'Auto-rejected after 2 months'}).eq('Request_ID', request['Request_ID']).execute()
 
     except Exception as e:

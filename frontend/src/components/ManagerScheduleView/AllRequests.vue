@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper">
-    <h2 class="mt-4">{{ approverName }}</h2> <!-- Display the approver name here -->
+    <h2 class="mt-4">{{ allRequests.length > 0 ? allRequests[0].Approver : 'Invalid Manager or Director' }}</h2>
 
     <div class="filter-container mb-3">
       <label for="statusFilter" class="status-label">Status</label>
@@ -73,7 +73,7 @@ export default {
   data() {
     return {
       selectedStatus: '', // Holds the value selected in the dropdown
-      approverName: 'Jaclyn Lee', // Set this to the name you want to filter by
+      approver_id: 140008, // Set this to the name you want to filter by
       allRequests: [], // All WFH requests fetched from the API
       filteredRequests: [], // The filtered WFH requests
     };
@@ -88,30 +88,48 @@ export default {
       twoMonthsBack.setMonth(today.getMonth() - 2);
       threeMonthsAhead.setMonth(today.getMonth() + 3);
 
+      // Set time to midnight (00:00:00) for comparison
+      today.setHours(0, 0, 0, 0);
+      twoMonthsBack.setHours(0, 0, 0, 0);
+      threeMonthsAhead.setHours(0, 0, 0, 0);
+
       // Filter the WFH requests based on status, date range, and approver's name
       this.filteredRequests = this.allRequests.filter(request => {
+        // Create a Date object from the Start_Date string (assumed to be in 'YYYY-MM-DD' format)
         const requestStartDate = new Date(request.Start_Date);
+
+        // Set the request date time to midnight for comparison
+        requestStartDate.setHours(0, 0, 0, 0);
+
+        // Check if the request date is within the date range
         const isWithinDateRange = requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
 
-        // Check if the request matches the selected status and approver's name
+        // Check if the request matches the selected status
         const matchesStatus = this.selectedStatus === '' || (request.Status && request.Status.toLowerCase() === this.selectedStatus.toLowerCase());
-        const matchesApprover = request.Approver && request.Approver.toLowerCase().includes(this.approverName.toLowerCase());
 
-        // Return true if within date range, matches status, and matches approver
-        return isWithinDateRange && matchesStatus && matchesApprover;
+        // Return true if within date range, matches status
+        return isWithinDateRange && matchesStatus;
       });
-
     },
+
+    
     fetchRequests() {
-      axios.get('http://127.0.0.1:5000/api/wfh/requests')
+      axios.get(`http://127.0.0.1:5000/api/wfh/requests/approver/${this.approver_id}`)
         .then(response => {
-          this.allRequests = response.data;
-          this.applyFilter(); // Apply both date and status filtering immediately after fetching data
+          if (response.data.length > 0 && response.data[0].Error) {
+            // If there is an error in the response, display the error message
+            alert(response.data[0].Error);
+            this.allRequests = [];  // Clear the request list
+          } else {
+            this.allRequests = response.data;
+          }
+          this.applyFilter();  // Apply filters after fetching the requests
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
         });
     },
+
     formatDate(dateString) {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, '0');

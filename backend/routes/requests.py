@@ -70,6 +70,23 @@ def get_user_req(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+@wfh_bp.route('/requests/approver/<int:approver_id>', methods=['GET'])
+def get_requests_by_approver(approver_id):
+    try:
+        # Call the Supabase RPC function
+        response = supabase.rpc('get_requests_by_approver', {'approver_id': approver_id}).execute()
+
+        # Check if there's an error in the SQL response
+        if len(response.data) > 0 and response.data[0]['Error']:
+            return jsonify({'error': response.data[0]['Error']}), 400
+
+        # Return the request data
+        return jsonify(response.data), 200
+
+    except Exception as e:
+        # Catch any unexpected errors and return a 500 response
+        return jsonify({'error': str(e)}), 500
+    
 @wfh_bp.route('/requests/withdraw', methods=['POST'])
 def withdraw_request():
     data = request.get_json()
