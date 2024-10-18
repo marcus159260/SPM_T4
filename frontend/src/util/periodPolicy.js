@@ -56,8 +56,11 @@ export function PeriodChecker(currentDate, checkDate){
         const result = check60Days(currentDate, checkDate);
         return result;
     }
-    else{
+    else if(checkDate > currentDate){
         const result = check90Days(currentDate, checkDate);
         return result
+    }
+    else{
+        return true
     }
 }
