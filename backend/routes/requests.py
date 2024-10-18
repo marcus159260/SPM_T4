@@ -112,6 +112,17 @@ def create_request():
         approver_id = data.get('approver_id')
         requested_dates = [str(date) for date in data.get('requested_dates')]
 
+        # check if recurring request is more than 3 months
+        if request_type == 'RECURRING':
+            date_range_check = supabase.rpc('check_date_range_limit', {
+                'p_start_date': start_date,
+                'p_end_date': end_date
+            }).execute()
+
+            # If the date range exceeds 3 months, return the error message
+            if date_range_check.data != 'Valid':
+                return jsonify({'error': date_range_check.data}), 400
+
         # check for conflicts
         conflict_response = supabase.rpc('check_overlapping_requests', {
             'p_staff_id': staff_id,
