@@ -123,14 +123,20 @@ export default{
                 console.log(payload);
 
                 const response = await axios.post('http://127.0.0.1:5000/api/wfh/requests', payload);
-                console.log("Request submitted:", response.data);
-                alert('Request submitted successfully!');
+                if (response.data.message) {
+                    console.log("Request submitted:", response.data);
+                    alert('Request submitted successfully');
+                }
                 this.clearFields();
-            } catch (error) {
-                alert("Error submitting request");
-                console.error("Error submitting request:", error.response);
+            }   catch (error) {
+                    if (error.response && error.response.data.error) {
+                    // conflict error message
+                    alert(error.response.data.error); 
+                } else {
+                console.error("Error submitting request:", error);
             }
-        },
+        }
+    },
         clearFields(){
             this.staffId = null;
             this.startDate = null;

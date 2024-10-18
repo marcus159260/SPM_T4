@@ -112,6 +112,17 @@ def create_request():
         approver_id = data.get('approver_id')
         requested_dates = [str(date) for date in data.get('requested_dates')]
 
+        # check for conflicts
+        conflict_response = supabase.rpc('check_overlapping_requests', {
+            'p_staff_id': staff_id,
+            'p_requested_dates': requested_dates,
+            'p_time': time_of_day
+        }).execute()
+
+        if conflict_response.data and conflict_response.data != 'No conflict':
+            return jsonify({'error': conflict_response.data}), 400  # Return conflict message
+
+        # if no conflict, proceed to create request
         response = supabase.rpc('create_request', {
             'p_staff_id': staff_id,
             'p_start_date': start_date,
