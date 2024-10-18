@@ -38,9 +38,9 @@ describe('check60Days testing', () => {
 
 
 describe('check90Days testing', () => {
-    test('If start date is exactly 3 months later, start date is valid (boundary)', () =>{
+    test('If start date is exactly 3 months later (91 days later according to jo), start date is valid (boundary)', () =>{
         const currentDate = "2024-10-15"
-        const checkDate = "2025-01-15"
+        const checkDate = "2025-01-14"
         expect(check90Days(currentDate, checkDate)).toBe(true);
     })
     test('If start date is within 3 months in the future, but before the boundary date', () =>{
