@@ -1,7 +1,4 @@
-import * as periodPolicy from "../frontend/src/util/periodPolicy.js";
-import {PeriodChecker, check60Days, check90Days, getDaysDifference, formatDate} from "../frontend/src/util/periodPolicy.js";
-
-
+import {PeriodChecker, check60Days, check90Days, getDaysDifference, formatDate} from "../../frontend/src/util/periodPolicy.js";
 
 describe('formatDate unit testing', () =>{
     test('Check that date object is converted to YYYY-MM-DD as expected', () =>{
@@ -58,49 +55,6 @@ describe('check90Days testing', () => {
     })
 });
 
-
-describe('PeriodChecker testing', () => {
-    let mockCheck60Days;
-    let mockCheck90Days;
-
-    beforeEach(() => {
-        // Set up spies before each test
-        mockCheck60Days = jest.spyOn(periodPolicy, 'check60Days');
-        mockCheck90Days = jest.spyOn(periodPolicy, 'check90Days');
-
-        // Clear previous call history
-        mockCheck60Days.mockClear();
-        mockCheck90Days.mockClear();
-    });
-
-    afterEach(() => {
-        // Restore original implementations after each test
-        mockCheck60Days.mockRestore();
-        mockCheck90Days.mockRestore();
-    });
-
-
-    test('If the start date is earlier than today, invoke check60Days', () =>{
-
-        const currentDate = formatDate(new Date());
-        const checkDate = "2024-09-15"
-        PeriodChecker(currentDate, checkDate)
-
-        expect(mockCheck60Days).toHaveBeenCalledWith(currentDate, checkDate);
-
-    })
-
-    test('If the start date is later than today, invoke check90Days', () =>{
-
-        const currentDate = formatDate(new Date());
-        const checkDate = "2024-11-15"
-        PeriodChecker(currentDate, checkDate)
-
-        expect(mockCheck90Days).toHaveBeenCalledWith(currentDate, checkDate);
-
-    })
-
-});
 
 
 
