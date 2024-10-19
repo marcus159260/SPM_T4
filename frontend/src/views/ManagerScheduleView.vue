@@ -16,6 +16,10 @@
       </li>
       <li class="nav-item" role="presentation">
         <a data-mdb-tab-init class="nav-link" id="ex1-tab-4" href="#ex1-tabs-4" role="tab" aria-controls="ex1-tabs-4"
+          aria-selected="false">Rejected</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-5" href="#ex1-tabs-5" role="tab" aria-controls="ex1-tabs-5"
           aria-selected="false">All Requests</a>
       </li>
     </ul>
@@ -109,22 +113,20 @@
       </div>
       <!--End of Pending WFH-->
       
-
       <!--Approved WFH-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        <!-- <ViewPendingRequestsDB
-          v-if="employees.length > 0" 
-          :filteredEmployee="filteredEmployee" 
-          :filteredPendingEmployees="filteredPendingEmployees" 
-          :hasPendingRequests="hasPendingRequests" 
-        /> -->
         <ApprovedRequests/>
       </div>
       <!--End of Approved WFH-->
-
+      
+      <!--Rejected WFH-->
+      <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+        <RejectedRequests/>
+      </div>
+      <!--End of Rejected WFH-->
 
       <!--All Requests-->
-      <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-3">
+      <div class="tab-pane fade" id="ex1-tabs-5" role="tabpanel" aria-labelledby="ex1-tab-5">
         <AllRequests />
       </div>
 
@@ -148,6 +150,7 @@ import 'jquery';
 import ViewPendingRequests from '../components/ManagerScheduleView/ViewPendingRequests.vue';
 import AllRequests from '../components/ManagerScheduleView/AllRequests.vue';
 import ApprovedRequests from '@/components/ManagerScheduleView/ApprovedRequests.vue';
+import RejectedRequests from '@/components/ManagerScheduleView/RejectedRequests.vue';
 import PopupWrapper from '@/components/PopupWrapper.vue';
 
 export default {
@@ -220,11 +223,10 @@ export default {
     ViewPendingRequests,
     AllRequests,
     ApprovedRequests,
+    RejectedRequests,
     PopupWrapper
-
   },
 }
-
 
 </script>
 

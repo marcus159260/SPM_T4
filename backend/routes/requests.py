@@ -6,7 +6,6 @@ from util.db import supabase
 
 wfh_bp = Blueprint('wfh_bp', __name__)
 
-
 @wfh_bp.route('/requests', methods=['GET'])
 def get_wfh_requests():
     try:
@@ -15,7 +14,6 @@ def get_wfh_requests():
         # Call the function to fetch the data
         data, error = supabase.rpc('get_requests').execute()
 
-
         if error[0] != 'count':
             return jsonify({"error": f"Error fetching data: {error}"}), 500
         else:
@@ -23,9 +21,7 @@ def get_wfh_requests():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-
-
-   
+    
 #------------------------------------------------------------------------------
    
 @wfh_bp.route('/<int:user_id>', methods=['GET']) 

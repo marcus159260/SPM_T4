@@ -10,7 +10,7 @@
           &emsp;Position -> <span>{{ managerDetails.Position }}</span> -->
         </h6>
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
-        <table v-if="approvedRequests.length > 0" class="table align-middle mt-10 bg-white">
+        <table v-if="rejectedRequests.length > 0" class="table align-middle mt-10 bg-white">
             <thead class="bg-light">
                 <tr>
                     <th>Request_ID</th>
@@ -20,11 +20,11 @@
                     <th>Application_Date</th>
                     <th>WFH_Start_Date</th>
                     <th>Approver_ID</th>
-                    <th>Reason of Application</th>
+                    <th>Rejection Reason</th>
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody v-for="staff in approvedRequests" :key="staff.Staff_ID">
+            <tbody v-for="staff in rejectedRequests" :key="staff.Staff_ID">
                 <tr>
                     <td>
                         <p class="mb-1">{{ staff.Request_ID }}</p>
@@ -58,7 +58,7 @@
                         <p class="mb-1">{{ staff.Approver_ID }}</p>
                     </td>
                     <td>
-                        <p class="mb-1">{{ staff.Reason }}</p>
+                        <p class="mb-1">{{ staff.Rejection_Reason }}</p>
                     </td>
                     <td>
                         <p class="mb-1">{{ staff.Status }}</p>
@@ -66,7 +66,7 @@
                 </tr>
             </tbody>
         </table>
-        <div v-if="approvedRequests.length === 0" class="text-center mt-3">
+        <div v-if="rejectedRequests.length === 0" class="text-center mt-3">
             <p>No Approved requests.</p>
         </div>
     </div>
@@ -98,8 +98,9 @@ export default {
             // Fetch WFH requests using Axios
             axios.get('http://127.0.0.1:5000/api/wfh/requests')
                 .then(response => {
-                    console.log(123);
+                    console.log(123)
                     this.allRequests = response.data;
+                    console.log(this.allRequests)
                 })
                 .catch(error => {
                     console.error('Error fetching requests:', error);
@@ -119,10 +120,10 @@ export default {
         // },
     },
     computed: {
-        approvedRequests() {
+        rejectedRequests() {
             // Filter for approved requests
             return this.allRequests.filter(request => 
-            request.Status === 'Approved' && 
+            request.Status === 'Rejected' && 
             request.Approver_ID === this.managerId
             );
         }
