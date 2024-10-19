@@ -154,11 +154,8 @@ def cancel_wfh_request(request_id, reason, staff_id):
     
 def auto_reject_pending_requests():
     try:
-        # current_date = datetime.now().date()
-        current_date = datetime(2025, 8, 8).date()
-
-        # Define the threshold date (2 months before the current date)
-        # threshold_date = current_date - relativedelta(months=2)
+        current_date = datetime.now().date()
+        # current_date = datetime(2025, 8, 8).date()
 
         # Fetch pending requests older than 2 months
         response = supabase.table('request').select("*").eq('Status', 'Pending').eq('Approver_ID', 151408).execute()
@@ -167,7 +164,7 @@ def auto_reject_pending_requests():
         # Loop through the pending requests and auto-reject them if they exceed 2 months
         for request in pending_requests:
             start_date = request['Start_Date'] 
-            print(start_date)
+            # print(start_date)
 
             start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
 
