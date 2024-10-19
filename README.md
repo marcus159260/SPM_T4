@@ -17,3 +17,7 @@ This helps ensure this Flask project won't affect others on the same machine wit
 6. Activate the virtual environment with `source venv/bin/activate` (MacOS) / `venv\Scripts\activate.bat`(CMD on Windows). Then run `pip3 install -r requirements.txt` or try `pip install -r requirements.txt`. 
 7. Run `python3 app.py` or `python app.py`. The Flask server should be live.
 `deactivate` to deactivate virtual environment if you want to stop using it
+
+## Unit Testing
+1. For backend tests, put into tests_package folder
+2. To run, type `pytest [filename].py`

@@ -103,12 +103,12 @@ def withdraw_request_controller(request_id, rejection_reason, staff_id):
     if not request_id or not rejection_reason:
         return {'error': 'Invalid input'}, 400
 
-    response = supabase.table('request').select('*').eq('Request_ID', request_id).single().execute()
+    response = supabase.table('request').select('*').eq('Request_ID', request_id).maybe_single().execute()
     request_data = response.data
 
     if not request_data:
         return {'error': 'Request not found'}, 404
-
+    
     if request_data['Staff_ID'] != staff_id:
         return {'error': 'Unauthorized' }, 403
 
@@ -117,6 +117,11 @@ def withdraw_request_controller(request_id, rejection_reason, staff_id):
     today = datetime.today().date()
     two_weeks_ago = start_date - timedelta(days=14)
     two_weeks_later = end_date + timedelta(days=14)
+
+    # print(f"Start_Date: {request_data['Start_Date']} (type: {type(request_data['Start_Date'])})")
+    # print(f"End_Date: {request_data['End_Date']} (type: {type(request_data['End_Date'])})")
+    # print(f"start_date: {start_date}, end_date: {end_date}, today: {today}")
+    # print(f"two_weeks_ago: {two_weeks_ago}, two_weeks_later: {two_weeks_later}")
 
     if not (two_weeks_ago <= today <= two_weeks_later):
         return {'error': 'Cannot withdraw request outside the allowed time frame'}, 400
