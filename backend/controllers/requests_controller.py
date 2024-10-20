@@ -127,7 +127,7 @@ def withdraw_request_controller(request_id, rejection_reason, staff_id):
         return {'error': 'Cannot withdraw request outside the allowed time frame'}, 400
 
     supabase.table('request').update({
-        'Status': 'Withdrawn',
+        'Status': 'Withdrawn-pending',
         'Withdrawal_Reason': rejection_reason
     }).eq('Request_ID', request_id).execute()
 

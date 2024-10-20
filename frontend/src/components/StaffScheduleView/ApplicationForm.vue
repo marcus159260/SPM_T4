@@ -157,7 +157,7 @@ export default{
     },
     computed:{
         canSubmit(){
-            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate && this.validRecurringDuration == true){
+            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
                 return true;
             } return false;
         },
