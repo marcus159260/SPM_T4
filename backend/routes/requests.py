@@ -6,10 +6,11 @@ from util.db import supabase
 
 wfh_bp = Blueprint('wfh_bp', __name__)
 
-
 @wfh_bp.route('/requests', methods=['GET'])
 def get_wfh_requests():
     try:
+        auto_reject_pending_requests()
+        
         # Call the function to fetch the data
         data, error = supabase.rpc('get_requests').execute()
 
@@ -20,30 +21,7 @@ def get_wfh_requests():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@wfh_bp.route('/requests/<int:request_id>', methods=['PUT'])
-def update_request(request_id):
-    print(request_id)
-    try:
-        # Get the status from the request body
-        request_data = request.json
-        status = request_data.get('Status')  # Get the 'Status' value from the request body
-        # print(status)
-
-        # Assuming you have a Supabase method for updating the request status
-        response = supabase.from_('request').update({'Status': status}).eq('Request_ID', request_id).execute()
-
-        # print(response.error, 'hiii')
-        # if response.error not in ['Approved', 'Rejected']:
-            
-        #     return jsonify({"error": response.error.message}), 500
-        
-        return jsonify({"status": "success", "data": response.data}), 200
     
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-   
 #------------------------------------------------------------------------------
    
 @wfh_bp.route('/<int:user_id>', methods=['GET']) 
@@ -88,6 +66,23 @@ def get_user_req(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+@wfh_bp.route('/requests/approver/<int:approver_id>', methods=['GET'])
+def get_requests_by_approver(approver_id):
+    try:
+        # Call the Supabase RPC function
+        response = supabase.rpc('get_requests_by_approver', {'approver_id': approver_id}).execute()
+
+        # Check if there's an error in the SQL response
+        if len(response.data) > 0 and response.data[0]['Error']:
+            return jsonify({'error': response.data[0]['Error']}), 400
+
+        # Return the request data
+        return jsonify(response.data), 200
+
+    except Exception as e:
+        # Catch any unexpected errors and return a 500 response
+        return jsonify({'error': str(e)}), 500
+    
 @wfh_bp.route('/requests/withdraw', methods=['POST'])
 def withdraw_request():
     data = request.get_json()
@@ -104,16 +99,37 @@ def create_request():
 
         # Parse and validate date fields
         staff_id = data.get('staff_id')
-        start_date = str(datetime.strptime(data.get('start_date'), '%Y-%m-%d').date())
-        end_date = str(datetime.strptime(data.get('end_date'), '%Y-%m-%d').date())
+        start_date = str(data.get('start_date'))
+        end_date = str(data.get('end_date'))
         time_of_day = data.get('time_of_day')
         request_type = data.get('request_type')
         status = data.get('status')
-        reason = data.get('reason').replace("'", "''")  # Escape single quotes
+        reason = data.get('reason').replace("'", "''") 
         approver_id = data.get('approver_id')
-        requested_dates = [str(datetime.strptime(date, '%Y-%m-%d').date()) for date in data.get('requested_dates')]
+        requested_dates = [str(date) for date in data.get('requested_dates')]
 
-        # Call the stored procedure with the validated data
+        # check if recurring request is more than 3 months
+        if request_type == 'RECURRING':
+            date_range_check = supabase.rpc('check_date_range_limit', {
+                'p_start_date': start_date,
+                'p_end_date': end_date
+            }).execute()
+
+            # If the date range exceeds 3 months, return the error message
+            if date_range_check.data != 'Valid':
+                return jsonify({'error': date_range_check.data}), 400
+
+        # check for conflicts
+        conflict_response = supabase.rpc('check_overlapping_requests', {
+            'p_staff_id': staff_id,
+            'p_requested_dates': requested_dates,
+            'p_time': time_of_day
+        }).execute()
+
+        if conflict_response.data and conflict_response.data != 'No conflict':
+            return jsonify({'error': conflict_response.data}), 400  # Return conflict message
+
+        # if no conflict, proceed to create request
         response = supabase.rpc('create_request', {
             'p_staff_id': staff_id,
             'p_start_date': start_date,
@@ -123,13 +139,12 @@ def create_request():
             'p_status': status,
             'p_reason': reason,
             'p_approver_id': approver_id,
-            'p_requested_date': requested_dates
+            'p_requested_dates': requested_dates 
         }).execute()
 
-        # Check if there's an error in the response
         if response.data == "Request created successfully":
             return jsonify({'message': response.data}), 201
-
+        
         return jsonify({'error': 'Unable to create request'}), 401
 
     except Exception as e:
@@ -141,17 +156,33 @@ def cancel_request():
     data = request.get_json()
     request_id = data.get('Request_ID')
     reason = data.get('Withdrawal_Reason')
-    date_to_cancel = data.get('dateToCancel')  # Optional, only for recurring requests
     staff_id = data.get('Staff_id')
 
     if not request_id or not reason:
         return jsonify({'error': 'Request ID and reason are required.'}), 400
 
     # Call the controller to handle the business logic
-    result = cancel_wfh_request(request_id, reason, staff_id, date_to_cancel)
+    result = cancel_wfh_request(request_id, reason, staff_id)
     
     return jsonify(result), result['status']
 
+@wfh_bp.route('/requests/approve', methods=['POST'])
+def update_request():
+    try:
+        request_data = request.json
+        print(request_data)
+        request_id = request_data.get('Request_ID')
+        status = request_data.get('request_Status')
+        # print(request_id, status)
+        if not request_id or not status:
+            return jsonify({"error": "Missing request ID or status"}), 400
+        result, status_code = approve_wfh_request(request_id, status)
+        print("line 143:", result, status_code)
+        return jsonify(result), status_code
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @wfh_bp.route('/requests/reject', methods=['POST'])
 def reject_request():
     data = request.get_json()

@@ -1,5 +1,6 @@
 from util.db import supabase
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 
 # Get all the requests from a specific user id (staff)
@@ -96,17 +97,18 @@ def build_events(data):
 
     return events
 
+
 def withdraw_request_controller(request_id, rejection_reason, staff_id):
 
     if not request_id or not rejection_reason:
         return {'error': 'Invalid input'}, 400
 
-    response = supabase.table('request').select('*').eq('Request_ID', request_id).single().execute()
+    response = supabase.table('request').select('*').eq('Request_ID', request_id).maybe_single().execute()
     request_data = response.data
 
     if not request_data:
         return {'error': 'Request not found'}, 404
-
+    
     if request_data['Staff_ID'] != staff_id:
         return {'error': 'Unauthorized' }, 403
 
@@ -115,6 +117,11 @@ def withdraw_request_controller(request_id, rejection_reason, staff_id):
     today = datetime.today().date()
     two_weeks_ago = start_date - timedelta(days=14)
     two_weeks_later = end_date + timedelta(days=14)
+
+    # print(f"Start_Date: {request_data['Start_Date']} (type: {type(request_data['Start_Date'])})")
+    # print(f"End_Date: {request_data['End_Date']} (type: {type(request_data['End_Date'])})")
+    # print(f"start_date: {start_date}, end_date: {end_date}, today: {today}")
+    # print(f"two_weeks_ago: {two_weeks_ago}, two_weeks_later: {two_weeks_later}")
 
     if not (two_weeks_ago <= today <= two_weeks_later):
         return {'error': 'Cannot withdraw request outside the allowed time frame'}, 400
@@ -127,7 +134,7 @@ def withdraw_request_controller(request_id, rejection_reason, staff_id):
     return {'message': 'Request withdrawn successfully'}, 200
 
 
-def cancel_wfh_request(request_id, reason, staff_id, date_to_cancel=None):
+def cancel_wfh_request(request_id, reason, staff_id):
     try:
         # Fetch the request details by ID
         response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
@@ -139,44 +146,74 @@ def cancel_wfh_request(request_id, reason, staff_id, date_to_cancel=None):
         if request_data['Staff_ID'] != staff_id:
             return {'error': 'Unauthorized' }, 403
 
-        # Handle adhoc vs recurring request
-        update_response = supabase.table('request').update({
+        #update status in database
+        supabase.table('request').update({
         'Status': 'Withdrawn',
         'Withdrawal_Reason': reason
         }).eq('Request_ID', request_id).execute()
-        
-        print(update_response)  # Check if update was successful
-
-        # elif request_data['Request_Type'] == 'RECURRING':
-        #     if not date_to_cancel:
-        #         return {'error': 'For recurring requests, a date must be selected.', 'status': 400}
-            
-        #     # For RECURRING, cancel only the specific date
-        #     dates = request_data['Requested_Date']  # Assuming this is a list of dates
-        #     if date_to_cancel not in dates:
-        #         return {'error': 'Invalid date selected for cancellation.', 'status': 400}
-
-        #     # Remove the selected date from the requested dates
-        #     updated_dates = [date for date in dates if date != date_to_cancel]
-            
-        #     # If no more dates left, mark the request as withdrawn
-        #     if len(updated_dates) == 0:
-        #         supabase.table('request').update({
-        #             'Status': 'Withdrawn',
-        #             'Withdrawal_Reason': reason
-        #         }).eq('Request_ID', request_id).execute()
-        #     else:
-        #         # Otherwise, just update the remaining dates
-        #         supabase.table('request').update({
-        #             'Requested_Date': updated_dates,
-        #             'Withdrawal_Reason': reason
-        #         }).eq('Request_ID', request_id).execute()
 
         return {'message': 'Request cancelled successfully.', 'status': 200}
 
     except Exception as e:
         return {'error': str(e), 'status': 500}
     
+def auto_reject_pending_requests():
+    try:
+        current_date = datetime.now().date()
+        # current_date = datetime(2025, 8, 8).date()
+
+        # Fetch pending requests older than 2 months
+        response = supabase.table('request').select("*").eq('Status', 'Pending').eq('Approver_ID', 151408).execute()
+        pending_requests = response.data
+
+        # Loop through the pending requests and auto-reject them if they exceed 2 months
+        for request in pending_requests:
+            start_date = request['Start_Date'] 
+            # print(start_date)
+
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+
+            if current_date > start_date_obj + relativedelta(months=2):
+                supabase.table('request').update({'Status': 'Rejected', 'Rejection_Reason': 'Auto-rejected after 2 months'}).eq('Request_ID', request['Request_ID']).execute()
+
+    except Exception as e:
+        print("Error in auto-rejecting requests:", str(e))
+
+def approve_wfh_request(request_id, status):
+    try:
+        response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
+        request_data = response.data[0] if response.data else None
+        print(request_data)
+        if not request_data:
+            return {'error': 'Request not found.', 'status': 404}
+
+        # current_date = datetime.now().date()
+    # Check how many are currently approved for WFH between start_date and end_date
+        # approved_wfh_response = supabase.table('request').select("*")\
+        #     .eq('Status', 'Approved')\
+        #     .lte('Start_Date', current_date)\
+        #     .gte('End_Date', current_date).execute()
+        
+        # approved_wfh_count_db = len(approved_wfh_response.data)
+        # print(approved_wfh_count_db)
+
+        approved_wfh_count = 5
+        # print("approved count:", approved_wfh_count)
+        
+        current_working_in_office = 10 #hardcode 
+        validation = (approved_wfh_count + 1) / current_working_in_office
+        # print("validation:", validation)
+        if validation > 0.5:
+            return {'error': 'Cannot approve request as less than 50% of the team will be in the office.', 'status': 400}   
+
+        else:
+            update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
+            print("Update response:", update_response)
+            return {"message": "Request approved successfully."}, 200
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+
 def reject_wfh_request(request_id, reason, date_to_cancel=None):
     try:
         # Fetch the request details by ID

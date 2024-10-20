@@ -9,7 +9,7 @@
                         <th scope="col">Request ID</th>
                         <th scope="col">Request Type</th>
                         <th scope="col">Status</th>
-                        <th scope="col">Requested Date(s)</th>
+                        <th scope="col">Requested Date</th>
                         <th scope="col">Time</th>
                         <th scope="col">Reason</th>
                         <th scope="col">Application Date</th>
@@ -23,13 +23,7 @@
                         <td>
                             <span class="badge rounded-pill text-bg-success">{{ request.Status }}</span>
                         </td>
-                        <td>
-                            <ul>
-                                <li v-for="date in request.Requested_Date" :key="date">
-                                {{ formatDate(date) }}
-                                </li>
-                            </ul>
-                        </td>
+                        <td>{{ formatDate(request.Start_Date) }}</td>
                         <td>{{ request.Time }}</td>
                         <td>{{ request.Reason }}</td>
                         <td>{{ formatDate(request.Application_Date) }}</td>
@@ -80,19 +74,19 @@ export default {
     computed: {
         filteredRequests() {
             const currentDate = new Date();
-            const minus60Days = new Date(currentDate);
-            minus60Days.setDate(currentDate.getDate() - 60); // 60 days ago
+            const minus61Days = new Date(currentDate);
+            minus61Days.setDate(currentDate.getDate() - 61); 
 
-            const plus90Days = new Date(currentDate);
-            plus90Days.setDate(currentDate.getDate() + 90); // 90 days forward
+            const plus91Days = new Date(currentDate);
+            plus91Days.setDate(currentDate.getDate() + 91); 
 
             // Filter requests for 'Approved' status and within date range
             return this.requestsData.filter((request) => {
                 const endDate = new Date(request.End_Date);
                 return (
                     request.Status === "Approved" &&
-                    endDate >= minus60Days &&
-                    endDate <= plus90Days
+                    endDate >= minus61Days &&
+                    endDate <= plus91Days
                 );
             });
         }

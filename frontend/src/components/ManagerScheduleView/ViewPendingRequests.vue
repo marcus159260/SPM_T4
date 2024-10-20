@@ -5,9 +5,6 @@
       Manager ID: <span>{{ managerDetails.Staff_ID }}</span> <br>
       Department: <span>{{ managerDetails.Department }}</span> <br />
       Position: <span>{{ managerDetails.Position }}</span> <br />
-      <!-- In charge of: <br>
-          &emsp;Dept -> <span>{{ managerDetails.Department }}</span> <br>
-          &emsp;Position -> <span>{{ managerDetails.Position }}</span> -->
     </h6>
 
     <table v-if="pendingRequests.length > 0" class="table align-middle mt-10 bg-white">
@@ -19,7 +16,7 @@
           <th>Request_Type / Time of WFH requested days</th>
           <th>Application_Date</th>
           <th>WFH_Start_Date</th>
-          <th>WFH_End_Date</th>
+          <th>Approver_ID</th>
           <th>Reason of Application</th>
           <th>Status</th>
           <th>Approval</th>
@@ -57,7 +54,7 @@
             <p class="mb-1">{{ staff.Start_Date }}</p>
           </td>
           <td>
-            <p class="mb-1">{{ staff.End_Date }}</p>
+            <p class="mb-1">{{ staff.Approver_ID }}</p>
           </td>
           <td>
             <p class="mb-1">{{ staff.Reason }}</p>
@@ -70,7 +67,6 @@
           </td> -->
 
           <!--Approve/Reject buttons-->
-
           <!-- <td>
             <a href="#" class="d-inline-block">
               <img style="width:30px; height:30px" src="../../assets/checked.png">
@@ -79,8 +75,6 @@
               <img style="width:30px; height:30px" src="../../assets/x-button.png">
             </a>
           </td> -->
-
-
           <td class="d-flex align-items-center">
             <button @click="approveRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/checked.png" alt="Approve">
@@ -88,10 +82,7 @@
             <button @click="rejectRequestPopup(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/x-button.png" alt="Reject">
             </button>
-            
           </td>
-      
-
           <!--End of Approve/Reject buttons-->
         </tr>
 
@@ -101,23 +92,25 @@
     <div v-if="pendingRequests.length === 0" class="text-center mt-3">
       <p>No pending requests.</p>
     </div>
-  </div>
 
-  <div>
-    <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible" @update:visible="isPopupVisible = $event">
+    <div>
+      <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
+        @update:visible="isPopupVisible = $event">
         <template #content>
           <div width="100%" class="justify-content-center">
             <h3 class="my-4" style="color:black">Reason for Rejection</h3>
             <form>
-            <textarea style='width:400px;height:150px' class="form-control" v-model="rejectionReason" placeholder="Enter reason for rejection" />
-            <div class="d-flex flex-column my-2">
-              <p id="errormsg" class="text-danger mx-0"></p>
-              <button type="button" class="btn btn-primary" @click="rejectRequest(selectedRequestId)">Submit</button>
-            </div>
-          </form>
+              <textarea style='width:400px;height:150px' class="form-control" v-model="rejectionReason"
+                placeholder="Enter reason for rejection"></textarea>
+              <div class="d-flex flex-column my-2">
+                <p id="errormsg" class="text-danger mx-0"></p>
+                <button type="button" class="btn btn-primary" @click="rejectRequest(selectedRequestId)">Submit</button>
+              </div>
+            </form>
           </div>
         </template>
-    </PopupWrapper>
+      </PopupWrapper>
+    </div>
   </div>
 </template>
 
@@ -132,10 +125,11 @@ export default {
       managerDetails: [],
       managerId: 151408,
       isPopupVisible: false,
-      rejectionReason: ''
+      rejectionReason: '',
+      selectedRequestId: null
     };
   },
-  components:{
+  components: {
     PopupWrapper
   },
   computed: {
@@ -143,17 +137,33 @@ export default {
       // Filter by status 'Pending' and Approver_ID matching managerId
       return this.allRequests
         .filter(request => {
-          const applicationDate = new Date(request.Application_Date); // Use Application_Date for filtering
+          const applicationDate = new Date(request.Application_Date + 'T00:00:00'); // Use Application_Date for filtering
+          const startDate = new Date(request.Start_Date + 'T00:00:00'); // Use Start_Date for filtering
+          
+          console.log("Request object:", request);
+      
+          // Calculate the date 2 months before the Application_Date
+          const twoMonthsBeforeApplicationDate = new Date(applicationDate);
+          twoMonthsBeforeApplicationDate.setMonth(applicationDate.getMonth() - 2);
+          // console.log("twoMonthsBeforeApplicationDate: " + twoMonthsBeforeApplicationDate)
 
-          // Calculate the date 3 months from the Application_Date
-          const threeMonthsFromApplicationDate = new Date(applicationDate);
-          threeMonthsFromApplicationDate.setMonth(threeMonthsFromApplicationDate.getMonth() + 3);
+          // Calculate the date 3 months after the Application_Date
+          const threeMonthsAfterApplicationDate = new Date(applicationDate);
+          threeMonthsAfterApplicationDate.setMonth(applicationDate.getMonth() + 3);
+          // console.log("threeMonthsAfterApplicationDate: " + threeMonthsAfterApplicationDate)
+          
 
-          // Return true if the request is pending, the current date is within 3 months of the application date, and the Approver_ID matches managerId
+          // Check if the Start_Date is within the range of 2 months before to 3 months after the Application_Date
+          const isWithinRange = (
+            startDate >= twoMonthsBeforeApplicationDate &&
+            startDate <= threeMonthsAfterApplicationDate
+          );
+
+          // Return true if the request is pending, matches managerId, and Start_Date is within range
           return (
             request.Status === 'Pending' &&
             request.Approver_ID === this.managerId &&
-            new Date() <= threeMonthsFromApplicationDate
+            isWithinRange
           );
         })
         .sort((a, b) => a.Request_ID - b.Request_ID); // Sort by Request_ID in ascending order
@@ -174,8 +184,10 @@ export default {
       // Fetch WFH requests using Axios
       axios.get('http://127.0.0.1:5000/api/wfh/requests')
         .then(response => {
-          console.log(123);
           this.allRequests = response.data;
+          console.log(this.allRequests)
+          console.log(this.pendingRequests)
+
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
@@ -183,19 +195,18 @@ export default {
     },
     approveRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.put(`http://127.0.0.1:5000/api/wfh/requests/${requestId}`, { Status: 'Approved' })
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
-          const approvedRequest = this.allRequests.find(request => request.Request_ID === requestId);
-          if (approvedRequest) {
-            console.log(111)
-            approvedRequest.Status = 'Approved';
-            
+          console.log('response.data', response.data);
+          if (response.data == 'error') {
+            alert("Cannot approve request as less than 50% of the team will be in the office")
           }
-          this.fetchRequests();
-          
+          else {
+            this.fetchRequests();
+          }
         })
         .catch(error => {
-          console.error('Error approving request:', error);
+          console.error('Error rejecting request:', error);
         });
     },
 
@@ -203,22 +214,22 @@ export default {
       this.selectedRequestId = requestId; // Store the request ID for rejection
       this.isPopupVisible = true; // Show the popup
       document.getElementById('popup').style.display = 'flex';
-      document.getElementById('popup').style.border='1px black solid';
+      document.getElementById('popup').style.border = '1px black solid';
     },
     rejectRequest(requestId) {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
         .then(response => {
-          console.log('response.data',response.data);
-          if (response.data=='error') {
+          console.log('response.data', response.data);
+          if (response.data == 'error') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
-            document.getElementById('errormsg').innerHTML=`Reason cannot be empty<br>`;
+            document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;
 
           }
-          else{
-          this.fetchRequests();
-          this.isPopupVisible = false; // Hide the popup after submission
-          document.getElementById('popup').style.border='';
+          else {
+            this.fetchRequests();
+            this.isPopupVisible = false; // Hide the popup after submission
+            document.getElementById('popup').style.border = '';
 
           }
         })
@@ -266,6 +277,4 @@ export default {
   outline: none;
   /* Remove focus outline */
 }
-
-
 </style>

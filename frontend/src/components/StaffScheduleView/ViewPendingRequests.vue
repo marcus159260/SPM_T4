@@ -8,11 +8,12 @@
                         <th scope="col">Request ID</th>
                         <th scope="col">Request Type</th>
                         <th scope="col">Status</th>
-                        <th scope="col">Requested Date(s)</th>
+                        <th scope="col">Requested Date</th>
                         <th scope="col">Time</th>
                         <th scope="col">Reason</th>
                         <th scope="col">Application Date</th>
                         <th scope="col">Approver</th>
+                        <th scope="col">Withdrawal Reason</th>
                         <th scope="col">Cancel Request</th>
                     </tr>
                 </thead>
@@ -23,17 +24,12 @@
                         <td>
                             <span class="badge rounded-pill text-bg-warning">{{ request.Status }}</span>
                         </td>
-                        <td>
-                            <ul>
-                                <li v-for="date in request.Requested_Date" :key="date">
-                                    {{ formatDate(date) }}
-                                </li>
-                            </ul>
-                        </td>
+                        <td>{{ formatDate(request.Start_Date) }}</td>
                         <td>{{ request.Time }}</td>
                         <td>{{ request.Reason }}</td>
                         <td>{{ formatDate(request.Application_Date) }}</td>
                         <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
+                        <td>{{ request.Withdrawal_Reason }}</td>
                         <td>
                             <button @click="openCancelModal(request)">Cancel</button>
                         </td>
@@ -49,19 +45,6 @@
         <div v-if="showCancelModal" class="modal">
             <div class="modal-content">
                 <h4>Cancel Request</h4>
-                <!-- <p v-if="isRecurringRequest">Select the date to cancel for the recurring request:</p>
-                <ul v-if="isRecurringRequest">
-                    <li v-for="date in selectedRequest.Requested_Date" :key="date">
-                        <input
-                            type="radio"
-                            v-model="selectedDateToCancel"
-                            :value="date"
-                            name="cancel-date"
-                        />
-                        {{ formatDate(date) }}
-                    </li>
-                </ul> -->
-
                 <p>Reason for cancellation:</p>
                 <textarea v-model="cancellationReason"></textarea>
 
@@ -104,27 +87,25 @@ export default {
             showCancelModal: false, // Track modal visibility
             showSuccessModal: false, // Track success modal visibility
             selectedRequest: null, // Track the selected request
-            selectedDateToCancel: null, // For selecting a single date to cancel
             cancellationReason: "", // Capture the reason
-            isRecurringRequest: false, // Track if the request is recurring
         };
     },
 
     computed: {
         filteredRequests() {
             const currentDate = new Date();
-            const minus60Days = new Date(currentDate);
-            minus60Days.setDate(currentDate.getDate() - 60); // 60 days ago
+            const minus61Days = new Date(currentDate);
+            minus61Days.setDate(currentDate.getDate() - 61);
 
-            const plus90Days = new Date(currentDate);
-            plus90Days.setDate(currentDate.getDate() + 90); // 90 days forward
+            const plus91Days = new Date(currentDate);
+            plus91Days.setDate(currentDate.getDate() + 91);
 
             return this.requestsData.filter((request) => {
                 const endDate = new Date(request.End_Date);
                 return (
                     request.Status === "Pending" &&
-                    endDate >= minus60Days &&
-                    endDate <= plus90Days
+                    endDate >= minus61Days &&
+                    endDate <= plus91Days
                 );
             });
         }
@@ -157,8 +138,6 @@ export default {
 
         openCancelModal(request) {
             this.selectedRequest = request;
-            // this.isRecurringRequest = request.Request_Type === "RECURRING";
-            // this.selectedDateToCancel = null; // Reset selected date
             this.cancellationReason = "";
             this.showCancelModal = true;
         },
@@ -173,15 +152,9 @@ export default {
                 return;
             }
 
-            // if (this.isRecurringRequest && !this.selectedDateToCancel) {
-            //     // Optionally handle this case without an alert
-            //     return;
-            // }
-
             axios.post('http://127.0.0.1:5000/api/wfh/requests/cancel', {
                     Request_ID: this.selectedRequest.Request_ID,
                     Withdrawal_Reason: this.cancellationReason,
-                    dateToCancel: this.selectedDateToCancel,
                     Staff_id: this.staffId
                 }).then((response) => {
                     this.showCancelModal = false;
@@ -200,14 +173,8 @@ export default {
         },
 
         canSubmitCancellation() {
-            // if (this.isRecurringRequest) {
-            //     // For recurring requests, both the date and reason are required
-            //     return this.selectedDateToCancel && this.cancellationReason.trim().length > 0;
-            // } else {
-                // For adhoc requests, only the cancellation reason is required
-                return this.cancellationReason.trim().length > 0;
-            }
-        // }
+            return this.cancellationReason.trim().length > 0;
+        }
     },
     mounted() {
         this.fetchRequests();
