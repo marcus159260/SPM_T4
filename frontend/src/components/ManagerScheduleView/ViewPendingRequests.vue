@@ -16,10 +16,10 @@
           <th>Request_Type / Time of WFH requested days</th>
           <th>Application_Date</th>
           <th>WFH_Start_Date</th>
-          <th>Approver_ID</th>
           <th>Reason of Application</th>
           <th>Status</th>
           <th>Approval</th>
+          <th>Withdrawal_Reason</th>
         </tr>
       </thead>
 
@@ -54,27 +54,12 @@
             <p class="mb-1">{{ staff.Start_Date }}</p>
           </td>
           <td>
-            <p class="mb-1">{{ staff.Approver_ID }}</p>
-          </td>
-          <td>
             <p class="mb-1">{{ staff.Reason }}</p>
           </td>
           <td>
             <p class="mb-1">{{ staff.Status }}</p>
           </td>
-          <!-- <td>
-            <p class="mb-1">{{ staff.Approver }}</p>
-          </td> -->
-
           <!--Approve/Reject buttons-->
-          <!-- <td>
-            <a href="#" class="d-inline-block">
-              <img style="width:30px; height:30px" src="../../assets/checked.png">
-            </a>
-            <a href="#" class="d-inline-block ms-2">
-              <img style="width:30px; height:30px" src="../../assets/x-button.png">
-            </a>
-          </td> -->
           <td class="d-flex align-items-center">
             <button @click="approveRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/checked.png" alt="Approve">
@@ -84,6 +69,9 @@
             </button>
           </td>
           <!--End of Approve/Reject buttons-->
+          <td>
+            <p class="mb-1">{{ staff.Withdrawal_Reason }}</p>
+          </td>
         </tr>
 
       </tbody>

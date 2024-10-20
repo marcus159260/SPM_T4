@@ -19,9 +19,9 @@
                     <th>Request_Type / Time of WFH requested days</th>
                     <th>Application_Date</th>
                     <th>WFH_Start_Date</th>
-                    <th>Approver_ID</th>
                     <th>Rejection Reason</th>
                     <th>Status</th>
+                    <th>Withdrawal_Reason</th>
                 </tr>
             </thead>
             <tbody v-for="staff in rejectedRequests" :key="staff.Staff_ID">
@@ -55,13 +55,13 @@
                         <p class="mb-1">{{ staff.Start_Date }}</p>
                     </td>
                     <td>
-                        <p class="mb-1">{{ staff.Approver_ID }}</p>
-                    </td>
-                    <td>
                         <p class="mb-1">{{ staff.Rejection_Reason }}</p>
                     </td>
                     <td>
                         <p class="mb-1">{{ staff.Status }}</p>
+                    </td>
+                    <td>
+                        <p class="mb-1">{{ staff.Withdrawal_Reason }}</p>
                     </td>
                 </tr>
             </tbody>
