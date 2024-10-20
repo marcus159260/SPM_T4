@@ -27,7 +27,6 @@
             <th scope="col">Request Type</th>
             <th scope="col">Request Reason</th>
             <th scope="col">Application Date</th>
-            <th scope="col">Approver</th>
             <th scope="col">Rejection Reason</th>
             <th scope="col">Withdrawal Reason</th>
           </tr>
@@ -42,7 +41,7 @@
             <td>
               <span :class="{
                   'badge rounded-pill text-bg-success': request.Status === 'Approved',
-                  'badge rounded-pill text-bg-warning': request.Status === 'Pending',
+                  'badge rounded-pill text-bg-warning': request.Status === 'Pending'|| request.Status === 'Withdrawn - Pending',
                   'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
                   'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
               }">{{ request.Status }}</span>
@@ -52,7 +51,6 @@
             <td>{{ request.Request_Type }}</td>
             <td>{{ request.Reason }}</td>
             <td>{{ formatDate(request.Application_Date) }}</td>
-            <td>{{ request.Approver }}</td>
             <td>{{ request.Rejection_Reason }}</td>
             <td>{{ request.Withdrawal_Reason }}</td>
           </tr>
@@ -104,13 +102,16 @@ export default {
         // Compare dates without time affecting the result
         const isWithinDateRange = requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
 
+        // Check if the request matches the selected status, include "Withdrawn - Pending" under "Pending"
         const matchesStatus = this.selectedStatus === '' || 
-                              (request.Status && request.Status.toLowerCase() === this.selectedStatus.toLowerCase());
+                              (request.Status && (
+                                request.Status.toLowerCase() === this.selectedStatus.toLowerCase() || 
+                                (this.selectedStatus.toLowerCase() === 'pending' && request.Status.toLowerCase() === 'withdrawn - pending')
+                              ));
 
         return isWithinDateRange && matchesStatus;
       });
     },
-
     
     fetchRequests() {
       axios.get(`http://127.0.0.1:5000/api/wfh/requests/approver/${this.approver_id}`)
