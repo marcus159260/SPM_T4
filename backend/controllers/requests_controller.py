@@ -197,7 +197,7 @@ def approve_wfh_request(request_id, status):
         # approved_wfh_count_db = len(approved_wfh_response.data)
         # print(approved_wfh_count_db)
 
-        approved_wfh_count = 5
+        approved_wfh_count = 4
         # print("approved count:", approved_wfh_count)
         
         current_working_in_office = 10 #hardcode 
