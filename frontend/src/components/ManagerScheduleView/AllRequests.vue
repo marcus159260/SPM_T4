@@ -80,34 +80,33 @@ export default {
   },
   methods: {
     applyFilter() {
-      const today = new Date(); // Current date
+      const today = new Date();
+
+      // Calculate two months back and three months ahead
       const twoMonthsBack = new Date(today);
       const threeMonthsAhead = new Date(today);
 
-      // Adjust months for date range
-      twoMonthsBack.setMonth(today.getMonth() - 2);
-      threeMonthsAhead.setMonth(today.getMonth() + 3);
+      // Adjust for date range (no change here)
+      twoMonthsBack.setDate(today.getDate() - 61);
+      threeMonthsAhead.setDate(today.getDate() + 91);
 
-      // Set time to midnight (00:00:00) for comparison
-      today.setHours(0, 0, 0, 0);
+      // Remove the time component for accurate date comparison
       twoMonthsBack.setHours(0, 0, 0, 0);
       threeMonthsAhead.setHours(0, 0, 0, 0);
 
-      // Filter the WFH requests based on status, date range, and approver's name
+      // Filter the WFH requests
       this.filteredRequests = this.allRequests.filter(request => {
-        // Create a Date object from the Start_Date string (assumed to be in 'YYYY-MM-DD' format)
         const requestStartDate = new Date(request.Start_Date);
 
-        // Set the request date time to midnight for comparison
+        // Remove the time component from requestStartDate
         requestStartDate.setHours(0, 0, 0, 0);
 
-        // Check if the request date is within the date range
+        // Compare dates without time affecting the result
         const isWithinDateRange = requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
 
-        // Check if the request matches the selected status
-        const matchesStatus = this.selectedStatus === '' || (request.Status && request.Status.toLowerCase() === this.selectedStatus.toLowerCase());
+        const matchesStatus = this.selectedStatus === '' || 
+                              (request.Status && request.Status.toLowerCase() === this.selectedStatus.toLowerCase());
 
-        // Return true if within date range, matches status
         return isWithinDateRange && matchesStatus;
       });
     },
