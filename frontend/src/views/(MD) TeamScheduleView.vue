@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import teamCalendar from '../components/teamCalendar.vue';
+import teamCalendar from '../components/teamCalendarManager.vue';
 import axios from 'axios';
 // import { getTeamEvents, getTeamResources } from '../services/apiService';
 
@@ -22,12 +22,12 @@ export default {
       teamResources: [],
       employees:[],
       resources:[],
-      Reporting_Manager: 140894 //hardcode team manager
+      Staff_ID: 140894 //hardcode team manager
       
     };
   },
   mounted() {
-    var url = "http://127.0.0.1:5000/api/users/by-team-employees/" + this.Reporting_Manager;
+    var url = "http://127.0.0.1:5000/api/users/by-team-employees/" + this.Staff_ID;
     axios
       .get(url)
       .then((response) => {

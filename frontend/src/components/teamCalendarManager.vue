@@ -14,7 +14,7 @@
     days: DayPilot.Date.today().daysInMonth(),
     startDate: DayPilot.Date.today().firstDayOfMonth(),
     timeRangeSelectedHandling: "Disabled",
-    reporting_manager: 140894,
+    Staff_ID: 140894,
     eventClickHandling: "Disabled",
     eventHoverHandling: "Bubble",
     bubble: new DayPilot.Bubble({
@@ -36,10 +36,10 @@
   
   const loadEvents = () => {
     loadResources();
-    const events = [
-      { id: 1, start: "2024-10-01", end: "2024-10-05", text: "WFH", resource: "R" },
-      { id: 2, start: DayPilot.Date.today(), end: DayPilot.Date.today().addDays(5), text: "WFO", resource: "R2" }
-    ];
+    // const events = [
+    //   { id: 1, start: "2024-10-01", end: "2024-10-05", text: "WFH", resource: "R" },
+    //   { id: 2, start: DayPilot.Date.today(), end: DayPilot.Date.today().addDays(5), text: "WFO", resource: "R2" }
+    // ];
 
     var resources = config.resources;
     console.log(resources);
@@ -70,18 +70,8 @@
   };
   
   const loadResources = () => {
-    // const resources = [
-    //     {
-    //         "name": "Alice",
-    //         "test":123,
-    //         "id": "R"
-    //     },
-    //     {
-    //         "name": "Rachel",
-    //         "id": "R2"
-    //     }
-    // ];
-    var teamurl = "http://127.0.0.1:5000/api/users/by-team-employees/" + config.reporting_manager;
+    
+    var teamurl = "http://127.0.0.1:5000/api/users/by-team-employees/" + config.Staff_ID;
     // console.log(teamurl);
     axios
       .get(teamurl)

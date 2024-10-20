@@ -38,6 +38,14 @@ def get_manager_details(manager_id):
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
     
+@user_bp.route('find-manager/<int:staff_id>', methods=['GET'])
+def find_manager_details(staff_id):
+    manager = find_manager_details_data(staff_id)
+    if manager:
+        return jsonify({"status": "success", "data": manager}), 200
+    else:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+    
 @user_bp.route('by-dept-employees', methods=['GET'])
 def get_employees_by_dept():
     user = get_employees_by_dept_data() 

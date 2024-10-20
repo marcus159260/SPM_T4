@@ -28,6 +28,12 @@ def get_user_data_by_id(user_id):
     else:
         return None
     
+def find_manager_details_data(staff_id):
+    response = supabase.table('employee').select('Reporting_Manager').eq('Staff_ID', staff_id).execute() #eq is filter
+    if response.data:
+        return response.data[0]
+    else:
+        return None
   
 def get_manager_details_data(manager_id: int):
     # Query to get manager details by Staff_ID (which is manager_id)
