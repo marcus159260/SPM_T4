@@ -63,7 +63,7 @@
 
 <script>
 import axios from 'axios';
-import { formatDate, PeriodChecker, DateRangeChecker} from '@/util/periodPolicy';
+import { formatDate, PeriodChecker, check90Days} from '@/util/periodPolicy';
 import { generateRecurringDates } from '@/util/recurringDates';
 
 export default{
@@ -106,7 +106,7 @@ export default{
         checkDateRange() {
             const startDateCheck = new Date(this.startDate);
             const endDateCheck = new Date(this.endDate);
-            this.validRecurringDuration = DateRangeChecker(startDateCheck, endDateCheck)
+            this.validRecurringDuration = check90Days(startDateCheck, endDateCheck)
     },
         validateRequestReason() {
             this.isRequestReasonValid = this.requestReason.length > 0 ;

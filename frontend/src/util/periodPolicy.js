@@ -57,12 +57,3 @@ export function PeriodChecker(currentDate, checkDate){
         return true
     }
 }
-
-export function DateRangeChecker(startDate, endDate) {
-    const dateDifference = (endDate - startDate) / (1000 * 60 * 60 * 24);
-
-    if (dateDifference > 91) {
-        return false;
-    }
-    return true;
-}
