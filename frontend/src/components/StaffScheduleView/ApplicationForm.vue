@@ -23,7 +23,7 @@
 
                         <div class="mb-3">
                             <label for="startDate" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="StartDate" v-model="startDate" @input = "checkPeriod, checkDateRange">
+                            <input type="date" class="form-control" id="StartDate" v-model="startDate" @input = "checkPeriod">
                             <span class="text-danger" v-if="validPeriod == false">Start date can only be 2 months back or 3 months forward</span>
                         </div>
 
@@ -104,9 +104,9 @@ export default{
             this.validPeriod = PeriodChecker(currentDate, this.startDate);
         },
         checkDateRange() {
-        const startDateCheck = new Date(this.startDate);
-        const endDateCheck = new Date(this.endDate || this.startDate);
-        this.validRecurringDuration = DateRangeChecker(startDateCheck, endDateCheck)
+            const startDateCheck = new Date(this.startDate);
+            const endDateCheck = new Date(this.endDate);
+            this.validRecurringDuration = DateRangeChecker(startDateCheck, endDateCheck)
     },
         validateRequestReason() {
             this.isRequestReasonValid = this.requestReason.length > 0 ;
