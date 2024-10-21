@@ -73,6 +73,7 @@ export default{
             staffId: 150076, 
             staff_name: "",
             approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
+            currentDate: null,
             startDate: null,
             endDate: null,
             wfhTime: 'AM',
@@ -100,12 +101,11 @@ export default{
             }
         },
         checkPeriod(){
-            const currentDate = formatDate(new Date());
-            this.validPeriod = PeriodChecker(currentDate, this.startDate);
+            this.validPeriod = PeriodChecker(this.currentDate, this.startDate);
         },
         checkDateRange() {
             this.validRecurringDuration = check90Days(this.startDate, this.endDate)
-    },
+        },
         async submitRequest() {
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
@@ -169,6 +169,7 @@ export default{
         }
     },
     mounted(){
+        this.currentDate = formatDate(new Date());
         this.getStaffApprover();
     }
     

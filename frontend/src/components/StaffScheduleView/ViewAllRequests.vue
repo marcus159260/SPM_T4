@@ -61,6 +61,8 @@
 
 <script>
 import axios from 'axios';
+import { formatDate } from '@/util/periodPolicy';
+import { viewRequests } from '@/util/viewRequests';
 
 export default {
     name: "StaffRequests",
@@ -71,7 +73,8 @@ export default {
             selectedStatus: "",
             staff_id: 150076,
             approverName: "",
-            requestsData : []
+            requestsData : [],
+            currentDate: null
         }
     },
     computed: {
@@ -98,7 +101,7 @@ export default {
             const staffId = this.$route.params.staff_id || 150076; 
             const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${this.staff_id}`);
             if(response.data){
-              this.requestsData = response.data
+              this.requestsData = viewRequests(this.currentDate,response.data)
             }
             else {
             console.log("No data found for this staff ID");
@@ -109,7 +112,10 @@ export default {
     }},
 
     mounted() {
+    // Mount the current date in the component
+    this.currentDate = formatDate(new Date());
     this.fetchRequests();
+
   }
 
 
