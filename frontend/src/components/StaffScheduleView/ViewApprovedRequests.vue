@@ -32,32 +32,45 @@
                     </tr>
                 </tbody>
             </table>
-            <div v-if="showWithdrawalModal" class="modal">
-                <div class="modal-content">
-                    <span class="close" @click="cancelWithdrawal">&times;</span>
-                    <h3>Withdraw WFH Request</h3>
-                    <p>Please provide a reason for withdrawal:</p>
-                    <textarea v-model="withdrawalReason"></textarea>
-                    <div class="modal-actions">
-                    <button @click="confirmWithdrawal">Confirm</button>
-                    <button @click="cancelWithdrawal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-
-            <div v-if="showWithdrawalSuccessfulMessage" class="withdrawal-success-message">
-                <p>Your WFH request has been withdrawn successfully.</p>
-                <button @click="closeWithdrawalSuccessfulMessage">Close</button>
-            </div>
         </div>
         <div v-else>
             <p>No approved requests available within the date range.</p>
+        </div>
+        <div>
+            <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
+                @update:visible="isPopupVisible = $event">
+                <template #content>
+                <div width="100%" class="justify-content-center">
+                    <h3 class="my-4" style="color:black">Reason for Withdrawal</h3>
+                    <form>
+                    <textarea style='width:400px;height:150px' class="form-control" v-model="withdrawalReason"
+                        placeholder="Enter reason for withdrawal"></textarea>
+                    <div class="d-flex flex-column my-2">
+                        <p id="errormsg" class="text-danger mx-0"></p>
+                        <button type="button" class="btn btn-primary" @click="confirmWithdrawal">Submit</button>
+                    </div>
+                    </form>
+                </div>
+                </template>
+            </PopupWrapper>
+        </div>
+
+        <!-- Withdrawal Success Modal -->
+        <div v-if="showSuccessModal" class="modal">
+            <div class="modal-content">
+                <h4>Withdrawal Successful</h4>
+                <p>Your request has been successfully withdrawn.</p>
+                <div class="modal-actions">
+                    <button @click="closeSuccessModal">Close</button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import PopupWrapper from '../PopupWrapper.vue';
 
 export default {
     name: "StaffRequests",
@@ -66,10 +79,14 @@ export default {
             selectedStatus: "Approved", // Default filter is Approved
             staffId: 150076,
             requestsData: [],
-            showWithdrawalModal: false,
             withdrawalReason: '',
-            showWithdrawalSuccessfulMessage: false,
+            showSuccessModal: false,
+            isPopupVisible: false,
+            selectedRequestId: null
         };
+    },
+    components: {
+        PopupWrapper
     },
     computed: {
         filteredRequests() {
@@ -122,22 +139,27 @@ export default {
             const today = new Date();
             const startDate = new Date(request.Start_Date);
             const endDate = new Date(request.End_Date);
-            const twoWeeksAgo = new Date();
-            const twoWeeksLater = new Date();
-            twoWeeksAgo.setDate(today.getDate() - 14);
-            twoWeeksLater.setDate(today.getDate() + 14);
 
-            if ((startDate >= twoWeeksAgo && startDate <= twoWeeksLater) ||(endDate >= twoWeeksAgo && endDate <= twoWeeksLater)) {
+            const twoWeeksAgo = new Date(startDate);
+            twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);            
+            const twoWeeksLater = new Date(endDate);
+            twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
+
+            if (today >= twoWeeksAgo && today <= twoWeeksLater) {
                 this.selectedRequest = request;
-                this.showWithdrawalModal = true;
+                this.isPopupVisible = true; 
+                document.getElementById('popup').style.display = 'flex';
+                document.getElementById('popup').style.border = '1px black solid';
             } else {
                 alert('You can only withdraw requests within 2 weeks backward and forward.');
+
             }
         },
 
         confirmWithdrawal() {
             if (!this.withdrawalReason.trim()) {
-                alert('Please provide a reason for withdrawal.');
+                console.log('error from popup: no error msg');
+                document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
             axios.post('http://127.0.0.1:5000/api/wfh/requests/withdraw', {
@@ -145,23 +167,18 @@ export default {
                 Rejection_Reason: this.withdrawalReason,
                 Staff_ID: this.staffId
             }).then((response) => {
-                this.showWithdrawalModal = false;
-                this.showWithdrawalSuccessfulMessage = true;
-                this.withdrawalReason = '';
-                this.fetchRequests(); // Refresh the list
+                this.isPopupVisible = false;
+                document.getElementById('popup').style.border = '';
+                this.showSuccessModal = true;
+                this.fetchRequests();
             }).catch((error) => {
                 console.error('Error withdrawing request:', error);
                 alert('An error occurred while withdrawing the request.');
             });
         },
 
-        cancelWithdrawal() {
-            this.showWithdrawalModal = false;
-            this.withdrawalReason = '';
-        },
-
-        closeWithdrawalSuccessfulMessage() {
-            this.showWithdrawalSuccessfulMessage = false;
+        closeSuccessModal() {
+            this.showSuccessModal = false;
         },
 
     },

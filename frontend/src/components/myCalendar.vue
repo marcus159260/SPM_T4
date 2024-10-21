@@ -28,7 +28,8 @@ const config = reactive({
   eventClickHandling: "Disabled",
   treeEnabled: true,
   resources: [],
-  events: []
+  events: [],
+  cellWidthSpec: "Auto"
 });
 const schedulerRef = ref(null);
 
