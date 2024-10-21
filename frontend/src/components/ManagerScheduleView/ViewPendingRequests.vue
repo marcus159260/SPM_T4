@@ -156,7 +156,7 @@ export default {
           // Check if the Start_Date is within the range of 2 months before to 3 months after the Application_Date
           const isWithinRange = (
             startDate >= twoMonthsBeforeApplicationDate &&
-            startDate <= threeMonthsAfterApplicationDate
+            startDate < threeMonthsAfterApplicationDate
           );
 
           // Return true if the request is pending, matches managerId, and Start_Date is within range
@@ -219,11 +219,11 @@ export default {
     rejectRequest(requestId) {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
         .then(response => {
-          console.log('response.data', response.data);
-          if (response.data == 'error') {
+          console.log('response.data', response.data.message);
+          if (response.data.message == 'Reason cannot be empty.') {
             // console.log(response.data.error);
-            console.log('error from popup: no error msg');
-            document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;
+            console.log('error from popup: no rejection msg');
+            document.getElementById('errormsg').innerHTML = response.data.message+`<br>`;
 
           }
           else {

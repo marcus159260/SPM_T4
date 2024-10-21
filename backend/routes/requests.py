@@ -188,6 +188,5 @@ def reject_request():
     data = request.get_json()
     request_id = data.get('Request_ID')
     rejection_reason = data.get('Rejection_Reason')
-    staff_id = data.get('Staff_ID'); 
-    result, status_code = reject_wfh_request(request_id, rejection_reason, staff_id)
+    result, status_code = reject_wfh_request(request_id, rejection_reason)
     return jsonify(result), status_code

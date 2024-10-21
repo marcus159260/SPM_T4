@@ -14,7 +14,7 @@
     days: DayPilot.Date.today().daysInMonth(),
     startDate: DayPilot.Date.today().firstDayOfMonth(),
     timeRangeSelectedHandling: "Disabled",
-    Staff_ID: 140894,
+    Staff_ID: 151408,
     reporting_manager: 0,
     eventClickHandling: "Disabled",
     eventHoverHandling: "Bubble",
@@ -52,40 +52,40 @@
     
     
   
-  const loadEvents = () => {
-    loadResources();
-    const events = [
-      { id: 1, start: "2024-10-01", end: "2024-10-05", text: "WFH", resource: "R" },
-      { id: 2, start: DayPilot.Date.today(), end: DayPilot.Date.today().addDays(5), text: "WFO", resource: "R2" }
-    ];
+  // const loadEvents = () => {
+  //   loadResources();
+  //   const events = [
+  //     { id: 1, start: "2024-10-01", end: "2024-10-05", text: "WFH", resource: "R" },
+  //     { id: 2, start: DayPilot.Date.today(), end: DayPilot.Date.today().addDays(5), text: "WFO", resource: "R2" }
+  //   ];
 
-    var resources = config.resources;
-    console.log(resources);
+  //   var resources = config.resources;
+  //   console.log(resources);
 
-    for(emp of resources){
-      var requesturl = "http://127.0.0.1:5000/api/wfh/" + emp.id;
+  //   for(emp of resources){
+  //     var requesturl = "http://127.0.0.1:5000/api/wfh/" + emp.id;
 
-      axios
-        .get(requesturl)
-        .then((response) => {
-          data = response.data;
-          temp = [];
-          for(e of data){
-            let bubbleHtml = `<ul><li>Start Date: `+e.Start_Date+`</li><li>End Date: `+ e.End_Date+ `</li><li>Status: `+e.Status+`</li><li>Request Type: `+ e.Request_Type+`</li></ul>`;
-            console.log(bubbleHtml);
-            config.events.push({resource:e.Staff_ID,id:e.Request_ID,start: e.Start_Date, end:e.End_Date, time:e.Time, status:e.Status, text:"WFH", bubbleHtml:bubbleHtml});
-          }
+  //     axios
+  //       .get(requesturl)
+  //       .then((response) => {
+  //         data = response.data;
+  //         temp = [];
+  //         for(e of data){
+  //           let bubbleHtml = `<ul><li>Start Date: `+e.Start_Date+`</li><li>End Date: `+ e.End_Date+ `</li><li>Status: `+e.Status+`</li><li>Request Type: `+ e.Request_Type+`</li></ul>`;
+  //           console.log(bubbleHtml);
+  //           config.events.push({resource:e.Staff_ID,id:e.Request_ID,start: e.Start_Date, end:e.End_Date, time:e.Time, status:e.Status, text:"WFH", bubbleHtml:bubbleHtml});
+  //         }
           
-          console.log("Loaded resources:", this.resources);
-        })
-        .catch((error) => {
-          console.error('Error fetching requests:', error);
-        });
+  //         console.log("Loaded resources:", this.resources);
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error fetching requests:', error);
+  //       });
 
-    }
+  //   }
     
-    // config.events = events;
-  };
+  //   // config.events = events;
+  // };
   
   const loadResources = () => {
     
