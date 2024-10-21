@@ -29,7 +29,8 @@
 
                         <div class="mb-3" v-if="requestType === 'RECURRING'">
                             <label for="endDate" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="endDate" v-model="endDate">
+                            <input type="date" class="form-control" id="endDate" v-model="endDate" @input = "checkDateRange">
+                            <span class="text-danger" v-if="validRecurringDuration == false">The start and end dates for a recurring request cannot be more than 3 months apart. Please try again.</span>
                         </div>
                         <!-- ATC4 (application): Start date must be earlier or equal to end date (recurring) -->
                         <span class="text-danger" v-if="startEndDate == false && endDate != null">Your end date can't be earlier than start date</span>
@@ -46,7 +47,6 @@
                         <div class="mb-3">
                             <label for="requestReason" class="form-label">Request Reason</label>
                             <input type="textarea" class="form-control" id="requestReason" v-model="requestReason">
-                            <!-- <small v-if="!isRequestReasonValid" class="text-danger">Request reason must be more than 10 characters long.</small> -->
                         </div>
 
 
@@ -63,7 +63,7 @@
 
 <script>
 import axios from 'axios';
-import { formatDate, PeriodChecker} from '@/util/periodPolicy';
+import { formatDate, PeriodChecker, check90Days} from '@/util/periodPolicy';
 import { generateRecurringDates } from '@/util/recurringDates';
 
 export default{
@@ -79,6 +79,7 @@ export default{
             requestReason: null,
             requestType: "ADHOC",
             validPeriod: null,
+            validRecurringDuration: null,
             isRequestReasonValid: true,
         }
     },
@@ -102,6 +103,11 @@ export default{
             const currentDate = formatDate(new Date());
             this.validPeriod = PeriodChecker(currentDate, this.startDate);
         },
+        checkDateRange() {
+            const startDateCheck = new Date(this.startDate);
+            const endDateCheck = new Date(this.endDate);
+            this.validRecurringDuration = check90Days(startDateCheck, endDateCheck)
+    },
         validateRequestReason() {
             this.isRequestReasonValid = this.requestReason.length > 0 ;
             console.log(this.isRequestReasonValid);
@@ -145,6 +151,7 @@ export default{
             this.requestType = "ADHOC";
             this.requestReason = null;
             this.validPeriod = null;
+            this.validRecurringDuration = null;
         }
 
     },

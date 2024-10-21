@@ -127,7 +127,7 @@ def withdraw_request_controller(request_id, rejection_reason, staff_id):
         return {'error': 'Cannot withdraw request outside the allowed time frame'}, 400
 
     supabase.table('request').update({
-        'Status': 'Withdrawn',
+        'Status': 'Withdrawn-pending',
         'Withdrawal_Reason': rejection_reason
     }).eq('Request_ID', request_id).execute()
 
@@ -197,7 +197,7 @@ def approve_wfh_request(request_id, status):
         # approved_wfh_count_db = len(approved_wfh_response.data)
         # print(approved_wfh_count_db)
 
-        approved_wfh_count = 5
+        approved_wfh_count = 4
         # print("approved count:", approved_wfh_count)
         
         current_working_in_office = 10 #hardcode 
