@@ -13,4 +13,8 @@ util/__pycache__
 
 backend/__pycache__
 
+__pycache__
+
+.pytest_cache
+
 .vscode

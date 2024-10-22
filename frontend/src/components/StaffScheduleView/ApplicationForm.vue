@@ -104,14 +104,8 @@ export default{
             this.validPeriod = PeriodChecker(currentDate, this.startDate);
         },
         checkDateRange() {
-            const startDateCheck = new Date(this.startDate);
-            const endDateCheck = new Date(this.endDate);
-            this.validRecurringDuration = check90Days(startDateCheck, endDateCheck)
+            this.validRecurringDuration = check90Days(this.startDate, this.endDate)
     },
-        validateRequestReason() {
-            this.isRequestReasonValid = this.requestReason.length > 0 ;
-            console.log(this.isRequestReasonValid);
-        },
         async submitRequest() {
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
@@ -156,8 +150,11 @@ export default{
 
     },
     computed:{
+        validateRequestReason() {
+            return this.requestReason && this.requestReason.length>0
+        },
         canSubmit(){
-            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
+            if(this.validateRequestReason && this.validPeriod && this.startEndDate == true){
                 return true;
             } return false;
         },

@@ -31,7 +31,7 @@
                         <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
                         <td>{{ request.Withdrawal_Reason }}</td>
                         <td>
-                            <button @click="openCancelModal(request)">Cancel</button>
+                            <button @click="openCancelModal(request.Request_ID)">Cancel</button>
                         </td>
                     </tr>
                 </tbody>
@@ -42,27 +42,27 @@
         </div>
 
         <!-- Cancel Modal -->
-        <div v-if="showCancelModal" class="modal">
-            <div class="modal-content">
-                <h4>Cancel Request</h4>
-                <p>Reason for cancellation:</p>
-                <textarea v-model="cancellationReason"></textarea>
-
-                <div class="modal-actions">
-                    <button 
-                        :disabled="!canSubmitCancellation()" 
-                        @click="confirmCancellation"
-                        :class="['confirm-button', { 'disabled-button': !canSubmitCancellation() }]">
-                        Confirm
-                    </button>
-
-                    <button @click="closeCancelModal">Close</button>
-                </div>
-            </div>
+        <div>
+            <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
+            @update:visible="isPopupVisible = $event">
+                <template #content>
+                    <div width="100%" class="justify-content-center">
+                        <h3 class="my-4" style="color:black">Reason for Rejection</h3>
+                        <form>
+                            <textarea style='width:400px;height:150px' class="form-control" v-model="cancellationReason"
+                                placeholder="Enter reason for cancellation"></textarea>
+                            <div class="d-flex flex-column my-2">
+                                <p id="errormsg" class="text-danger mx-0"></p>
+                                <button type="button" class="btn btn-primary" @click="confirmCancellation(selectedRequestId)">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </template>
+            </PopupWrapper>
         </div>
 
         <!-- Success Modal -->
-        <div v-if="showSuccessModal" class="modal">
+        <div v-if="showSuccessModal" class="modal-overlay">
             <div class="modal-content">
                 <h4>Cancellation Successful</h4>
                 <p>Your request has been successfully cancelled.</p>
@@ -76,6 +76,7 @@
 
 <script>
 import axios from 'axios';
+import PopupWrapper from '../PopupWrapper.vue';
 
 export default {
     name: "StaffRequests",
@@ -84,10 +85,11 @@ export default {
             selectedStatus: "Pending", 
             staffId: 150076,
             requestsData: [],
-            showCancelModal: false, // Track modal visibility
             showSuccessModal: false, // Track success modal visibility
             selectedRequest: null, // Track the selected request
             cancellationReason: "", // Capture the reason
+            isPopupVisible: false, // Popup visibility
+            selectedRequestid: null,
         };
     },
 
@@ -109,6 +111,10 @@ export default {
                 );
             });
         }
+    },
+
+    components: {
+        PopupWrapper
     },
 
     methods: {
@@ -136,46 +142,42 @@ export default {
             }
         },
 
-        openCancelModal(request) {
-            this.selectedRequest = request;
-            this.cancellationReason = "";
-            this.showCancelModal = true;
+        openCancelModal(requestId) {
+            this.selectedRequestId = requestId; // Store the request ID for rejection
+            this.isPopupVisible = true; // Show the popup
+            document.getElementById('popup').style.display = 'flex';
+            document.getElementById('popup').style.border = '1px black solid';
         },
 
-        closeCancelModal() {
-            this.showCancelModal = false;
-        },
-
-        async confirmCancellation() {
-            if (!this.cancellationReason) {
-                // Optionally handle this case without an alert, such as highlighting the input
-                return;
-            }
-
+        async confirmCancellation(selectedRequestId) {
             axios.post('http://127.0.0.1:5000/api/wfh/requests/cancel', {
-                    Request_ID: this.selectedRequest.Request_ID,
-                    Withdrawal_Reason: this.cancellationReason,
-                    Staff_id: this.staffId
-                }).then((response) => {
-                    this.showCancelModal = false;
-                    this.showSuccessModal = true;
-                    this.withdrawalReason = '';
-                    this.fetchRequests(); // Refresh the list
-                }).catch((error) => {
-                    console.error('Error cancelling pending request:', error);
-                    alert('An error occurred while cancelling the pending request.');
-                }
-            );
+                Request_ID: selectedRequestId,
+                Withdrawal_Reason: this.cancellationReason,
+                Staff_id: this.staffId
+            })
+
+            .then(response => {
+                if (response)  {
+                    this.fetchRequests();
+                    this.isPopupVisible = false; // Hide the popup after submission
+                    document.getElementById('popup').style.border = '';
+                    this.openSuccessModal();
+                }})
+                .catch(error => {
+                console.error('Error rejecting request:', error);
+                document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;
+                });
+            },
+
+        openSuccessModal() {
+            this.showSuccessModal = true;
         },
 
         closeSuccessModal() {
-            this.showSuccessModal = false; // Close the success modal
+            this.showSuccessModal = false;
         },
-
-        canSubmitCancellation() {
-            return this.cancellationReason.trim().length > 0;
-        }
     },
+
     mounted() {
         this.fetchRequests();
     }
@@ -183,62 +185,31 @@ export default {
 </script>
 
 <style scoped>
-.content-wrapper {
-    padding-left: 20px;
-}
-
-.modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Styles for the overlay and modal */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    max-width: 500px;
-    width: 100%;
+    width: 500px;
+    max-width: 100%;
+    z-index: 1001;
 }
 
 .modal-actions {
     display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-/* Confirm button styles */
-.confirm-button {
-    background-color: #007bff; /* Bootstrap primary color */
-    color: white; /* White text */
-    border: none; /* No border */
-    padding: 10px 20px; /* Add padding */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
-}
-
-.confirm-button:hover:not(.disabled-button) {
-    background-color: #0056b3; /* Darker shade on hover */
-    transform: translateY(-2px); /* Slight lift effect on hover */
-}
-
-.confirm-button:focus {
-    outline: none; /* Remove default focus outline */
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.5); /* Custom focus outline */
-}
-
-/* Disabled state for the confirm button */
-.disabled-button {
-    background-color: #ccc;
-    color: #666;
-    cursor: not-allowed;
-    border: 1px solid #aaa;
+    justify-content: flex-end;
 }
 </style>
