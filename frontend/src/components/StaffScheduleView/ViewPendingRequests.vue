@@ -43,7 +43,7 @@
 
         <!-- Cancel Modal -->
         <div>
-            <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
+            <PopupWrapper id='cancelPopup' class="flex-container justify-content-center" :visible="isPopupVisible"
             @update:visible="isPopupVisible = $event">
                 <template #content>
                     <div width="100%" class="justify-content-center">
@@ -145,8 +145,8 @@ export default {
         openCancelModal(requestId) {
             this.selectedRequestId = requestId; // Store the request ID for rejection
             this.isPopupVisible = true; // Show the popup
-            document.getElementById('popup').style.display = 'flex';
-            document.getElementById('popup').style.border = '1px black solid';
+            // document.getElementById('cancelPopup').style.display = 'flex';
+            // document.getElementById('cancelPopup').style.border = '1px black solid';
         },
 
         async confirmCancellation(selectedRequestId) {
@@ -160,7 +160,7 @@ export default {
                 if (response)  {
                     this.fetchRequests();
                     this.isPopupVisible = false; // Hide the popup after submission
-                    document.getElementById('popup').style.border = '';
+                    // document.getElementById('cancelPopup').style.border = '';
                     this.openSuccessModal();
                 }})
                 .catch(error => {
