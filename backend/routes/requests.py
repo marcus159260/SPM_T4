@@ -41,6 +41,7 @@ def get_all_events():
 
 @wfh_bp.route('/events/<int:staff_id>', methods=['GET'])
 def get_events_for_current_user(staff_id):
+    # print(staff_id)
     # staff_id = session.get('staff_id')
     if not staff_id:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -173,10 +174,37 @@ def update_request():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+@wfh_bp.route('/requests/approvewithdrawal', methods=['POST'])
+def approve_withdrawal_request():
+    try:
+        request_data = request.json
+        print(request_data)
+        request_id = request_data.get('Request_ID')
+        
+        # print(request_id, status)
+        if not request_id:
+            return jsonify({"error": "Missing request ID"}), 400
+        result, status_code = approve_withdrawal_wfh_request(request_id)
+     
+        return jsonify(result), status_code
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @wfh_bp.route('/requests/reject', methods=['POST'])
 def reject_request():
     data = request.get_json()
     request_id = data.get('Request_ID')
     rejection_reason = data.get('Rejection_Reason')
     result, status_code = reject_wfh_request(request_id, rejection_reason)
+    return jsonify(result), status_code
+
+@wfh_bp.route('/requests/rejectwithdrawal', methods=['POST'])
+def reject_withdrawal_request():
+    data = request.get_json()
+    print(123456)
+    request_id = data.get('Request_ID')
+    rejection_reason = data.get('Withdrawal_Reason')
+    result, status_code = reject_wfh_withdrawal_request(request_id, rejection_reason)
+    
     return jsonify(result), status_code

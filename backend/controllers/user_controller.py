@@ -34,7 +34,7 @@ def find_manager_details_data(staff_id):
         return response.data[0]
     else:
         return None
-  
+
 def get_manager_details_data(manager_id: int):
     # Query to get manager details by Staff_ID (which is manager_id)
     response = (
@@ -145,6 +145,7 @@ def build_resource_tree(data):
             'children': build_department_hierarchy(employees)
         }
         resources.append(dept_node)
+        print(str(resources)) 
     return resources
 
 # get team members (same reporting manager)
@@ -159,9 +160,19 @@ def get_employees_by_reporting_manager(reporting_manager_id:int):
         .execute()
     )
 
+    # temp = []
+    # for e in team_response.data:
+    #     temp += get_employees_by_reporting_manager(e["Staff_ID"])
+    
+
     manager_response = (supabase.table("employee").select("*").eq("Staff_ID", reporting_manager_id).execute())
 
+    
    
     # Return the list of employees
     # print(str(team_response.data))
-    return team_response.data+ manager_response.data
+    # print(manager_response.data)
+    if reporting_manager_id != manager_response.data[0]['Reporting_Manager']:
+        return build_resource_tree(team_response.data+ manager_response.data)
+    else:
+        return build_resource_tree(team_response.data)

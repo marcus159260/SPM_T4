@@ -103,7 +103,7 @@ export default {
             return this.requestsData.filter((request) => {
                 const endDate = new Date(request.End_Date);
                 return (
-                    request.Status === "Pending" &&
+                    (request.Status === "Pending" || request.Status === "Withdrawn-pending") &&
                     endDate >= minus61Days &&
                     endDate <= plus91Days
                 );
