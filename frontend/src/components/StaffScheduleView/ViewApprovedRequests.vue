@@ -151,7 +151,8 @@ export default {
                 document.getElementById('popup').style.display = 'flex';
                 document.getElementById('popup').style.border = '1px black solid';
             } else {
-                alert('You can only withdraw requests within 2 weeks backward and forward.');
+                document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
+                // alert('You can only withdraw requests within 2 weeks backward and forward.');
 
             }
         },
@@ -164,7 +165,7 @@ export default {
             }
             axios.post('http://127.0.0.1:5000/api/wfh/requests/withdraw', {
                 Request_ID: this.selectedRequest.Request_ID,
-                Rejection_Reason: this.withdrawalReason,
+                Withdrawal_Reason: this.withdrawalReason,
                 Staff_ID: this.staffId
             }).then((response) => {
                 this.isPopupVisible = false;
