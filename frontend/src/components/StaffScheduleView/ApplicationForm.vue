@@ -32,7 +32,7 @@
                             <input type="date" class="form-control" id="endDate" v-model="endDate" @input = "checkDateRange">
                             <span class="text-danger" v-if="validRecurringDuration == false">The start and end dates for a recurring request cannot be more than 3 months apart. Please try again.</span>
                         </div>
-                        <!-- ATC4 (application): Start date must be earlier or equal to end date (recurring) -->
+                        
                         <span class="text-danger" v-if="startEndDate == false && endDate != null">Your end date can't be earlier than start date</span>
 
                         <div class="mb-3">
