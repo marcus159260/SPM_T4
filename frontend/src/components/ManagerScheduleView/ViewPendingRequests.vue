@@ -61,10 +61,18 @@
           </td>
           <!--Approve/Reject buttons-->
           <td class="d-flex align-items-center">
-            <button @click="approveRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
+            <button v-if="staff.Status == 'Withdrawn-pending'" @click="approveWithdrawalRequest(staff.Request_ID)"
+              class="icon-button mb-5" style="padding-top: 40px;">
+              <img src="../../assets/checked.png" alt="Approve Withdrawal">
+            </button>
+            <button v-if="staff.Status == 'Pending'" @click="approveRequest(staff.Request_ID)" class="icon-button mb-5"
+              style="padding-top: 40px;">
               <img src="../../assets/checked.png" alt="Approve">
             </button>
-            <button @click="rejectRequestPopup(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
+
+
+            <button @click="rejectRequestPopup(staff.Request_ID, staff.Status)" class="icon-button mb-5"
+              style="padding-top: 40px;">
               <img src="../../assets/x-button.png" alt="Reject">
             </button>
           </td>
@@ -92,7 +100,11 @@
                 placeholder="Enter reason for rejection"></textarea>
               <div class="d-flex flex-column my-2">
                 <p id="errormsg" class="text-danger mx-0"></p>
-                <button type="button" class="btn btn-primary" @click="rejectRequest(selectedRequestId)">Submit</button>
+                <button v-if="selectedRequestStatus == 'Pending'" type="button" class="btn btn-primary"
+                  @click="rejectRequest(selectedRequestId)">Submit</button>
+                <button v-if="selectedRequestStatus == 'Withdrawn-pending'" type="button" class="btn btn-primary"
+                  @click="rejectWithdrawalRequest(selectedRequestId)">Submit</button>
+
               </div>
             </form>
           </div>
@@ -127,9 +139,9 @@ export default {
         .filter(request => {
           const applicationDate = new Date(request.Application_Date + 'T00:00:00'); // Use Application_Date for filtering
           const startDate = new Date(request.Start_Date + 'T00:00:00'); // Use Start_Date for filtering
-          
-          console.log("Request object:", request);
-      
+
+          //console.log("Request object:", request);
+
           // Calculate the date 2 months before the Application_Date
           const twoMonthsBeforeApplicationDate = new Date(applicationDate);
           twoMonthsBeforeApplicationDate.setMonth(applicationDate.getMonth() - 2);
@@ -139,7 +151,7 @@ export default {
           const threeMonthsAfterApplicationDate = new Date(applicationDate);
           threeMonthsAfterApplicationDate.setMonth(applicationDate.getMonth() + 3);
           // console.log("threeMonthsAfterApplicationDate: " + threeMonthsAfterApplicationDate)
-          
+
 
           // Check if the Start_Date is within the range of 2 months before to 3 months after the Application_Date
           const isWithinRange = (
@@ -149,7 +161,7 @@ export default {
 
           // Return true if the request is pending, matches managerId, and Start_Date is within range
           return (
-            request.Status === 'Pending' &&
+            (request.Status === 'Pending' || request.Status === 'Withdrawn-pending') &&
             request.Approver_ID === this.managerId &&
             isWithinRange
           );
@@ -173,8 +185,8 @@ export default {
       axios.get('http://127.0.0.1:5000/api/wfh/requests')
         .then(response => {
           this.allRequests = response.data;
-          console.log(this.allRequests)
-          console.log(this.pendingRequests)
+          // console.log(this.allRequests)
+          // console.log(this.pendingRequests)
 
         })
         .catch(error => {
@@ -185,9 +197,45 @@ export default {
       // console.log("Request ID clicked:", requestId); 
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
-          console.log('response.data', response.data);
+          if (response.status === 200) {
+            alert(response.data.message);
+            this.fetchRequests();  // Refresh the request list
+          }
+        })
+        .catch(error => {
+          if (error.response.status === 400) { //A (forward)
+            alert(error.response.data.error);  // Show the error message from the backend
+          }
+          else if (error.response.status === 409) { //B (backdated)
+            const confirmation = confirm(`${error.response.data.error}\n\nDo you still want to approve this request despite the violation?`);
+            if (confirmation) {
+              axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
+                .then(response => {
+                  if (response.status === 200) {
+                    alert(response.data.message); 
+                    this.fetchRequests(); 
+                  }
+                })
+                .catch(forceError => {
+                  console.error('Error forcing approval:', forceError);
+                  alert("Failed to approve request even after confirmation. Please try again.");
+                });
+            }
+          }
+          else {
+            console.error('Error approving request:', error);
+            alert("An unknown error occurred. Please try again.");
+          }
+        });
+    },
+    approveWithdrawalRequest(requestId) {
+      // console.log("Request ID clicked:", requestId); 
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approvewithdrawal`, { Request_ID: requestId })
+        .then(response => {
+          // console.log('response.data', response.data);
+          console.log('approveWithdrawalRequest');
           if (response.data == 'error') {
-            alert("Cannot approve request as less than 50% of the team will be in the office")
+            alert(response.data);
           }
           else {
             this.fetchRequests();
@@ -198,7 +246,7 @@ export default {
         });
     },
 
-    rejectRequestPopup(requestId) {
+    rejectRequestPopup(requestId, status) {
       this.selectedRequestId = requestId; // Store the request ID for rejection
       this.isPopupVisible = true; // Show the popup
       document.getElementById('popup').style.display = 'flex';
