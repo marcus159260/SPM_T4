@@ -14,11 +14,11 @@ def login():
         session['staff_id'] = user['staff_id']
         session['role'] = user['role']
         session['position'] = user['position']
-        session['department'] = user['department'],
-        session['staff_fname'] = user['staff_fname'],
-        session['staff_lname'] = user['staff_lname'],
+        session['department'] = user['department']
+        session['staff_fname'] = user['staff_fname']
+        session['staff_lname'] = user['staff_lname']
         session['reporting_manager'] = user['reporting_manager']
-        # print(session)
+        print(session)
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'message': 'Invalid username or password'}), 401
@@ -30,7 +30,16 @@ def logout():
 
 @auth_bp.route('/check_auth', methods=['GET'])
 def check_auth():
-    if 'user_id' in session:
-        return jsonify({'authenticated': True, 'role': session.get('role')})
+    if 'staff_id' in session:
+        return jsonify({
+            'authenticated': True,
+            'staff_id': session['staff_id'],
+            'role': session['role'],
+            'position': session['position'],
+            'department': session['department'],
+            'staff_fname': session['staff_fname'],
+            'staff_lname': session['staff_lname'],
+            'reporting_manager': session['reporting_manager'],
+        })
     else:
         return jsonify({'authenticated': False})
