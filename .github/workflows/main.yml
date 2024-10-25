@@ -1,0 +1,49 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Change this to your default branch
+  pull_request:
+    branches:
+      - main  # Change this to your default branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      # Backend Testing
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Specify your Python version
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt  # Adjust this if your requirements file has a different name
+
+      - name: Run pytest
+        run: |
+          cd backend
+          pytest  # Add any options you need
+
+      # Frontend Testing
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # Specify your Node.js version
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install  # Adjust if you have a different setup
+
+      - name: Run Jest tests
+        run: |
+          cd frontend
+          npm test  # Add any options you need
