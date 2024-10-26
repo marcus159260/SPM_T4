@@ -1,16 +1,21 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
-import { onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { computed } from 'vue';
 
 export default {
   name: 'App',
   setup() {
     const authStore = useAuthStore();
+    const user = computed(() => authStore.user);
 
-    onMounted(() => {
-      authStore.checkAuth();
-    });
+    // Debugging
+    console.log('user:', user.value);
+    console.log('user.role:', typeof user.value?.role, user.value?.role);
+
+    return {
+      user,
+    };
   },
 };
 </script>
@@ -46,7 +51,7 @@ export default {
                 </a>
               </li>
 
-              <li class="nav-item">
+              <li v-if="user && Number(user.role) === 1" class="nav-item">
                 <a class="nav-link" href="#">
                   <RouterLink to="/hr-schedule">HR Schedule</RouterLink>
                 </a>
