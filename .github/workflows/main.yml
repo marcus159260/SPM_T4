@@ -20,6 +20,9 @@ jobs:
         run: |
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> $GITHUB_ENV
           echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> $GITHUB_ENV
+          
+      - name: Set timezone to Singapore
+        run: echo "TZ=Asia/Singapore" >> $GITHUB_ENV
       
       # Backend Testing
       - name: Set up Python
