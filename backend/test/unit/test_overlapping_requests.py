@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 
-from controllers.requests_controller import check_conflict
+from routes.requests import check_conflict
 
 # Unit test on overlapping adhoc request
 def test_overlapping_adhoc_requests():
