@@ -11,6 +11,7 @@ def get_staff_requests_data(user_id):
     else:
         return None
 
+
 def get_staff_events_data(staff_id):
     try:
         response = supabase.table('request').select(
@@ -29,6 +30,7 @@ def get_staff_events_data(staff_id):
     events = build_events(data)
     return events
 
+
 def get_all_events_data():
     try:
         response = supabase.table('request').select(
@@ -46,6 +48,7 @@ def get_all_events_data():
 
     events = build_events(data)
     return events
+
 
 def build_events(data):
     events = []
@@ -138,13 +141,14 @@ def cancel_wfh_request(request_id, reason, staff_id):
     try:
         # Fetch the request details by ID
         response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
-        request_data = response.data[0]
-
-        if not request_data:
+        
+        if not response.data:
             return {'error': 'Request not found.', 'status': 404}
         
+        request_data = response.data[0]
+        
         if request_data['Staff_ID'] != staff_id:
-            return {'error': 'Unauthorized' }, 403
+            return {'error': 'Unauthorized' , 'status': 403}
 
         #update status in database
         supabase.table('request').update({
@@ -157,6 +161,7 @@ def cancel_wfh_request(request_id, reason, staff_id):
     except Exception as e:
         return {'error': str(e), 'status': 500}
     
+
 def auto_reject_pending_requests():
     try:
         current_date = datetime.now().date()
@@ -178,6 +183,7 @@ def auto_reject_pending_requests():
 
     except Exception as e:
         print("Error in auto-rejecting requests:", str(e))
+
 
 def approve_wfh_request(request_id, status, force_approval=False):
     try:
@@ -234,8 +240,10 @@ def approve_wfh_request(request_id, status, force_approval=False):
     except Exception as e:
         return {"error": str(e)}, 500
 
+
 def get_total_office_strength(requested_date):
     return 10
+
 
 def get_wfh_count(requested_date):
     # forward: 2024-10-28 (use example id: 4,5,7,10,13, -> 23)
@@ -279,6 +287,7 @@ def reject_wfh_request(request_id, reason):
     except Exception as e:
         return {'error': str(e), 'status': 500}
     
+
 def check_conflict(staff_id, requested_dates, time_of_day):
     conflict_response = supabase.rpc('check_overlapping_requests', {
         'p_staff_id': staff_id,
@@ -287,6 +296,7 @@ def check_conflict(staff_id, requested_dates, time_of_day):
     }).execute()
     # print(conflict_response)
     return conflict_response
+
 
 def log_activity(request_id, old_status, new_status, changed_by, change_message, reason):
     log_response = supabase.rpc('log_activity', {
