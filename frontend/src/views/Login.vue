@@ -33,7 +33,6 @@ export default {
 
     const handleLogin = async () => {
       const success = await authStore.login(staff_id.value);
-      console.log(success);
       if (!success) {
         errorMessage.value = 'Invalid Staff ID';
         successMessage.value = '';

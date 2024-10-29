@@ -84,9 +84,9 @@ router.beforeEach(async (to, from, next) => {
 
       const requiredRoles = to.matched[0]?.meta?.requiredRoles || [];
 
-      console.log('authStore.user.role:', authStore.user.role);
-      console.log(authStore.user.staff_id);
-      console.log('requiredRoles:', requiredRoles);
+      // console.log('authStore.user.role:', authStore.user.role);
+      // console.log(authStore.user.staff_id);
+      // console.log('requiredRoles:', requiredRoles);
 
       // Check if user's role is included in requiredRoles
       if (

@@ -51,7 +51,7 @@ def get_employees_by_dept():
     
 @user_bp.route('/resources', methods=['GET'])
 @login_required
-# @role_required([1])
+@role_required([1])
 def get_resources_endpoint():
     resources = get_resources()
     if resources is None:
