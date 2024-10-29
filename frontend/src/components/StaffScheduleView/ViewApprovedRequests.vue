@@ -37,7 +37,7 @@
             <p>No approved requests available within the date range.</p>
         </div>
         <div>
-            <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
+            <PopupWrapper id='withdrawalPopup' class="flex-container justify-content-center" :visible="isPopupVisible"
                 @update:visible="isPopupVisible = $event">
                 <template #content>
                 <div width="100%" class="justify-content-center">
@@ -46,7 +46,7 @@
                     <textarea style='width:400px;height:150px' class="form-control" v-model="withdrawalReason"
                         placeholder="Enter reason for withdrawal"></textarea>
                     <div class="d-flex flex-column my-2">
-                        <p id="errormsg" class="text-danger mx-0"></p>
+                        <p class="text-danger mx-0">{{ errorMessage }}</p>
                         <button type="button" class="btn btn-primary" @click="confirmWithdrawal">Submit</button>
                     </div>
                     </form>
@@ -56,7 +56,7 @@
         </div>
 
         <!-- Withdrawal Success Modal -->
-        <div v-if="showSuccessModal" class="modal">
+        <div v-if="showSuccessModal" class="modal-overlay">
             <div class="modal-content">
                 <h4>Withdrawal Successful</h4>
                 <p>Your request has been successfully withdrawn.</p>
@@ -82,7 +82,8 @@ export default {
             withdrawalReason: '',
             showSuccessModal: false,
             isPopupVisible: false,
-            selectedRequestId: null
+            selectedRequest: null,
+            errorMessage: ''
         };
     },
     components: {
@@ -148,27 +149,28 @@ export default {
             if (today >= twoWeeksAgo && today <= twoWeeksLater) {
                 this.selectedRequest = request;
                 this.isPopupVisible = true; 
-                document.getElementById('popup').style.display = 'flex';
-                document.getElementById('popup').style.border = '1px black solid';
+                // document.getElementById('withdrawalPopup').style.display = 'flex';
+                // document.getElementById('withdrawalPopup').style.border = '1px black solid';
             } else {
-                alert('You can only withdraw requests within 2 weeks backward and forward.');
+                document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
+                // alert('You can only withdraw requests within 2 weeks backward and forward.');
 
             }
         },
 
         confirmWithdrawal() {
             if (!this.withdrawalReason.trim()) {
-                console.log('error from popup: no error msg');
+                console.log('error from withdrawalPopup: no error msg');
                 document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
             axios.post('http://127.0.0.1:5000/api/wfh/requests/withdraw', {
                 Request_ID: this.selectedRequest.Request_ID,
-                Rejection_Reason: this.withdrawalReason,
+                Withdrawal_Reason: this.withdrawalReason,
                 Staff_ID: this.staffId
             }).then((response) => {
                 this.isPopupVisible = false;
-                document.getElementById('popup').style.border = '';
+                // document.getElementById('withdrawalPopup').style.border = '';
                 this.showSuccessModal = true;
                 this.fetchRequests();
             }).catch((error) => {
@@ -193,24 +195,26 @@ export default {
     padding-left: 20px;
 }
 
-.modal {
-  display: block; 
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 20px;
-  width: 50%;
-  border-radius: 5px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 100%;
+    z-index: 1001;
 }
 
 .close {
@@ -221,11 +225,8 @@ export default {
 }
 
 .modal-actions {
-  margin-top: 15px;
-}
-
-.modal-actions button {
-  margin-right: 10px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .withdrawal-success-message {
