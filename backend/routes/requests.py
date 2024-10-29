@@ -133,12 +133,12 @@ def create_request():
             message = response.data[0]['message']
 
             log_response = log_activity(
-                request_id=first_request_id,
-                old_status='Pending',
-                new_status=status,
-                changed_by=staff_id,
-                change_message='Request created successfully',
-                reason=reason
+                request_id = first_request_id,
+                old_status = None,
+                new_status = status,
+                changed_by = staff_id,
+                change_message = 'Request created successfully',
+                reason = reason
             )
 
             if log_response.data is None: 
@@ -154,7 +154,6 @@ def create_request():
         print("Error:", str(e))
         return jsonify({'error': str(e)}), 500
 
-#------------------------------------------------------------------------------
 
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():

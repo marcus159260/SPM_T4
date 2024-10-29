@@ -197,41 +197,6 @@ export default {
         padding-left: 20px;
     }
 
-    .modal {
-    display: block; 
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    }
-
-    .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    width: 50%;
-    border-radius: 5px;
-    }
-
-    .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    cursor: pointer;
-    }
-
-    .modal-actions {
-    margin-top: 15px;
-    }
-
-    .modal-actions button {
-    margin-right: 10px;
-    }
-
     .withdrawal-success-message {
     background-color: #dff0d8;
     color: #3c763d;
