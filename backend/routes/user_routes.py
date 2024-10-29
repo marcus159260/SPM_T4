@@ -24,6 +24,7 @@ def get_all_users():
     else:
         return jsonify({"status": "error", "message": "No data found"}), 404
 
+
 # Route to get a single user by ID (e.g 140001)
 @user_bp.route('/<int:user_id>', methods=['GET'])
 def get_user_by_id(user_id):
@@ -33,7 +34,8 @@ def get_user_by_id(user_id):
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
     
-@user_bp.route('get-manager/<int:manager_id>', methods=['GET'])
+
+@user_bp.route('/get-manager/<int:manager_id>', methods=['GET'])
 def get_manager_details(manager_id):
     manager = get_manager_details_data(manager_id)
     if manager:
@@ -41,7 +43,8 @@ def get_manager_details(manager_id):
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
     
-@user_bp.route('by-dept-employees', methods=['GET'])
+
+@user_bp.route('/by-dept-employees', methods=['GET'])
 def get_employees_by_dept():
     user = get_employees_by_dept_data() 
     if user:
@@ -49,6 +52,7 @@ def get_employees_by_dept():
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
     
+
 @user_bp.route('/resources', methods=['GET'])
 @login_required
 @role_required([1])
@@ -57,6 +61,7 @@ def get_resources_endpoint():
     if resources is None:
         return jsonify({'error': 'Failed to fetch employee data'}), 500
     return jsonify(resources)
+
 
 @user_bp.route('/by-team-employees/<int:reporting_manager_id>', methods=['GET']) #test-case: 140894
 # @login_required
