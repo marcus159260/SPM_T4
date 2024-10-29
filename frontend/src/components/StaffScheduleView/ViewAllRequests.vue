@@ -37,7 +37,7 @@
                   <td>
                       <span :class="{
                           'badge rounded-pill text-bg-success': request.Status === 'Approved',
-                          'badge rounded-pill text-bg-warning': request.Status === 'Pending',
+                          'badge rounded-pill text-bg-warning': request.Status === 'Pending' || request.Status === 'Withdrawn - Pending' ,
                           'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
                           'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
                       }">{{ request.Status}}</span></td>
@@ -78,7 +78,7 @@ export default {
       filteredRequests() {
         if (Array.isArray(this.requestsData) && this.selectedStatus) {
         return this.requestsData.filter(
-          (request) => request.Status === this.selectedStatus
+          (request) => request.Status.includes(this.selectedStatus)
         );
       }
       return this.requestsData;

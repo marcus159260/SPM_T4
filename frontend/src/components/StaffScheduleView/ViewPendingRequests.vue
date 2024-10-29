@@ -84,7 +84,6 @@ export default {
     name: "StaffRequests",
     data() {
         return {
-            selectedStatus: "Pending", 
             staffId: 150076,
             requestsData: [],
             showSuccessModal: false, // Track success modal visibility

@@ -93,6 +93,15 @@ def withdraw_request():
     rejection_reason = data.get('Rejection_Reason')
     staff_id = data.get('Staff_ID'); 
     result, status_code = withdraw_request_controller(request_id, rejection_reason, staff_id)
+    if status_code == 200:
+        log_activity(
+                request_id = data.get('Request_ID'),
+                old_status = 'Approved',
+                new_status = 'Withdrawn - Pending',
+                changed_by = data.get('Staff_ID'),
+                change_message = 'Request withdrawn successfully',
+                reason =  rejection_reason 
+            )
     return jsonify(result), status_code
 
 @wfh_bp.route('/requests', methods=['POST'])
