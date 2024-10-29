@@ -144,7 +144,6 @@ export default{
         }
     },
         clearFields(){
-            this.staffId = null;
             this.startDate = null;
             this.endDate = null;
             this.wfhTime = null;
