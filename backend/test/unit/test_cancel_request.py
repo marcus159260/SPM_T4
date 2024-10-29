@@ -63,7 +63,7 @@ def test_general_exception_database(mocker):
     mock_supabase.table.side_effect = Exception("Database connection failed")
 
     # Run the function
-    result = cancel_wfh_request(request_id=1, reason="No longer needed", staff_id=100)
+    result = cancel_wfh_request(request_id=1, reason="No longer needed", staff_id=140008)
     
     # Assertions
     assert result['error'] == "Database connection failed"

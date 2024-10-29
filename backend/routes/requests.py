@@ -32,6 +32,7 @@ def get_staff_requests(user_id):
     else:
         return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
     
+    
 @wfh_bp.route('/all_events', methods=['GET'])
 @login_required
 @role_required([1])
@@ -40,6 +41,7 @@ def get_all_events():
     if events is None:
         return jsonify({'error': 'Failed to fetch events data'}), 500
     return jsonify(events)
+
 
 @wfh_bp.route('/events/<int:staff_id>', methods=['GET'])
 def get_events_for_current_user(staff_id):
@@ -51,6 +53,7 @@ def get_events_for_current_user(staff_id):
     if events is None:
         return jsonify({'error': 'Failed to fetch events data'}), 500
     return jsonify(events)
+
 
 @wfh_bp.route('/requests/<int:user_id>', methods=['GET'])
 def get_user_req(user_id):
@@ -68,6 +71,7 @@ def get_user_req(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+
 @wfh_bp.route('/requests/approver/<int:approver_id>', methods=['GET'])
 def get_requests_by_approver(approver_id):
     try:
@@ -85,6 +89,7 @@ def get_requests_by_approver(approver_id):
         # Catch any unexpected errors and return a 500 response
         return jsonify({'error': str(e)}), 500
     
+
 @wfh_bp.route('/requests/withdraw', methods=['POST'])
 # @login_required
 def withdraw_request():
@@ -103,6 +108,7 @@ def withdraw_request():
                 reason =  rejection_reason 
             )
     return jsonify(result), status_code
+
 
 @wfh_bp.route('/requests', methods=['POST'])
 def create_request():
@@ -187,6 +193,7 @@ def cancel_request():
             )
     return jsonify(result), result['status']
 
+
 @wfh_bp.route('/requests/approve', methods=['POST'])
 def update_request():
     try:
@@ -205,6 +212,7 @@ def update_request():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+
 @wfh_bp.route('/requests/reject', methods=['POST'])
 def reject_request():
     data = request.get_json()

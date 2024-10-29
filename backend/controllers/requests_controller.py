@@ -209,12 +209,12 @@ def approve_wfh_request(request_id, status, force_approval=False):
             print("current_working_in_office, approved_wfh_count: ", current_working_in_office, approved_wfh_count)
             validation = (approved_wfh_count + 1) / current_working_in_office
             if validation > 0.5:
-                return {'error': 'Cannot approve request as less than 50% of the team will be in the office.', 'status': 400}, 400  
+                return {'error': 'Cannot approve request as less than 50% of the team will be in the office.', 'status': 400} 
             
             else:
                 update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
                 print("Update response:", update_response)
-                return {"message": "Request approved successfully."}, 200
+                return {"message": "Request approved successfully.", 'status': 200}
 
         #backward
         else:
@@ -226,19 +226,19 @@ def approve_wfh_request(request_id, status, force_approval=False):
             validation = (approved_wfh_count + 1) / current_working_in_office
             if validation > 0.5:
                 if not force_approval:  # If force_approval is False, return violation
-                    return {'error': 'Violation of 50% WFH policy for backdated request', 'status': 409}, 409
+                    return {'error': 'Violation of 50% WFH policy for backdated request', 'status': 409}
                 else:
                     # If force_approval is True, proceed with the update despite violation
                     update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
-                    return {"message": "Request approved successfully despite policy violation."}, 200
+                    return {"message": "Request approved successfully despite policy violation.", 'status': 200}
                 
             else:
                 update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
                 print("Update response:", update_response)
-                return {"message": "Request approved successfully."}, 200
+                return {"message": "Request approved successfully.", 'status': 200}
 
     except Exception as e:
-        return {"error": str(e)}, 500
+        return {"error": str(e),'status': 500}
 
 
 def get_total_office_strength(requested_date):
@@ -267,13 +267,15 @@ def reject_wfh_request(request_id, reason):
     try:
         # Fetch the request details by ID
         response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
-        request_data = response.data[0]
 
-        if not request_data:
+        if not response.data:
             return {'error': 'Request not found.', 'status': 404}
+        
+        request_data = response.data[0]
         
         if reason == '':
             return {'error': 'Reason cannot be empty.', 'status': 404}
+        
         # Handle adhoc vs recurring request
         update_response = supabase.table('request').update({
         'Status': 'Rejected',
