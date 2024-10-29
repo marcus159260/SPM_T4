@@ -65,22 +65,10 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  // if (!authStore.user) {
-  //   localStorage.getItem('user') ? authStore.user = JSON.parse(localStorage.getItem('user')) : null;
-
-  // }
-
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
   if (requiresAuth) {
     if (authStore.user) {
-      // Collect requiredRoles from all matched route records
-      // const requiredRoles = to.matched.reduce((roles, record) => {
-      //   if (record.meta.requiredRoles) {
-      //     roles.push(...record.meta.requiredRoles);
-      //   }
-      //   return roles;
-      // }, []);
 
       const requiredRoles = to.matched[0]?.meta?.requiredRoles || [];
 
