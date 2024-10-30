@@ -5,13 +5,13 @@ from util.auth_decorators import login_required, role_required
 
 user_bp = Blueprint('user_bp', __name__)
 
-@user_bp.route('/', methods=['GET'])
-def users():
-    users = get_all_users_names()
-    if users:
-        return jsonify(users)
-    else:
-        return jsonify({'error': 'Users not found'}), 404
+# @user_bp.route('/', methods=['GET'])
+# def users():
+#     users = get_all_users_names()
+#     if users:
+#         return jsonify(users)
+#     else:
+#         return jsonify({'error': 'Users not found'}), 404
 
 
 @user_bp.route('/', methods=['GET'])
