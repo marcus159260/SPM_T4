@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
 from controllers.user_controller import *
-from datetime import datetime, timedelta
 from util.auth_decorators import login_required, role_required
 
 user_bp = Blueprint('user_bp', __name__)
@@ -71,3 +70,15 @@ def get_employees_by_team(reporting_manager_id):
         return jsonify({"status": "success", "data": resources}), 200
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
+    
+@user_bp.route('/department_counts', methods=['GET'])
+@login_required
+@role_required([1])
+def get_department_counts():
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    counts = get_department_wfh_wfo_counts(start_date, end_date)
+    if counts is None:
+        return jsonify({'error': 'Failed to fetch department counts'}), 500
+    return jsonify(counts), 200

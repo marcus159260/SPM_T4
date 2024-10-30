@@ -57,7 +57,7 @@ def build_events(data):
         end_date = row['End_Date']      
         time_slot = row['Time']         
         status = row['Status']         
-
+        
         if status != 'Approved':
             continue
 
@@ -90,7 +90,7 @@ def build_events(data):
                 'id': event_id,
                 'start': start,
                 'end': end,
-                'text': 'WFH', 
+                'status': 'WFH', 
                 'resource': f"E_{staff_id}", 
             }
             events.append(event)
