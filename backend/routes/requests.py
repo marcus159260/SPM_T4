@@ -15,7 +15,7 @@ def get_wfh_requests():
         data, error = supabase.rpc('get_requests').execute()
 
         if error[0] != 'count':
-            return jsonify({"error": f"Error fetching data: {error}"}), 500
+            return jsonify({"error": f"Error fetching data: {error}"}), 501
         else:
             return jsonify(data[1])  # Return the actual data
     except Exception as e:
@@ -30,9 +30,9 @@ def get_staff_requests(user_id):
     if requests:
         return jsonify({"status": "success", "data": requests}), 200
     else:
-        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
+        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 500
     
-    
+
 @wfh_bp.route('/all_events', methods=['GET'])
 @login_required
 @role_required([1])

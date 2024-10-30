@@ -25,45 +25,45 @@ def client(app):
         yield client
 
 
-# def test_users_success(client):
-#     with patch('routes.user_routes.get_all_users_names') as mock_get_all_users:
-#         mock_get_all_users.return_value = ['Alice', 'Bob']
+def test_users_success(client):
+    with patch('routes.user_routes.get_all_users_names') as mock_get_all_users:
+        mock_get_all_users.return_value = ['Alice', 'Bob']
         
-#         response = client.get('/')
-#         assert response.status_code == 200
-#         data = json.loads(response.data)
-#         assert data == ['Alice', 'Bob']
+        response = client.get('/')
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == ['Alice', 'Bob']
 
 
-# def test_users_not_found(client):
-#     with patch('routes.user_routes.get_all_users_names') as mock_get_all_users:
-#         mock_get_all_users.return_value = None
+def test_users_not_found(client):
+    with patch('routes.user_routes.get_all_users_names') as mock_get_all_users:
+        mock_get_all_users.return_value = None
         
-#         response = client.get('/')
-#         assert response.status_code == 404
-#         data = json.loads(response.data)
-#         assert data == {'error': 'Users not found'}
+        response = client.get('/')
+        assert response.status_code == 404
+        data = json.loads(response.data)
+        assert data == {'error': 'Users not found'}
 
 
-# def test_get_all_users(client):
-#     with patch('routes.user_routes.get_all_users_data') as mock_get_all_users_data:
-#         mock_get_all_users_data.return_value = [{'name': 'Alice'}, {'name': 'Bob'}]
+def test_get_all_users(client):
+    with patch('routes.user_routes.get_all_users_data') as mock_get_all_users_data:
+        mock_get_all_users_data.return_value = [{'Full_Name': 'Alice'}, {'Full_Name': 'Bob'}]
         
-#         response = client.get('/')
+        response = client.get('/')
 
-#         assert response.status_code == 200
-#         data = json.loads(response.data)
-#         assert data == {"status": "success", "data": [{'name': 'Alice'}, {'name': 'Bob'}]}
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data == {"status": "success", "data": [{'Full_Name': 'Alice'}, {'Full_Name': 'Bob'}]}
 
 
-# def test_get_all_users_no_data(client):
-#     with patch('routes.user_routes.get_all_users_data') as mock_get_all_users_data:
-#         mock_get_all_users_data.return_value = None
+def test_get_all_users_no_data(client):
+    with patch('routes.user_routes.get_all_users_data') as mock_get_all_users_data:
+        mock_get_all_users_data.return_value = None
         
-#         response = client.get('/')
-#         assert response.status_code == 404
-#         data = json.loads(response.data)
-#         assert data == {"status": "error", "message": "No data found"}
+        response = client.get('/')
+        assert response.status_code == 404
+        data = json.loads(response.data)
+        assert data == {"status": "error", "message": "No data found"}
 
 
 def test_get_user_by_id(client):
