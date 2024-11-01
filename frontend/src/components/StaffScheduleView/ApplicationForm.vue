@@ -1,5 +1,5 @@
 <template>
-    <div >
+    <div>
         <div class = "d-flex justify-content-center">
             <div class="card w-75 h-100 align-items-center">
                 <div class="card-body w-75">
@@ -32,6 +32,7 @@
                             <input type="date" class="form-control" id="endDate" v-model="endDate" @input = "checkDateRange">
                             <span class="text-danger" v-if="validRecurringDuration == false">The start and end dates for a recurring request cannot be more than 3 months apart. Please try again.</span>
                         </div>
+                        
                         <span class="text-danger" v-if="startEndDate == false && endDate != null">Your end date can't be earlier than start date</span>
 
                         <div class="mb-3">
@@ -47,17 +48,29 @@
                             <label for="requestReason" class="form-label">Request Reason</label>
                             <input type="textarea" class="form-control" id="requestReason" v-model="requestReason">
                         </div>
-
-
-                        <button type="submit" class="btn btn-primary" :disabled = "canSubmit == false" @click="submitRequest">Submit</button>
-                    
-                        
-                </form>
+                        <button type="submit" class="btn btn-primary" :disabled = "canSubmit == false" @click="submitRequest">Submit</button>         
+                    </form>
                 </div>
             </div>
         </div>
-
     </div>
+    <!-- Modal for success and error messages -->
+    <div v-if="showModal" class="modal">
+            <div class="modal-content">
+                <div v-if="responseMessage.includes('success')">
+                    <h4>Successful request creation</h4>
+                <p>{{responseMessage}}</p>
+                </div>
+                <div v-else>
+                    <h4>Request not created</h4>
+                <span>{{responseMessage}}</span>
+                <span> Please try again.</span>
+                </div>
+                <div class="modal-actions">
+                    <button @click="closeModal">Close</button>
+                </div>
+            </div>
+        </div>
 </template>
 
 <script>
@@ -80,6 +93,8 @@ export default{
             validPeriod: null,
             validRecurringDuration: null,
             isRequestReasonValid: true,
+            showModal: false,
+            responseMessage: ''
         }
     },
     methods:{
@@ -103,8 +118,14 @@ export default{
             this.validPeriod = PeriodChecker(currentDate, this.startDate);
         },
         checkDateRange() {
-            this.validRecurringDuration = check90Days(this.startDate, this.endDate)
+            const startDateCheck = new Date(this.startDate);
+            const endDateCheck = new Date(this.endDate);
+            this.validRecurringDuration = check90Days(startDateCheck, endDateCheck)
     },
+        validateRequestReason() {
+            this.isRequestReasonValid = this.requestReason.length > 0 ;
+            console.log(this.isRequestReasonValid);
+        },
         async submitRequest() {
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
@@ -124,20 +145,23 @@ export default{
                 const response = await axios.post('http://127.0.0.1:5000/api/wfh/requests', payload);
                 if (response.data.message) {
                     console.log("Request submitted:", response.data);
-                    alert('Request submitted successfully');
+                    // alert('Request submitted successfully');
+                    this.showModal = true;
+                    this.responseMessage = response.data.message;
                 }
                 this.clearFields();
             }   catch (error) {
                     if (error.response && error.response.data.error) {
                     // conflict error message
-                    alert(error.response.data.error); 
+                    // alert(error.response.data.error); 
+                    this.showModal = true;
+                    this.responseMessage = error.response.data.error;
                 } else {
                 console.error("Error submitting request:", error);
             }
         }
     },
         clearFields(){
-            this.staffId = null;
             this.startDate = null;
             this.endDate = null;
             this.wfhTime = null;
@@ -145,15 +169,16 @@ export default{
             this.requestReason = null;
             this.validPeriod = null;
             this.validRecurringDuration = null;
-        }
+        },
+        
+        closeModal() {
+            this.showModal = false;
+        },
 
     },
     computed:{
-        validateRequestReason() {
-            return this.requestReason && this.requestReason.length>0
-        },
         canSubmit(){
-            if(this.validateRequestReason && this.validPeriod && this.startEndDate == true){
+            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
                 return true;
             } return false;
         },

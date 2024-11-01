@@ -93,6 +93,15 @@ def withdraw_request():
     rejection_reason = data.get('Rejection_Reason')
     staff_id = data.get('Staff_ID'); 
     result, status_code = withdraw_request_controller(request_id, rejection_reason, staff_id)
+    if status_code == 200:
+        log_activity(
+                request_id = data.get('Request_ID'),
+                old_status = 'Approved',
+                new_status = 'Withdrawn - Pending',
+                changed_by = data.get('Staff_ID'),
+                change_message = 'Request withdrawn successfully',
+                reason =  rejection_reason 
+            )
     return jsonify(result), status_code
 
 @wfh_bp.route('/requests', methods=['POST'])
@@ -133,12 +142,12 @@ def create_request():
             message = response.data[0]['message']
 
             log_response = log_activity(
-                request_id=first_request_id,
-                old_status='Pending',
-                new_status=status,
-                changed_by=staff_id,
-                change_message='Request created successfully',
-                reason=reason
+                request_id = first_request_id,
+                old_status = None,
+                new_status = status,
+                changed_by = staff_id,
+                change_message = 'Request created successfully',
+                reason = reason
             )
 
             if log_response.data is None: 
@@ -222,24 +231,3 @@ def reject_withdrawal_request():
     result, status_code = reject_wfh_withdrawal_request(request_id, rejection_reason)
     
     return jsonify(result), status_code
-
-def check_conflict(staff_id, requested_dates, time_of_day):
-    conflict_response = supabase.rpc('check_overlapping_requests', {
-        'p_staff_id': staff_id,
-        'p_requested_dates': requested_dates,
-        'p_time': time_of_day
-    }).execute()
-    # print(conflict_response)
-    return conflict_response
-
-def log_activity(request_id, old_status, new_status, changed_by, change_message, reason):
-    log_response = supabase.rpc('log_activity', {
-        'p_request_id': request_id,
-        'p_old_status': old_status,
-        'p_new_status': new_status,
-        'p_changed_by': changed_by,
-        'p_change_message': change_message,
-        'p_reason': reason
-    }).execute()
-        
-    return log_response

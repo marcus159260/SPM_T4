@@ -198,7 +198,7 @@ export default {
         padding-left: 20px;
     }
 
-    .modal {
+    /* .modal {
     display: block; 
     position: fixed;
     z-index: 1;
@@ -231,7 +231,7 @@ export default {
 
     .modal-actions button {
     margin-right: 10px;
-    }
+    } */
 
     .withdrawal-success-message {
     background-color: #dff0d8;
