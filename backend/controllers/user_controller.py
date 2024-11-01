@@ -149,9 +149,7 @@ def build_resource_tree(data):
     return resources
 
 # get team members (same reporting manager)
-def get_employees_by_reporting_manager(reporting_manager_id:int):
-    # reporting_manager_id = 140894
-
+def get_employees_by_reporting_manager(reporting_manager_id: int):
     # Query the employee table for employees with the specified Reporting_Manager
     team_response = (
         supabase.table('employee')
@@ -160,19 +158,25 @@ def get_employees_by_reporting_manager(reporting_manager_id:int):
         .execute()
     )
 
-    # temp = []
-    # for e in team_response.data:
-    #     temp += get_employees_by_reporting_manager(e["Staff_ID"])
-    
+    # Query for the reporting manager
+    manager_response = (
+        supabase.table("employee")
+        .select("*")
+        .eq("Staff_ID", reporting_manager_id)
+        .execute()
+    )
 
-    manager_response = (supabase.table("employee").select("*").eq("Staff_ID", reporting_manager_id).execute())
+    # Create a list to store the final result
+    result = []
 
-    
-   
-    # Return the list of employees
-    # print(str(team_response.data))
-    # print(manager_response.data)
-    if reporting_manager_id != manager_response.data[0]['Reporting_Manager']:
-        return build_resource_tree(team_response.data+ manager_response.data)
-    else:
-        return build_resource_tree(team_response.data)
+    # Add team members if they exist
+    if team_response.data:
+        result.extend(team_response.data)
+
+    # Always add the reporting manager to the result if not already included
+    if manager_response.data:
+        # Only add if the manager is not already in the result
+        if not any(emp['Staff_ID'] == reporting_manager_id for emp in result):
+            result.extend(manager_response.data)
+
+    return result
