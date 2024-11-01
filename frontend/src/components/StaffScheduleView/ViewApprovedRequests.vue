@@ -37,7 +37,7 @@
             <p>No approved requests available within the date range.</p>
         </div>
         <div>
-            <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
+            <PopupWrapper id='withdrawalPopup' class="flex-container justify-content-center" :visible="isPopupVisible"
                 @update:visible="isPopupVisible = $event">
                 <template #content>
                 <div width="100%" class="justify-content-center">
@@ -148,27 +148,28 @@ export default {
             if (today >= twoWeeksAgo && today <= twoWeeksLater) {
                 this.selectedRequest = request;
                 this.isPopupVisible = true; 
-                document.getElementById('popup').style.display = 'flex';
-                document.getElementById('popup').style.border = '1px black solid';
+                // document.getElementById('withdrawalPopup').style.display = 'flex';
+                // document.getElementById('withdrawalPopup').style.border = '1px black solid';
             } else {
-                alert('You can only withdraw requests within 2 weeks backward and forward.');
+                document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
+                // alert('You can only withdraw requests within 2 weeks backward and forward.');
 
             }
         },
 
         confirmWithdrawal() {
             if (!this.withdrawalReason.trim()) {
-                console.log('error from popup: no error msg');
+                console.log('error from withdrawalPopup: no error msg');
                 document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
             axios.post('http://127.0.0.1:5000/api/wfh/requests/withdraw', {
                 Request_ID: this.selectedRequest.Request_ID,
-                Rejection_Reason: this.withdrawalReason,
+                Withdrawal_Reason: this.withdrawalReason,
                 Staff_ID: this.staffId
             }).then((response) => {
                 this.isPopupVisible = false;
-                document.getElementById('popup').style.border = '';
+                // document.getElementById('withdrawalPopup').style.border = '';
                 this.showSuccessModal = true;
                 this.fetchRequests();
             }).catch((error) => {

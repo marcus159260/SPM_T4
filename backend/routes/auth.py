@@ -1,7 +1,9 @@
 from flask import request, session, jsonify, Blueprint
 from controllers.auth_controller import *
 from util.db import supabase 
+
 auth_bp = Blueprint('auth_bp', __name__)
+
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -23,9 +25,19 @@ def login():
 def logout():
     session.clear()
     return jsonify({'success': True})
+
 @auth_bp.route('/check_auth', methods=['GET'])
 def check_auth():
-    if 'user_id' in session:
-        return jsonify({'authenticated': True, 'role': session.get('role')})
+    if 'staff_id' in session:
+        return jsonify({
+            'authenticated': True,
+            'staff_id': session['staff_id'],
+            'role': session['role'],
+            'position': session['position'],
+            'department': session['department'],
+            'staff_fname': session['staff_fname'],
+            'staff_lname': session['staff_lname'],
+            'reporting_manager': session['reporting_manager'],
+        })
     else:
         return jsonify({'authenticated': False})
