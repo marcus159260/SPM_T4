@@ -40,19 +40,19 @@ const router = createRouter({
       path: '/team-schedule-manager',
       name: 'TeamScheduleManager',
       component: TeamScheduleViewManager,
-      meta: { requiresAuth: true, requiredRoles: [2,3] },
+      meta: { requiresAuth: true, requiredRoles: [3] },
     },
     {
       path: '/team-schedule-staff',
       name: 'TeamScheduleStaff',
       component: TeamScheduleViewStaff,
-      meta: { requiresAuth: true, requiredRoles: [2,3] },
+      meta: { requiresAuth: true, requiredRoles: [1,2,3] },
     },
     {
       path: '/manager-schedule',
       name: 'ManagerSchedule',
       component: ManagerScheduleView,
-      meta: { requiresAuth: true, requiredRoles: [2] },
+      meta: { requiresAuth: true, requiredRoles: [3] },
     },
     {
       path: '/hr-schedule',

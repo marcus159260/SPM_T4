@@ -20,7 +20,7 @@ export default {
     const user = computed(() => authStore.user);
 
     // Debugging
-    // console.log('user:', user.value);
+    console.log('user:', user.value);
     // console.log('user.role:', typeof user.value?.role, user.value?.role);
 
     return {

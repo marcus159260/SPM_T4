@@ -192,13 +192,16 @@ def approve_wfh_request(request_id, status, force_approval=False):
     try:
         response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
         request_data = response.data[0] if response.data else None
-        # print(request_data)
+        print(request_data)
         if not request_data:
             return {'error': 'Request not found.', 'status': 404}
-
         requested_date = datetime.strptime(request_data['Application_Date'], "%Y-%m-%d").date()
+        
+
         start_date = datetime.strptime(request_data['Start_Date'], "%Y-%m-%d").date()
+        
         end_date = datetime.strptime(request_data['End_Date'], "%Y-%m-%d").date()
+        print('hiiiiiii')
         print(requested_date, start_date, end_date)
 
         current_date = datetime.now().date()
@@ -244,6 +247,7 @@ def approve_wfh_request(request_id, status, force_approval=False):
         return {"error": str(e),'status': 500}
 
 def get_total_office_strength(requested_date):
+    print('get total office strength')
     return 10
 
 def get_wfh_count(requested_date):
@@ -256,7 +260,7 @@ def get_wfh_count(requested_date):
             .eq('Status', 'Approved')\
             .lte('Start_Date', requested_date)\
             .gte('End_Date', requested_date).execute()
-        
+        print('get wfh count')
         return len(response.data) if response.data else 0
 
     except Exception as e:
