@@ -182,7 +182,7 @@ export default {
     },
     fetchRequests() {
       // Fetch WFH requests using Axios
-      axios.get('http://127.0.0.1:5000/api/wfh/requests')
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests`)
         .then(response => {
           this.allRequests = response.data;
           // console.log(this.allRequests)
