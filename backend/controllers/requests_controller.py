@@ -37,7 +37,8 @@ def get_all_events_data():
             'Start_Date',
             'End_Date',
             'Time',
-            'Status'
+            'Status',
+            'Request_Type'
         ).execute()
         data = response.data
     except Exception as e:
@@ -56,7 +57,8 @@ def build_events(data):
         start_date = row['Start_Date']  
         end_date = row['End_Date']      
         time_slot = row['Time']         
-        status = row['Status']         
+        status = row['Status']
+        request_type = row['Request_Type']         
         
         if status != 'Approved':
             continue

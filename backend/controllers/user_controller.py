@@ -117,7 +117,8 @@ def get_resources():
             'Staff_ID',
             'Staff_FName',
             'Staff_LName',
-            'Reporting_Manager'
+            'Reporting_Manager',
+            'Role'
         ).execute()
         data = response.data
     except Exception as e:

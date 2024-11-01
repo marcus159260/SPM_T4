@@ -1,7 +1,6 @@
 <template>
   <div>
     <myCalendar
-      :title="'My Schedule'"
       :events="events"
       :resources="resources"
       @dateChanged="onDateChanged"

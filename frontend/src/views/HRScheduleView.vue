@@ -1,7 +1,6 @@
 <template>
   <div>
     <hrCalendar
-      :title="'HR Schedule'"
       :resources="resources"
       :events="events"
       @dateChanged="onDateChanged"
@@ -107,7 +106,7 @@ export default {
 
       // Update department names in resources
       this.resources.forEach(department => {
-        const deptName = department.name;
+        const deptName = department.name.split(' (')[0]; // Remove existing counts
         const counts = countsMap[deptName];
         if (counts) {
           department.name = `${deptName} (WFH: ${counts.wfhCount}, WFO: ${counts.wfoCount})`;
