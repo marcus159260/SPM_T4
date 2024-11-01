@@ -39,7 +39,7 @@
                             <select class="form-select" aria-label="wfhTime" v-model="wfhTime">
                                 <option selected value="AM"> AM (9am - 1pm)</option>
                                 <option value="PM">PM (2pm - 6pm)</option>
-                                <option value="FULL">FULL (9am - 6pm)</option>
+                                <option value="FULL DAY">FULL (9am - 6pm)</option>
                             </select>
                         </div>
 

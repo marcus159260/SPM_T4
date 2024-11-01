@@ -187,40 +187,81 @@ def auto_reject_pending_requests():
     except Exception as e:
         print("Error in auto-rejecting requests:", str(e))
 
-def approve_wfh_request(request_id, status):
+def approve_wfh_request(request_id, status, force_approval=False):
     try:
         response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
         request_data = response.data[0] if response.data else None
-        print(request_data)
+        # print(request_data)
         if not request_data:
             return {'error': 'Request not found.', 'status': 404}
 
-        # current_date = datetime.now().date()
-    # Check how many are currently approved for WFH between start_date and end_date
-        # approved_wfh_response = supabase.table('request').select("*")\
-        #     .eq('Status', 'Approved')\
-        #     .lte('Start_Date', current_date)\
-        #     .gte('End_Date', current_date).execute()
-        
-        # approved_wfh_count_db = len(approved_wfh_response.data)
-        # print(approved_wfh_count_db)
+        requested_date = datetime.strptime(request_data['Application_Date'], "%Y-%m-%d").date()
+        start_date = datetime.strptime(request_data['Start_Date'], "%Y-%m-%d").date()
+        end_date = datetime.strptime(request_data['End_Date'], "%Y-%m-%d").date()
+        print(requested_date, start_date, end_date)
 
-        approved_wfh_count = 4
-        # print("approved count:", approved_wfh_count)
-        
-        current_working_in_office = 10 #hardcode 
-        validation = (approved_wfh_count + 1) / current_working_in_office
-        # print("validation:", validation)
-        if validation > 0.5:
-            return {'error': 'Cannot approve request as less than 50% of the team will be in the office.', 'status': 400}   
+        current_date = datetime.now().date()
 
+        #forward
+        if start_date >= current_date:   #clarification: current_date or application_date?
+            print("A")
+            current_working_in_office = get_total_office_strength(start_date)
+            approved_wfh_count = get_wfh_count(start_date)
+
+            print("current_working_in_office, approved_wfh_count: ", current_working_in_office, approved_wfh_count)
+            validation = (approved_wfh_count + 1) / current_working_in_office
+            if validation > 0.5:
+                return {'error': 'Cannot approve request as less than 50% of the team will be in the office.', 'status': 400}, 400  
+            
+            else:
+                update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
+                print("Update response:", update_response)
+                return {"message": "Request approved successfully."}, 200
+
+        #backward
         else:
-            update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
-            print("Update response:", update_response)
-            return {"message": "Request approved successfully."}, 200
+            print("B")
+            current_working_in_office = get_total_office_strength(start_date)
+            approved_wfh_count = get_wfh_count(start_date)
+        
+            print("current_working_in_office, approved_wfh_count: ", current_working_in_office, approved_wfh_count)
+            validation = (approved_wfh_count + 1) / current_working_in_office
+            if validation > 0.5:
+                if not force_approval:  # If force_approval is False, return violation
+                    return {'error': 'Violation of 50% WFH policy for backdated request', 'status': 409}, 409
+                else:
+                    # If force_approval is True, proceed with the update despite violation
+                    update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
+                    return {"message": "Request approved successfully despite policy violation."}, 200
+                
+            else:
+                update_response = supabase.table('request').update({'Status': status}).eq('Request_ID', request_id).execute()
+                print("Update response:", update_response)
+                return {"message": "Request approved successfully."}, 200
 
     except Exception as e:
         return {"error": str(e)}, 500
+
+def get_total_office_strength(requested_date):
+    return 10
+
+def get_wfh_count(requested_date):
+    # forward: 2024-10-28 (use example id: 4,5,7,10,13, -> 23)
+    # backdated: 2024-10-14 (use example id: 30, 31, 35, 36, 37, -> 38)
+    try:
+        # Query the database for approved WFH requests between start and end dates that include current_date
+        # Check how many are currently approved for WFH between start_date and end_date
+        response = supabase.table('request').select("*")\
+            .eq('Status', 'Approved')\
+            .lte('Start_Date', requested_date)\
+            .gte('End_Date', requested_date).execute()
+        
+        return len(response.data) if response.data else 0
+
+    except Exception as e:
+        print(f"Error retrieving WFH count: {str(e)}")
+        return 0
+
 
 def reject_wfh_request(request_id, reason):
     try:
