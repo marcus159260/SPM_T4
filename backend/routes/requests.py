@@ -201,6 +201,7 @@ def update_request():
         request_id = request_data.get('Request_ID')
         status = request_data.get('request_Status')
         force_approval = request_data.get('force_approval', False) 
+        print(force_approval)
         
         # print(request_id, status)
         if not request_id or not status:
