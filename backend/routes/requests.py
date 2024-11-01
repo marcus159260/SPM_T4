@@ -98,7 +98,6 @@ def create_request():
     try:
         data = request.get_json()
 
-        # Parse and validate date fields
         staff_id = data.get('staff_id')
         start_date = str(data.get('start_date'))
         end_date = str(data.get('end_date'))
@@ -109,13 +108,7 @@ def create_request():
         approver_id = data.get('approver_id')
         requested_dates = [str(date) for date in data.get('requested_dates')]
 
-
-        # check for conflicts
-        conflict_response = supabase.rpc('check_overlapping_requests', {
-            'p_staff_id': staff_id,
-            'p_requested_dates': requested_dates,
-            'p_time': time_of_day
-        }).execute()
+        conflict_response = check_conflict(staff_id, requested_dates, time_of_day)
 
         if conflict_response.data and conflict_response.data != 'No conflict':
             return jsonify({'error': conflict_response.data}), 400  # Return conflict message
@@ -133,12 +126,30 @@ def create_request():
             'p_requested_dates': requested_dates 
         }).execute()
 
-        if response.data == "Request created successfully":
-            return jsonify({'message': response.data}), 201
+        if response.data and isinstance(response.data, list) and len(response.data) > 0:
+            first_request_id = response.data[0]['first_request_id']
+            message = response.data[0]['message']
+
+            log_response = log_activity(
+                request_id=first_request_id,
+                old_status='Pending',
+                new_status=status,
+                changed_by=staff_id,
+                change_message='Request created successfully',
+                reason=reason
+            )
+
+            if log_response.data is None: 
+                print("Error logging activity: No data in log response")
+            else:
+                print("Activity logged successfully:", log_response.data)
+
+            return jsonify({'first_request_id': first_request_id, 'message': message}), 201
         
         return jsonify({'error': 'Unable to create request'}), 401
 
     except Exception as e:
+        print("Error:", str(e))
         return jsonify({'error': str(e)}), 500
 
 
@@ -209,3 +220,24 @@ def reject_withdrawal_request():
     result, status_code = reject_wfh_withdrawal_request(request_id, rejection_reason)
     
     return jsonify(result), status_code
+
+def check_conflict(staff_id, requested_dates, time_of_day):
+    conflict_response = supabase.rpc('check_overlapping_requests', {
+        'p_staff_id': staff_id,
+        'p_requested_dates': requested_dates,
+        'p_time': time_of_day
+    }).execute()
+    # print(conflict_response)
+    return conflict_response
+
+def log_activity(request_id, old_status, new_status, changed_by, change_message, reason):
+    log_response = supabase.rpc('log_activity', {
+        'p_request_id': request_id,
+        'p_old_status': old_status,
+        'p_new_status': new_status,
+        'p_changed_by': changed_by,
+        'p_change_message': change_message,
+        'p_reason': reason
+    }).execute()
+        
+    return log_response
