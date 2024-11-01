@@ -195,7 +195,7 @@ export default {
     },
     approveRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
+      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
           if (response.status === 200) {
             alert(response.data.message);
@@ -209,7 +209,7 @@ export default {
           else if (error.response.status === 409) { //B (backdated)
             const confirmation = confirm(`${error.response.data.error}\n\nDo you still want to approve this request despite the violation?`);
             if (confirmation) {
-              axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
+              axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
                 .then(response => {
                   if (response.status === 200) {
                     alert(response.data.message); 
@@ -230,7 +230,7 @@ export default {
     },
     approveWithdrawalRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approvewithdrawal`, { Request_ID: requestId })
+      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approvewithdrawal`, { Request_ID: requestId })
         .then(response => {
           // console.log('response.data', response.data);
           console.log('approveWithdrawalRequest');
@@ -253,7 +253,7 @@ export default {
       document.getElementById('popup').style.border = '1px black solid';
     },
     rejectRequest(requestId) {
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
+      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
         .then(response => {
           console.log('response.data', response.data);
           if (response.data == 'error') {
