@@ -99,7 +99,7 @@ def withdraw_request():
                 old_status = 'Approved',
                 new_status = 'Withdrawn - Pending',
                 changed_by = data.get('Staff_ID'),
-                change_message = 'Request withdrawn successfully',
+                change_message = 'Attempt to withdrawn successful, waiting for approval',
                 reason =  rejection_reason 
             )
     return jsonify(result), status_code
@@ -176,6 +176,15 @@ def cancel_request():
 
     # Call the controller to handle the business logic
     result = cancel_wfh_request(request_id, reason, staff_id)
+    if result['status'] == 200:
+        log_activity(
+                request_id = data.get('Request_ID'),
+                old_status = 'Pending',
+                new_status = 'Withdrawn',
+                changed_by = staff_id,
+                change_message = 'Request cancelled successfully',
+                reason =  data.get('Withdrawal_Reason') 
+            )
     
     return jsonify(result), result['status']
 
