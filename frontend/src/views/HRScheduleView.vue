@@ -11,6 +11,7 @@
 <script>
 import hrCalendar from '../components/hrCalendar.vue';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
 
 export default {
   components: {
@@ -25,7 +26,13 @@ export default {
   },
 
   mounted() {
-    axios.get('http://127.0.0.1:5000/api/users/resources').then((response) => {
+    const authStore = useAuthStore();
+    axios.get('http://127.0.0.1:5000/api/users/resources', {
+          headers: {
+            staff_id: authStore.user.staff_id,
+            role: authStore.user.role,
+          },
+        }).then((response) => {
       this.resources = response.data;
       // console.log("Loaded resources:", this.resources);
       this.loadEvents();
@@ -38,7 +45,12 @@ export default {
   methods: {
     loadEvents() {
       axios
-        .get('http://127.0.0.1:5000/api/wfh/all_events')
+        .get('http://127.0.0.1:5000/api/wfh/all_events', {
+          headers: {
+            staff_id: authStore.user.staff_id,
+            role: authStore.user.role,
+          },
+        })
         .then((response) => {
           this.events = response.data;
           // console.log('Loaded events:', this.events);
