@@ -45,7 +45,7 @@
     console.log(resources);
 
     for(emp of resources){
-      var requesturl = "http://127.0.0.1:5000/api/wfh/" + emp.id;
+      var requesturl = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/` + emp.id;
 
       axios
         .get(requesturl)
@@ -81,7 +81,7 @@
     //         "id": "R2"
     //     }
     // ];
-    var teamurl = "http://127.0.0.1:5000/api/users/by-team-employees/" + config.reporting_manager;
+    var teamurl = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + config.reporting_manager;
     // console.log(teamurl);
     axios
       .get(teamurl)
@@ -92,7 +92,7 @@
         console.log("Loaded resources:", temp);
         
         for(let emp of temp.data){
-          var requesturl = "http://127.0.0.1:5000/api/wfh/" + emp.id;
+          var requesturl = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/` + emp.id;
 
           axios
             .get(requesturl)

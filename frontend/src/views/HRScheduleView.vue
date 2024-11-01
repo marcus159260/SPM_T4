@@ -39,7 +39,7 @@ export default {
 
   methods: {
     loadEvents() {
-      axios.get('http://127.0.0.1:5000/api/wfh/all_events', {
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/all_events`, {
         headers: {
           'X-Staff-ID': this.authStore.user.staff_id,
           'X-Staff-Role': this.authStore.user.role,
@@ -51,7 +51,7 @@ export default {
       });
     },
     loadResources() {
-      axios.get('http://127.0.0.1:5000/api/users/resources', {
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/resources`, {
         headers: {
           'X-Staff-ID': this.authStore.user.staff_id,
           'X-Staff-Role': this.authStore.user.role,

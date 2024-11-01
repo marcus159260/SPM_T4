@@ -26,7 +26,7 @@ export default {
   },
 
   mounted() {
-    var url = "http://127.0.0.1:5000/api/users/" + this.staff_id;
+    var url = `${import.meta.env.VITE_API_BASE_URL}/api/users/` + this.staff_id;
       axios.get(url).then((response) => {
         const staffData = response.data.data;
         this.resources = [
@@ -44,7 +44,7 @@ export default {
 
   methods: {
     loadEvents() {
-      var url = "http://127.0.0.1:5000/api/wfh/events/" + this.staff_id;
+      var url = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/events/` + this.staff_id;
       axios.get(url).then((response) => {
         this.events = response.data;
       }).catch((error) => {
