@@ -69,33 +69,56 @@ def build_events(data):
         date_range = [start_date_obj + timedelta(days=i) for i in range((end_date_obj - start_date_obj).days + 1)]
 
         for single_date in date_range:
+            date_str = single_date.strftime('%Y-%m-%d')
+
             if time_slot == 'AM':
-                start_time = '09:00:00'
-                end_time = '13:00:00'
+                start = f"{date_str}T09:00:00"
+                end = f"{date_str}T13:00:00"
+                event_id = f"{request_id}_{date_str}_AM"
+                events.append({
+                    'id': event_id,
+                    'start': start,
+                    'end': end,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             elif time_slot == 'PM':
-                start_time = '14:00:00'
-                end_time = '18:00:00'
+                start = f"{date_str}T13:00:00"
+                end = f"{date_str}T18:00:00"
+                event_id = f"{request_id}_{date_str}_PM"
+                events.append({
+                    'id': event_id,
+                    'start': start,
+                    'end': end,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             elif time_slot == 'FULL DAY':
-                start_time = '09:00:00'
-                end_time = '18:00:00'
+                # AM Event
+                start_am = f"{date_str}T09:00:00"
+                end_am = f"{date_str}T13:00:00"
+                event_id_am = f"{request_id}_{date_str}_AM"
+                events.append({
+                    'id': event_id_am,
+                    'start': start_am,
+                    'end': end_am,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
+                # PM Event
+                start_pm = f"{date_str}T13:00:00"
+                end_pm = f"{date_str}T18:00:00"
+                event_id_pm = f"{request_id}_{date_str}_PM"
+                events.append({
+                    'id': event_id_pm,
+                    'start': start_pm,
+                    'end': end_pm,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             else:
                 print(f"Unknown time slot: {time_slot}")
                 continue
-
-            date_str = single_date.strftime('%Y-%m-%d')
-            start = f"{date_str}T{start_time}"
-            end = f"{date_str}T{end_time}"
-
-            event_id = f"{request_id}_{date_str}"
-
-            event = {
-                'id': event_id,
-                'start': start,
-                'end': end,
-                'status': 'WFH', 
-                'resource': f"E_{staff_id}", 
-            }
-            events.append(event)
 
     return events
 
