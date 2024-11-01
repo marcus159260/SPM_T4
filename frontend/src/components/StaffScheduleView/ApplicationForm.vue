@@ -32,6 +32,7 @@
                             <input type="date" class="form-control" id="endDate" v-model="endDate" @input = "checkDateRange">
                             <span class="text-danger" v-if="validRecurringDuration == false">The start and end dates for a recurring request cannot be more than 3 months apart. Please try again.</span>
                         </div>
+                        
                         <span class="text-danger" v-if="startEndDate == false && endDate != null">Your end date can't be earlier than start date</span>
 
                         <div class="mb-3">
@@ -39,7 +40,7 @@
                             <select class="form-select" aria-label="wfhTime" v-model="wfhTime">
                                 <option selected value="AM"> AM (9am - 1pm)</option>
                                 <option value="PM">PM (2pm - 6pm)</option>
-                                <option value="FULL">FULL (9am - 6pm)</option>
+                                <option value="FULL DAY">FULL (9am - 6pm)</option>
                             </select>
                         </div>
 
@@ -103,8 +104,14 @@ export default{
             this.validPeriod = PeriodChecker(currentDate, this.startDate);
         },
         checkDateRange() {
-            this.validRecurringDuration = check90Days(this.startDate, this.endDate)
+            const startDateCheck = new Date(this.startDate);
+            const endDateCheck = new Date(this.endDate);
+            this.validRecurringDuration = check90Days(startDateCheck, endDateCheck)
     },
+        validateRequestReason() {
+            this.isRequestReasonValid = this.requestReason.length > 0 ;
+            console.log(this.isRequestReasonValid);
+        },
         async submitRequest() {
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
@@ -149,11 +156,8 @@ export default{
 
     },
     computed:{
-        validateRequestReason() {
-            return this.requestReason && this.requestReason.length>0
-        },
         canSubmit(){
-            if(this.validateRequestReason && this.validPeriod && this.startEndDate == true){
+            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
                 return true;
             } return false;
         },

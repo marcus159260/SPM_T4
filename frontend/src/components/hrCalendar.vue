@@ -23,7 +23,6 @@ const config = reactive({
   cellDuration: 720,
   // days: DayPilot.Date.today().daysInMonth(),
   days: 7,
-  cellWidthSpec: "Auto",
   startDate: DayPilot.Date.today(),
   timeRangeSelectedHandling: "Disabled",
   eventClickHandling: "Disabled",

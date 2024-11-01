@@ -95,12 +95,24 @@ def withdraw_request():
     result, status_code = withdraw_request_controller(request_id, rejection_reason, staff_id)
     return jsonify(result), status_code
 
+#------------------------------------------------------------------------------
+# Isolated conflict check from create_request() for easier testing
+
+def check_conflict(staff_id, requested_dates, time_of_day):
+    conflict_response = supabase.rpc('check_overlapping_requests', {
+        'p_staff_id': staff_id,
+        'p_requested_dates': requested_dates,
+        'p_time': time_of_day
+    }).execute()
+    # print(conflict_response)
+    return conflict_response
+
+
 @wfh_bp.route('/requests', methods=['POST'])
 def create_request():
     try:
         data = request.get_json()
 
-        # Parse and validate date fields
         staff_id = data.get('staff_id')
         start_date = str(data.get('start_date'))
         end_date = str(data.get('end_date'))
@@ -111,13 +123,7 @@ def create_request():
         approver_id = data.get('approver_id')
         requested_dates = [str(date) for date in data.get('requested_dates')]
 
-
-        # check for conflicts
-        conflict_response = supabase.rpc('check_overlapping_requests', {
-            'p_staff_id': staff_id,
-            'p_requested_dates': requested_dates,
-            'p_time': time_of_day
-        }).execute()
+        conflict_response = check_conflict(staff_id, requested_dates, time_of_day)
 
         if conflict_response.data and conflict_response.data != 'No conflict':
             return jsonify({'error': conflict_response.data}), 400  # Return conflict message
@@ -143,6 +149,7 @@ def create_request():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+#------------------------------------------------------------------------------
 
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():

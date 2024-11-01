@@ -21,7 +21,6 @@ const config = reactive({
   timeHeaders: [{"groupBy":"Month"},{"groupBy":"Day","format":"d"},{"groupBy":"Cell","format":"tt"}],
   scale: "CellDuration",
   cellDuration: 720,
-  cellWidthSpec:"Auto",
   // days: DayPilot.Date.today().daysInMonth(),
   days: 7,
   startDate: DayPilot.Date.today(),

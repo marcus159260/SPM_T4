@@ -61,15 +61,10 @@
           </td>
           <!--Approve/Reject buttons-->
           <td class="d-flex align-items-center">
-            <button v-if="staff.Status == 'Withdrawn-pending'" @click="approveWithdrawalRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
-              <img src="../../assets/checked.png" alt="Approve Withdrawal">
-            </button>
-            <button v-if="staff.Status=='Pending'" @click="approveRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
+            <button @click="approveRequest(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/checked.png" alt="Approve">
             </button>
-            
-      
-            <button  @click="rejectRequestPopup(staff.Request_ID,staff.Status)" class="icon-button mb-5" style="padding-top: 40px;">
+            <button @click="rejectRequestPopup(staff.Request_ID)" class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/x-button.png" alt="Reject">
             </button>
           </td>
@@ -97,9 +92,7 @@
                 placeholder="Enter reason for rejection"></textarea>
               <div class="d-flex flex-column my-2">
                 <p id="errormsg" class="text-danger mx-0"></p>
-                <button v-if="selectedRequestStatus == 'Pending'" type="button" class="btn btn-primary" @click="rejectRequest(selectedRequestId)">Submit</button>
-                <button v-if="selectedRequestStatus == 'Withdrawn-pending'" type="button" class="btn btn-primary" @click="rejectWithdrawalRequest(selectedRequestId)">Submit</button>
-
+                <button type="button" class="btn btn-primary" @click="rejectRequest(selectedRequestId)">Submit</button>
               </div>
             </form>
           </div>
@@ -121,8 +114,6 @@ export default {
       managerId: 151408,
       isPopupVisible: false,
       rejectionReason: '',
-      withdrawalReason: '',
-      selectedRequestStatus: '',
       selectedRequestId: null
     };
   },
@@ -158,7 +149,7 @@ export default {
 
           // Return true if the request is pending, matches managerId, and Start_Date is within range
           return (
-            (request.Status === 'Pending' ||request.Status === 'Withdrawn-pending') &&
+            request.Status === 'Pending' &&
             request.Approver_ID === this.managerId &&
             isWithinRange
           );
@@ -206,27 +197,9 @@ export default {
           console.error('Error rejecting request:', error);
         });
     },
-    approveWithdrawalRequest(requestId) {
-      // console.log("Request ID clicked:", requestId); 
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approvewithdrawal`, { Request_ID: requestId })
-        .then(response => {
-          console.log('response.data', response.data);
-          if (response.data == 'error') {
-            alert(response.data);
-          }
-          else {
-            this.fetchRequests();
-          }
-        })
-        .catch(error => {
-          console.error('Error rejecting request:', error);
-        });
-    },
 
-    rejectRequestPopup(requestId,status) {
+    rejectRequestPopup(requestId) {
       this.selectedRequestId = requestId; // Store the request ID for rejection
-      this.selectedRequestStatus = status;
-      console.log(status);
       this.isPopupVisible = true; // Show the popup
       document.getElementById('popup').style.display = 'flex';
       document.getElementById('popup').style.border = '1px black solid';
@@ -235,31 +208,10 @@ export default {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
         .then(response => {
           console.log('response.data', response.data);
-          if (response.data.message == 'Reason cannot be empty.') {
+          if (response.data == 'error') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
-            document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
-
-          }
-          else {
-            this.fetchRequests();
-            this.isPopupVisible = false; // Hide the popup after submission
-            document.getElementById('popup').style.border = '';
-
-          }
-        })
-        .catch(error => {
-          console.error('Error rejecting request:', error);
-        });
-    },
-    rejectWithdrawalRequest(requestId) {
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
-        .then(response => {
-          console.log('response.data', response.data);
-          if (response.data.message == 'Reason cannot be empty.') {
-            // console.log(response.data.error);
-            console.log('error from popup: no error msg');
-            document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
+            document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;
 
           }
           else {

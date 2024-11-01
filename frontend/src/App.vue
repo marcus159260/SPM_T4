@@ -24,13 +24,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <RouterLink to="/team-schedule-manager">(M/D)My Team Schedule</RouterLink>
-                </a>
-              </li>
-
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <RouterLink to="/team-schedule-staff">(Staff)My Team Schedule</RouterLink>
+                  <RouterLink to="/team-schedule">My Team Schedule</RouterLink>
                 </a>
               </li>
 
