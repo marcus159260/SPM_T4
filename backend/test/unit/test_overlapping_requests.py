@@ -2,7 +2,9 @@ import pytest
 from unittest.mock import MagicMock
 from datetime import datetime, timedelta
 from freezegun import freeze_time
-from routes.requests import check_conflict
+
+from controllers.requests_controller import check_conflict
+
 # Unit test on overlapping adhoc request
 def test_overlapping_adhoc_requests():
     adhoc_request = {
@@ -19,6 +21,7 @@ def test_overlapping_adhoc_requests():
     response = check_conflict(adhoc_request["staff_id"], adhoc_request["requested_dates"], adhoc_request["time_of_day"])
     assert response != 'No conflict'
     
+
 # Unit test on overlapping recurring request
 def test_overlapping_recurring_requests():
     adhoc_request = {
@@ -34,4 +37,7 @@ def test_overlapping_recurring_requests():
     }
     response = check_conflict(adhoc_request["staff_id"], adhoc_request["requested_dates"], adhoc_request["time_of_day"])
     assert response != 'No conflict'
+    
+    
+    
     
