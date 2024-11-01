@@ -1,0 +1,48 @@
+  .filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* space between label and dropdown */
+  }
+
+  .status-label {
+    font-weight: bold;
+    margin-left: 15px;
+    margin-right: 10px;
+  }
+
+  .status-dropdown {
+    padding: 3px;
+    font-size: 14px;
+  }
+
+  /* Increase the row height */
+  tr {
+    height: 80px;
+  }
+
+  td, th {
+    vertical-align: middle; /* Center content vertically in rows */
+    padding: 15px; /* Add more padding for increased row size */
+    text-align: center;
+  }
+
+  h2 {
+    padding:8px;
+    font-weight: bolder;
+    margin-left: 8px;
+  }
+
+  p{
+    font-weight: bold;
+    margin-left: 15px;
+  }
+
+  .table-responsive {
+  overflow-x: scroll; /* Makes table scrollable on small screens */
+  }
+
+  .fixed-column {
+    position: sticky;
+    right: 0; 
+    z-index: 1; 
+  }

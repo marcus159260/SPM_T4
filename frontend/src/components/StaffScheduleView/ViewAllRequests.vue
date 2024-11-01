@@ -1,7 +1,7 @@
 <template>
     <div class="content-wrapper">
       <div v-if="requestsData?.length > 0">
-        <h2 class="mt-4">{{ requestsData[0].Staff_Name }}</h2>
+        <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
 
         <div class="filter-container mb-3">
         <label for="statusFilter" class="status-label">Status</label>
@@ -15,19 +15,19 @@
       </div>
 
       <div class="table-responsive">
-        <table class="table">
+        <table class="table table-striped">
           <thead>
               <tr>
-              <th scope="col">Request ID</th>
-              <th scope="col">Request Type</th>
-              <th scope="col">Status</th>
-              <th scope="col">Requested Date</th>
-              <th scope="col">Time</th>
-              <th scope="col">Reason</th>
-              <th scope="col">Application Date</th>
-              <th scope="col">Approver</th>
-              <th scope="col">Rejection Reason</th>
-              <th scope="col">Withdrawal Reason</th>
+                <th scope="col">Request ID</th>
+                <th scope="col">Request Type</th>
+                <th scope="col">Status</th>
+                <th scope="col">Requested Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Reason</th>
+                <th scope="col">Application Date</th>
+                <th scope="col">Approver</th>
+                <th scope="col">Rejection Reason</th>
+                <th scope="col">Withdrawal Reason</th>
               </tr>
           </thead>
           <tbody>
@@ -117,48 +117,5 @@ export default {
 </script>
 
 <style>
-  .filter-container {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* space between label and dropdown */
-  }
-
-  .status-label {
-    font-weight: bold;
-    margin-left: 15px;
-    margin-right: 10px;
-  }
-
-  .status-dropdown {
-    padding: 3px;
-    font-size: 14px;
-  }
-
-  /* Increase the row height */
-  tr {
-    height: 80px;
-  }
-
-  td, th {
-    vertical-align: middle; /* Center content vertically in rows */
-    padding: 15px; /* Add more padding for increased row size */
-    text-align: center;
-  }
-
-  h2 {
-    padding:8px;
-    font-weight: bolder;
-    margin-left: 8px;
-  }
-
-  p{
-    font-weight: bold;
-    margin-left: 15px;
-  }
-
-  .table-responsive {
-  overflow-x: auto; /* Makes table scrollable on small screens */
-  }
-
-  
+  @import '../style.css';
 </style>
