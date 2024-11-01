@@ -102,26 +102,22 @@
 
       <!--Pending WFH-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <!-- <ViewPendingRequestsDB
-          v-if="employees.length > 0" 
-          :filteredEmployee="filteredEmployee" 
-          :filteredPendingEmployees="filteredPendingEmployees" 
-          :hasPendingRequests="hasPendingRequests" 
-        /> -->
-        <ViewPendingRequests/>
-        
+        <ViewPendingRequests 
+          :managerId="managerId" 
+        />
+
       </div>
       <!--End of Pending WFH-->
-      
+
       <!--Approved WFH-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        <ApprovedRequests/>
+        <ApprovedRequests />
       </div>
       <!--End of Approved WFH-->
-      
+
       <!--Rejected WFH-->
       <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-        <RejectedRequests/>
+        <RejectedRequests />
       </div>
       <!--End of Rejected WFH-->
 
@@ -129,10 +125,6 @@
       <div class="tab-pane fade" id="ex1-tabs-5" role="tabpanel" aria-labelledby="ex1-tab-5">
         <AllRequests />
       </div>
-
-      <!-- <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-        <FilterRequests/>
-      </div> -->
       <!--End of All Requests-->
 
     </div>
@@ -153,6 +145,9 @@ import ApprovedRequests from '@/components/ManagerScheduleView/ApprovedRequests.
 import RejectedRequests from '@/components/ManagerScheduleView/RejectedRequests.vue';
 import PopupWrapper from '@/components/PopupWrapper.vue';
 
+import { useAuthStore } from '../stores/auth';
+
+
 export default {
   name: "ManagerView",
   mounted() {
@@ -163,19 +158,23 @@ export default {
       return new MDCRipple(s)
     })
 
-    // Fetch data from the Flask back-end
-    // this.get_employees_callCentre(); //call methods
-    this.get_employees_by_dept();
+    // this.managerId = this.authStore.user?.managerId || null;
+    // this.get_employees_by_dept();
+    console.log(this.authStore.user)
+    this.managerId = this.authStore.user.staff_id || null;
+    console.log(this.managerId)
   },
-
   data() {
     return {
       employees: [], //initialize
-      managerId: 140001,
+      managerId: null,
       isLoading: true // Add loading state
     }
   },
   computed: {
+    authStore() {
+      return useAuthStore(); // Access the auth store
+    },
     filteredEmployee() {
       // Filter employees based on Dept and Position
       return (
@@ -195,7 +194,7 @@ export default {
           // staff.Dept === "Engineering" &&
           // staff.Position === "Call Centre" &&
           staff.Reporting_Manager === this.managerId
-        ) || []
+      ) || []
       );
     },
 
@@ -214,8 +213,6 @@ export default {
           console.error("Error fetching schedules:", error);
           this.isLoading = false;
         });
-      
-        
     }
   },
   components: {
@@ -237,6 +234,7 @@ export default {
   margin-right: 100px;
   margin-bottom: 200px;
 }
+
 #popup {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   /* -webkit-font-smoothing: antialiased;
@@ -246,17 +244,25 @@ export default {
   background-color: white;
   /* border: 1px black solid; */
   border-radius: 5px;
-  position: fixed; /* Fixes the popup to the viewport */
-  z-index: 1; /* Ensures it appears above other content */
-  left: 50%; /* Move to the middle of the screen */
-  top: 50%; /* Move to the middle of the screen */
-  transform: translate(-50%, -50%); /* Offset by half its width and height */
+  position: fixed;
+  /* Fixes the popup to the viewport */
+  z-index: 1;
+  /* Ensures it appears above other content */
+  left: 50%;
+  /* Move to the middle of the screen */
+  top: 50%;
+  /* Move to the middle of the screen */
+  transform: translate(-50%, -50%);
+  /* Offset by half its width and height */
   /* background: #3794ff; */
   color: #fff;
-  width: 500px; /* Set width */
-  min-height: min-content; /* Set height */
-  display: none; /* Enables flexbox for centering content */
-  padding:0px;
+  width: 500px;
+  /* Set width */
+  min-height: min-content;
+  /* Set height */
+  display: none;
+  /* Enables flexbox for centering content */
+  padding: 0px;
   /* align-items: center; Vertically center content */
   /* justify-content: center; Horizontally center content */
 }

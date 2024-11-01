@@ -117,16 +117,24 @@
 <script>
 import axios from 'axios';
 import PopupWrapper from '../PopupWrapper.vue';
+// import { useAuthStore } from '../../stores/auth';
 
 export default {
+  props: {
+    // managerId: {
+    //   type: Number,
+    //   required: true
+    // } 
+  },
   data() {
     return {
       allRequests: [],     // All WFH requests fetched from the API
       managerDetails: [],
-      managerId: 151408,
       isPopupVisible: false,
       rejectionReason: '',
-      selectedRequestId: null
+      selectedRequestId: null,
+      selectedRequestStatus: '',
+      managerId: 151408
     };
   },
   components: {
@@ -172,7 +180,7 @@ export default {
 
   methods: {
     get_manager_details(managerId) {
-      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${managerId}`)
         .then(response => {
           this.managerDetails = response.data.data; // Store manager details
         })
@@ -277,6 +285,8 @@ export default {
   },
   mounted() {
     // Fetch requests when the component is mounted
+    console.log(this.managerId);
+
     this.fetchRequests();
     this.get_manager_details(this.managerId);
   },
