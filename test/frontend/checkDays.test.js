@@ -1,4 +1,4 @@
-import {PeriodChecker, check60Days, check90Days, getDaysDifference, formatDate} from "../../frontend/src/util/periodPolicy.js";
+import {PeriodChecker, check60Days, check90Days, getDaysDifference, formatDate} from "../src/util/periodPolicy.js";
 
 describe('formatDate unit testing', () =>{
     test('Check that date object is converted to YYYY-MM-DD as expected', () =>{
@@ -54,7 +54,3 @@ describe('check90Days testing', () => {
         expect(check90Days(currentDate,checkDate)).toBe(false);
     })
 });
-
-
-
-
