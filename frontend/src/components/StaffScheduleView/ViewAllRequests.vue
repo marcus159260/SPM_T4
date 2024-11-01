@@ -14,44 +14,44 @@
         </select>
       </div>
 
-
-      <table class="table">
-      <thead>
-          <tr>
-          <th scope="col">Request ID</th>
-          <th scope="col">Request Type</th>
-          <th scope="col">Status</th>
-          <th scope="col">Requested Date</th>
-          <th scope="col">Time</th>
-          <th scope="col">Reason</th>
-          <th scope="col">Application Date</th>
-          <th scope="col">Approver</th>
-          <th scope="col">Rejection Reason</th>
-          <th scope="col">Withdrawal Reason</th>
-          </tr>
-      </thead>
-      <tbody>
-          <tr v-for="request in filteredRequests" :key="request.Request_ID">
-              <th scope="row">{{ request.Request_ID }}</th>
-              <td>{{ request.Request_Type}}</td>
-              <td>
-                  <span :class="{
-                      'badge rounded-pill text-bg-success': request.Status === 'Approved',
-                      'badge rounded-pill text-bg-warning': request.Status === 'Pending',
-                      'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
-                      'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
-                  }">{{ request.Status}}</span></td>
-              <td>{{ formatDate(request.Start_Date) }}</td>
-              <td>{{ request.Time }}</td>
-              <td>{{ request.Reason }}</td>
-              <td>{{ formatDate(request.Application_Date) }}</td>
-              <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
-              <td>{{ request.Rejection_Reason }}</td>
-              <td>{{ request.Withdrawal_Reason }}</td>
-          </tr>
-      </tbody>
-      </table>
-        
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+              <tr>
+              <th scope="col">Request ID</th>
+              <th scope="col">Request Type</th>
+              <th scope="col">Status</th>
+              <th scope="col">Requested Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Reason</th>
+              <th scope="col">Application Date</th>
+              <th scope="col">Approver</th>
+              <th scope="col">Rejection Reason</th>
+              <th scope="col">Withdrawal Reason</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr v-for="request in filteredRequests" :key="request.Request_ID">
+                  <th scope="row">{{ request.Request_ID }}</th>
+                  <td>{{ request.Request_Type}}</td>
+                  <td>
+                      <span :class="{
+                          'badge rounded-pill text-bg-success': request.Status === 'Approved',
+                          'badge rounded-pill text-bg-warning': request.Status === 'Pending',
+                          'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
+                          'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
+                      }">{{ request.Status}}</span></td>
+                  <td>{{ formatDate(request.Start_Date) }}</td>
+                  <td>{{ request.Time }}</td>
+                  <td>{{ request.Reason }}</td>
+                  <td>{{ formatDate(request.Application_Date) }}</td>
+                  <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
+                  <td>{{ request.Rejection_Reason }}</td>
+                  <td>{{ request.Withdrawal_Reason }}</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>  
     </div>
     <div v-else>
       <p>No requests.</p>
@@ -120,7 +120,7 @@ export default {
   .filter-container {
     display: flex;
     align-items: center;
-    gap: 10px; /* Adds space between label and dropdown */
+    gap: 10px; /* space between label and dropdown */
   }
 
   .status-label {
@@ -155,4 +155,10 @@ export default {
     font-weight: bold;
     margin-left: 15px;
   }
+
+  .table-responsive {
+  overflow-x: auto; /* Makes table scrollable on small screens */
+  }
+
+  
 </style>

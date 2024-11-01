@@ -34,13 +34,13 @@
 
       <!--View My Schedule-->
       <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <h1>Insert Staff View Own Schedule here</h1>
+        <MyScheduleView/>
       </div>
       <!-- End of View My Schedule-->
 
       <!--View My Team Schedule-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <h1>Insert Staff View My Team Schedule here</h1>
+        <TeamScheduleView/>
       </div>
       <!--End of All Requests-->
 
@@ -83,6 +83,8 @@ import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequ
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
 import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vue';
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
+import MyScheduleView from '../views/MyScheduleView.vue';
+import TeamScheduleView from '../views/TeamScheduleView.vue';
 
 
 export default {
@@ -107,7 +109,9 @@ export default {
     ViewPendingRequests,
     ViewApprovedRequests,
     ViewAllRequests2,
-    ApplicationForm
+    ApplicationForm,
+    MyScheduleView,
+    TeamScheduleView
   },
 }
 
