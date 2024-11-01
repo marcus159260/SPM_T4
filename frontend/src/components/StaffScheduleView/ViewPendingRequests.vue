@@ -1,41 +1,43 @@
 <template>
     <div class="content-wrapper">
         <div v-if="filteredRequests?.length > 0">
-            <h3 class="mt-5">{{ requestsData[0].Staff_Name }}</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Request ID</th>
-                        <th scope="col">Request Type</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Requested Date</th>
-                        <th scope="col">Time</th>
-                        <th scope="col">Reason</th>
-                        <th scope="col">Application Date</th>
-                        <th scope="col">Approver</th>
-                        <th scope="col">Withdrawal Reason</th>
-                        <th scope="col">Cancel Request</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="request in filteredRequests" :key="request.Request_ID">
-                        <th scope="row">{{ request.Request_ID }}</th>
-                        <td>{{ request.Request_Type }}</td>
-                        <td>
-                            <span class="badge rounded-pill text-bg-warning">{{ request.Status }}</span>
-                        </td>
-                        <td>{{ formatDate(request.Start_Date) }}</td>
-                        <td>{{ request.Time }}</td>
-                        <td>{{ request.Reason }}</td>
-                        <td>{{ formatDate(request.Application_Date) }}</td>
-                        <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
-                        <td>{{ request.Withdrawal_Reason }}</td>
-                        <td>
-                            <button @click="openCancelModal(request.Request_ID)">Cancel</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Request ID</th>
+                            <th scope="col">Request Type</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Requested Date</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Reason</th>
+                            <th scope="col">Application Date</th>
+                            <th scope="col">Approver</th>
+                            <th scope="col">Withdrawal Reason</th>
+                            <th scope="col" class="fixed-column">Cancel Request</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="request in filteredRequests" :key="request.Request_ID">
+                            <th scope="row">{{ request.Request_ID }}</th>
+                            <td>{{ request.Request_Type }}</td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-warning">{{ request.Status }}</span>
+                            </td>
+                            <td>{{ formatDate(request.Start_Date) }}</td>
+                            <td>{{ request.Time }}</td>
+                            <td>{{ request.Reason }}</td>
+                            <td>{{ formatDate(request.Application_Date) }}</td>
+                            <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
+                            <td>{{ request.Withdrawal_Reason }}</td>
+                            <td class="fixed-column">
+                                <button @click="openCancelModal(request.Request_ID)">Cancel</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div v-else>
             <p>No pending requests available within the date range.</p>
@@ -65,7 +67,7 @@
         <div v-if="showSuccessModal" class="modal-overlay">
             <div class="modal-content">
                 <h4>Cancellation Successful</h4>
-                <p>Your request has been successfully cancelled.</p>
+                    <p>Your request has been successfully cancelled.</p>
                 <div class="modal-actions">
                     <button @click="closeSuccessModal">Close</button>
                 </div>
@@ -105,7 +107,7 @@ export default {
             return this.requestsData.filter((request) => {
                 const endDate = new Date(request.End_Date);
                 return (
-                    (request.Status === "Pending" || request.Status === "Withdrawn-pending") &&
+                    request.Status === "Pending" &&
                     endDate >= minus61Days &&
                     endDate <= plus91Days
                 );
@@ -185,6 +187,7 @@ export default {
 </script>
 
 <style scoped>
+@import '../style.css';
 /* Styles for the overlay and modal */
 .modal-overlay {
     position: fixed;

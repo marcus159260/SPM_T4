@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrapper">
     <div v-if="requestsData?.length > 0">
-      <h2 class="mt-4">{{ requestsData[0].Staff_Name }}</h2>
+      <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
 
       <div class="filter-container mb-3">
       <label for="statusFilter" class="status-label">Status</label>
@@ -15,7 +15,7 @@
     </div>
 
     <div class="table-responsive">
-      <table class="table">
+      <table class="table table-striped">
         <thead>
             <tr>
             <th scope="col">Request ID</th>
@@ -116,7 +116,7 @@ export default {
   }
 </script>
 
-<style>
+<!-- <style>
 .filter-container {
   display: flex;
   align-items: center;
@@ -158,7 +158,11 @@ p{
 
 .table-responsive {
 overflow-x: auto; /* Makes table scrollable on small screens */
-}
+} 
 
+
+</style> -->
+<style>
+  @import '../style.css';
 
 </style>
