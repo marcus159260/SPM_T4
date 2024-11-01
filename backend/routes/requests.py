@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify, request
 from controllers.requests_controller import *
 from util.db import supabase 
-from util.auth_decorators import login_required, role_required
+
 
 wfh_bp = Blueprint('wfh_bp', __name__)
 
@@ -33,8 +33,6 @@ def get_staff_requests(user_id):
         return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
     
 @wfh_bp.route('/all_events', methods=['GET'])
-# @login_required
-# @role_required(['3'])
 def get_all_events():
     events = get_all_events_data()
     if events is None:
@@ -86,7 +84,6 @@ def get_requests_by_approver(approver_id):
         return jsonify({'error': str(e)}), 500
     
 @wfh_bp.route('/requests/withdraw', methods=['POST'])
-# @login_required
 def withdraw_request():
     data = request.get_json()
     request_id = data.get('Request_ID')
