@@ -4,6 +4,7 @@
       :title="'HR Schedule'"
       :resources="resources"
       :events="events"
+      @dateChanged="onDateChanged"
     />
   </div>
 </template>
@@ -45,11 +46,16 @@ export default {
   methods: {
 
     async loadEvents() {
+      const params = {
+        startDate: this.startDate.toString(),
+        days: this.days,
+      };
       return axios.get('http://127.0.0.1:5000/api/wfh/all_events', {
         headers: {
           'X-Staff-ID': this.authStore.user.staff_id,
           'X-Staff-Role': this.authStore.user.role,
         },
+        params: params,
       }).then((response) => {
         this.events = response.data;
       }).catch((error) => {
@@ -71,11 +77,16 @@ export default {
     },
 
     async loadDepartmentCounts() {
+      const params = {
+        start_date: this.startDate.toString('yyyy-MM-dd'),
+        end_date: this.startDate.addDays(this.days - 1).toString('yyyy-MM-dd'),
+      };
       return axios.get('http://127.0.0.1:5000/api/users/department_counts', {
         headers: {
           'X-Staff-ID': this.authStore.user.staff_id,
           'X-Staff-Role': this.authStore.user.role,
         },
+        params: params,
       }).then((response) => {
         this.departmentCounts = response.data;
         // console.log('Department counts:', this.departmentCounts);
@@ -106,6 +117,13 @@ export default {
       });
     },
 
+    onDateChanged(newStartDate) {
+      this.startDate = newStartDate;
+      Promise.all([this.loadEvents(), this.loadDepartmentCounts()])
+      .then(() => {
+        this.updateDepartmentNames();
+      });
+    },
 
   }
 

@@ -24,7 +24,7 @@ const router = createRouter({
       component: Login
     },
     {
-      path:"/staff-requests", //change to ownrequest
+      path:"/staff-requests",
       name:"StaffRequests",
       component:StaffRequests,
       meta: { requiresAuth: true }
@@ -65,22 +65,10 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  // if (!authStore.user) {
-  //   localStorage.getItem('user') ? authStore.user = JSON.parse(localStorage.getItem('user')) : null;
-
-  // }
-
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
   if (requiresAuth) {
     if (authStore.user) {
-      // Collect requiredRoles from all matched route records
-      // const requiredRoles = to.matched.reduce((roles, record) => {
-      //   if (record.meta.requiredRoles) {
-      //     roles.push(...record.meta.requiredRoles);
-      //   }
-      //   return roles;
-      // }, []);
 
       const requiredRoles = to.matched[0]?.meta?.requiredRoles || [];
 
@@ -88,7 +76,6 @@ router.beforeEach(async (to, from, next) => {
       // console.log(authStore.user.staff_id);
       // console.log('requiredRoles:', requiredRoles);
 
-      // Check if user's role is included in requiredRoles
       if (
         requiredRoles.length > 0 &&
         !requiredRoles.includes(authStore.user.role)
