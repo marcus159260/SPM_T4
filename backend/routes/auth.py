@@ -8,7 +8,9 @@ auth_bp = Blueprint('auth_bp', __name__)
 def login():
     data = request.json
     staff_id = data.get('Staff_ID')
+    # get user data from supabase
     user = authenticate_user(staff_id)
+    # store user data in session
     if user:
         session['staff_id'] = user['staff_id']
         session['role'] = user['role']
@@ -37,7 +39,7 @@ def check_auth():
             'department': session['department'],
             'staff_fname': session['staff_fname'],
             'staff_lname': session['staff_lname'],
-            'reporting_manager': session['reporting_manager'],
+            'reporting_manager': session['reporting_manager']
         })
     else:
         return jsonify({'authenticated': False})
