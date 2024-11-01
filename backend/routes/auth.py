@@ -11,11 +11,11 @@ def login():
         session['staff_id'] = user['staff_id']
         session['role'] = user['role']
         session['position'] = user['position']
-        session['department'] = user['department'],
-        session['staff_fname'] = user['staff_fname'],
-        session['staff_lname'] = user['staff_lname'],
+        session['department'] = user['department']
+        session['staff_fname'] = user['staff_fname']
+        session['staff_lname'] = user['staff_lname']
         session['reporting_manager'] = user['reporting_manager']
-        # print(session)
+        print(session)
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'message': 'Invalid username or password'}), 401

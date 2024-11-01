@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify, request
 from controllers.requests_controller import *
 from util.db import supabase 
-
+from util.auth_decorators import login_required, role_required
 
 wfh_bp = Blueprint('wfh_bp', __name__)
 
@@ -33,6 +33,8 @@ def get_staff_requests(user_id):
         return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
     
 @wfh_bp.route('/all_events', methods=['GET'])
+# @login_required
+# @role_required(['3'])
 def get_all_events():
     events = get_all_events_data()
     if events is None:
@@ -84,6 +86,7 @@ def get_requests_by_approver(approver_id):
         return jsonify({'error': str(e)}), 500
     
 @wfh_bp.route('/requests/withdraw', methods=['POST'])
+# @login_required
 def withdraw_request():
     data = request.get_json()
     request_id = data.get('Request_ID')
@@ -92,24 +95,12 @@ def withdraw_request():
     result, status_code = withdraw_request_controller(request_id, rejection_reason, staff_id)
     return jsonify(result), status_code
 
-#------------------------------------------------------------------------------
-# Isolated conflict check from create_request() for easier testing
-
-def check_conflict(staff_id, requested_dates, time_of_day):
-    conflict_response = supabase.rpc('check_overlapping_requests', {
-        'p_staff_id': staff_id,
-        'p_requested_dates': requested_dates,
-        'p_time': time_of_day
-    }).execute()
-    # print(conflict_response)
-    return conflict_response
-
-
 @wfh_bp.route('/requests', methods=['POST'])
 def create_request():
     try:
         data = request.get_json()
 
+        # Parse and validate date fields
         staff_id = data.get('staff_id')
         start_date = str(data.get('start_date'))
         end_date = str(data.get('end_date'))
@@ -120,7 +111,13 @@ def create_request():
         approver_id = data.get('approver_id')
         requested_dates = [str(date) for date in data.get('requested_dates')]
 
-        conflict_response = check_conflict(staff_id, requested_dates, time_of_day)
+
+        # check for conflicts
+        conflict_response = supabase.rpc('check_overlapping_requests', {
+            'p_staff_id': staff_id,
+            'p_requested_dates': requested_dates,
+            'p_time': time_of_day
+        }).execute()
 
         if conflict_response.data and conflict_response.data != 'No conflict':
             return jsonify({'error': conflict_response.data}), 400  # Return conflict message
@@ -146,7 +143,6 @@ def create_request():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-#------------------------------------------------------------------------------
 
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():

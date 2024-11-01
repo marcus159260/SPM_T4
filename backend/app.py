@@ -15,7 +15,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config.from_object(Config)
 Session(app)
-CORS(app,resources={r"/*":{'origins':"*"}})
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth/')
 app.register_blueprint(user_bp, url_prefix='/api/users/') #url_prefix is the url that you call to see the data

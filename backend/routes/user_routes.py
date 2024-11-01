@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from controllers.user_controller import *
 from datetime import datetime, timedelta
+from util.auth_decorators import login_required, role_required
 
 user_bp = Blueprint('user_bp', __name__)
 
@@ -14,6 +15,8 @@ def users():
 
 
 @user_bp.route('/', methods=['GET'])
+# @login_required
+# @role_required(['1'])
 def get_all_users():
     user_data = get_all_users_data()  
     if user_data:
@@ -38,14 +41,6 @@ def get_manager_details(manager_id):
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
     
-@user_bp.route('find-manager/<int:staff_id>', methods=['GET'])
-def find_manager_details(staff_id):
-    manager = find_manager_details_data(staff_id)
-    if manager:
-        return jsonify({"status": "success", "data": manager}), 200
-    else:
-        return jsonify({"status": "error", "message": "User not found"}), 404
-    
 @user_bp.route('by-dept-employees', methods=['GET'])
 def get_employees_by_dept():
     user = get_employees_by_dept_data() 
@@ -55,6 +50,8 @@ def get_employees_by_dept():
         return jsonify({"status": "error", "message": "User not found"}), 404
     
 @user_bp.route('/resources', methods=['GET'])
+@login_required
+@role_required(['1'])
 def get_resources_endpoint():
     resources = get_resources()
     if resources is None:
@@ -62,13 +59,15 @@ def get_resources_endpoint():
     return jsonify(resources)
 
 @user_bp.route('/by-team-employees/<int:reporting_manager_id>', methods=['GET']) #test-case: 140894
+# @login_required
+# @role_required(['2'])
 def get_employees_by_team(reporting_manager_id):
     team = get_employees_by_reporting_manager(reporting_manager_id) 
-    # resources = []
-    # for emp in team:
-    #     resources.append({"name":emp['Staff_FName']+" " +emp['Staff_LName'],"id":emp['Staff_ID'],"Dept":emp['Dept'],"Position":emp['Position']})
+    resources = []
+    for emp in team:
+        resources.append({"name":emp['Staff_FName']+" " +emp['Staff_LName'],"id":emp['Staff_ID'],"Dept":emp['Dept'],"Position":emp['Position']})
 
     if team:
-        return jsonify({"status": "success", "data": team}), 200
+        return jsonify({"status": "success", "data": resources}), 200
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
