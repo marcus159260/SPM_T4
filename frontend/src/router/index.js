@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import StaffRequests from '@/views/StaffRequests.vue'
-import TeamScheduleView from '../views/TeamScheduleView.vue';
+import TeamScheduleViewManager from '../views/TeamScheduleViewManager.vue';
+import TeamScheduleViewStaff from '../views/TeamScheduleViewStaff.vue';
 import ManagerScheduleView from '../views/ManagerScheduleView.vue';
 import HRScheduleView from '../views/HRScheduleView.vue';
 import MyScheduleView from '@/views/MyScheduleView.vue';
@@ -36,9 +37,15 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/team-schedule',
-      name: 'TeamSchedule',
-      component: TeamScheduleView,
+      path: '/team-schedule-manager',
+      name: 'TeamScheduleManager',
+      component: TeamScheduleViewManager,
+      meta: { requiresAuth: true, requiredRoles: [2,3] },
+    },
+    {
+      path: '/team-schedule-staff',
+      name: 'TeamScheduleStaff',
+      component: TeamScheduleViewStaff,
       meta: { requiresAuth: true, requiredRoles: [2,3] },
     },
     {
