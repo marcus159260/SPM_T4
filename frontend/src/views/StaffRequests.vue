@@ -34,7 +34,7 @@
 
       <!--View My Schedule-->
       <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <h1>Insert Staff View Own Schedule here</h1>
+        <h1><MyCalendar /></h1>
       </div>
       <!-- End of View My Schedule-->
 
