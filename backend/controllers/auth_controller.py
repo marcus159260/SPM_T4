@@ -15,4 +15,3 @@ def authenticate_user(staff_id):
         'staff_lname': user_data['Staff_LName'],
         'reporting_manager': user_data['Reporting_Manager']
     }
-

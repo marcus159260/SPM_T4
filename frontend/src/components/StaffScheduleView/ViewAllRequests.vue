@@ -1,7 +1,7 @@
 <template>
-  <div class="content-wrapper">
-    <div v-if="requestsData?.length > 0">
-      <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
+    <div class="content-wrapper">
+      <div v-if="requestsData?.length > 0">
+        <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
 
       <div class="filter-container mb-3">
       <label for="statusFilter" class="status-label">Status</label>
@@ -14,48 +14,49 @@
       </select>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-            <tr>
-            <th scope="col">Request ID</th>
-            <th scope="col">Request Type</th>
-            <th scope="col">Status</th>
-            <th scope="col">Requested Date</th>
-            <th scope="col">Time</th>
-            <th scope="col">Reason</th>
-            <th scope="col">Application Date</th>
-            <th scope="col">Approver</th>
-            <th scope="col">Rejection Reason</th>
-            <th scope="col">Withdrawal Reason</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="request in filteredRequests" :key="request.Request_ID">
-                <th scope="row">{{ request.Request_ID }}</th>
-                <td>{{ request.Request_Type}}</td>
-                <td>
-                    <span :class="{
-                        'badge rounded-pill text-bg-success': request.Status === 'Approved',
-                        'badge rounded-pill text-bg-warning': request.Status === 'Pending' || request.Status === 'Withdrawn - Pending' ,                        'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
-                        'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
-                    }">{{ request.Status}}</span></td>
-                <td>{{ formatDate(request.Start_Date) }}</td>
-                <td>{{ request.Time }}</td>
-                <td>{{ request.Reason }}</td>
-                <td>{{ formatDate(request.Application_Date) }}</td>
-                <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
-                <td>{{ request.Rejection_Reason }}</td>
-                <td>{{ request.Withdrawal_Reason }}</td>
-            </tr>
-        </tbody>
-      </table>
-    </div>  
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+              <tr>
+                <th scope="col">Request ID</th>
+                <th scope="col">Request Type</th>
+                <th scope="col">Status</th>
+                <th scope="col">Requested Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Reason</th>
+                <th scope="col">Application Date</th>
+                <th scope="col">Approver</th>
+                <th scope="col">Rejection Reason</th>
+                <th scope="col">Withdrawal Reason</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr v-for="request in filteredRequests" :key="request.Request_ID">
+                  <th scope="row">{{ request.Request_ID }}</th>
+                  <td>{{ request.Request_Type}}</td>
+                  <td>
+                      <span :class="{
+                          'badge rounded-pill text-bg-success': request.Status === 'Approved',
+                          'badge rounded-pill text-bg-warning': request.Status === 'Pending' || request.Status === 'Withdrawn - Pending' ,
+                          'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
+                          'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
+                      }">{{ request.Status}}</span></td>
+                  <td>{{ formatDate(request.Start_Date) }}</td>
+                  <td>{{ request.Time }}</td>
+                  <td>{{ request.Reason }}</td>
+                  <td>{{ formatDate(request.Application_Date) }}</td>
+                  <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
+                  <td>{{ request.Rejection_Reason }}</td>
+                  <td>{{ request.Withdrawal_Reason }}</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>  
+    </div>
+    <div v-else>
+      <p>No requests.</p>
+    </div>
   </div>
-  <div v-else>
-    <p>No requests.</p>
-  </div>
-</div>
 </template>
 
 <script>
@@ -63,20 +64,22 @@ import axios from 'axios';
 import { useAuthStore } from "../../stores/auth";
 
 export default {
-  name: "StaffRequests",
-  data(){
-      return{
-          staff_fname: "",
-          staff_lname: "",
-          selectedStatus: "",
-          requestsData : []
-      }
-  },
-  computed: {
-    filteredRequests() {
-      if (Array.isArray(this.requestsData) && this.selectedStatus) {
-      return this.requestsData.filter(
-        (request) => request.Status.includes(this.selectedStatus)
+    name: "StaffRequests",
+    data(){
+        return{
+            staff_fname: "",
+            staff_lname: "",
+            selectedStatus: "",
+            staff_id: 150076,
+            approverName: "",
+            requestsData : []
+        }
+    },
+    computed: {
+      filteredRequests() {
+        if (Array.isArray(this.requestsData) && this.selectedStatus) {
+        return this.requestsData.filter(
+          (request) => request.Status.includes(this.selectedStatus)
         );
     }
     return this.requestsData;
@@ -171,5 +174,4 @@ overflow-x: auto; /* Makes table scrollable on small screens */
 </style> -->
 <style>
   @import '../style.css';
-
 </style>

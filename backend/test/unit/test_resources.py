@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import MagicMock
+
 from controllers.user_controller import get_resources
+
 def test_get_resources_with_tree_building(mocker):
     # Mock the Supabase client to simulate database response
     mock_supabase = mocker.patch('controllers.user_controller.supabase')
@@ -28,21 +30,28 @@ def test_get_resources_with_tree_building(mocker):
             'children': []
         }
     ]
+
     # Run the function
     result = get_resources()
+
     # Assertions
     assert result == expected_output
     mock_supabase.table.return_value.select.assert_called_once_with(
         'Dept', 'Position', 'Staff_ID', 'Staff_FName', 'Staff_LName', 'Reporting_Manager'
     )
+
+
 def test_get_resources_exception_handling_with_output(capsys, mocker):
     # Mock the Supabase client to simulate an exception during data fetching
     mock_supabase = mocker.patch('controllers.user_controller.supabase')
     mock_supabase.table.return_value.select.return_value.execute.side_effect = Exception("Database error")
+
     # Run the function
     result = get_resources()
+
     # Assertions
     assert result is None  # Should return None when an exception occurs
+
     # Capture print output
     captured = capsys.readouterr()
     assert "Error fetching employee data: Database error" in captured.out

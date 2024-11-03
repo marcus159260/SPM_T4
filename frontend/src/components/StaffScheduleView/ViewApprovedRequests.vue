@@ -39,7 +39,7 @@
             <p>No approved requests available within the date range.</p>
         </div>
         <div>
-            <PopupWrapper id='withdrawalPopup' class="flex-container justify-content-center" :visible="isPopupVisible"
+            <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
                 @update:visible="isPopupVisible = $event">
                 <template #content>
                 <div width="100%" class="justify-content-center">
@@ -48,7 +48,7 @@
                     <textarea style='width:400px;height:150px' class="form-control" v-model="withdrawalReason"
                         placeholder="Enter reason for withdrawal"></textarea>
                     <div class="d-flex flex-column my-2">
-                        <p class="text-danger mx-0">{{ errorMessage }}</p>
+                        <p id="errormsg" class="text-danger mx-0"></p>
                         <button type="button" class="btn btn-primary" @click="confirmWithdrawal">Submit</button>
                     </div>
                     </form>
@@ -58,7 +58,7 @@
         </div>
 
         <!-- Withdrawal Success Modal -->
-        <div v-if="showSuccessModal" class="modal-overlay">
+        <div v-if="showSuccessModal" class="modal">
             <div class="modal-content">
                 <h4>Withdrawal Successful</h4>
                 <p>Your request has been successfully withdrawn.</p>
@@ -81,12 +81,10 @@ export default {
         return {
             selectedStatus: "Approved", // Default filter is Approved
             requestsData: [],
-            staffId: 150076,
             withdrawalReason: '',
             showSuccessModal: false,
             isPopupVisible: false,
-            selectedRequest: null,
-            errorMessage: ''
+            selectedRequestId: null
         };
     },
     components: {
@@ -172,14 +170,14 @@ export default {
 
         confirmWithdrawal() {
             if (!this.withdrawalReason.trim()) {
-                console.log('error from withdrawalPopup: no error msg');
+                console.log('error from popup: no error msg');
                 document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
             axios.post('http://127.0.0.1:5000/api/wfh/requests/withdraw', {
                 Request_ID: this.selectedRequest.Request_ID,
-                Withdrawal_Reason: this.withdrawalReason,
-                Staff_ID: this.staffId,
+                Rejection_Reason: this.withdrawalReason,
+                Staff_ID: this.staffId
             }).then((response) => {
                 this.isPopupVisible = false;
                 document.getElementById('withdrawalPopup').style.border = '';
@@ -208,19 +206,6 @@ export default {
     .content-wrapper {
         padding-left: 20px;
     }
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
 .modal-content {
     background-color: white;

@@ -150,6 +150,7 @@ def build_resource_tree(data):
         resources.append(dept_node)
     return resources
 
+
 # get team members (same reporting manager)
 def get_employees_by_reporting_manager(reporting_manager_id: int):
     # Query the employee table for employees with the specified Reporting_Manager
@@ -160,7 +161,13 @@ def get_employees_by_reporting_manager(reporting_manager_id: int):
         .execute()
     )
 
-    manager_response = (supabase.table("employee").select("*").eq("Staff_ID", reporting_manager_id).execute())
+    # Query for the reporting manager
+    manager_response = (
+        supabase.table("employee")
+        .select("*")
+        .eq("Staff_ID", reporting_manager_id)
+        .execute()
+    )
 
    
     # Return the list of employees

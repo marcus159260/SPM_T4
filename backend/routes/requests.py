@@ -15,7 +15,7 @@ def get_wfh_requests():
         data, error = supabase.rpc('get_requests').execute()
 
         if error[0] != 'count':
-            return jsonify({"error": f"Error fetching data: {error}"}), 500
+            return jsonify({"error": f"Error fetching data: {error}"}), 501
         else:
             return jsonify(data[1])  # Return the actual data
     except Exception as e:
@@ -30,8 +30,9 @@ def get_staff_requests(user_id):
     if requests:
         return jsonify({"status": "success", "data": requests}), 200
     else:
-        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
+        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 500
     
+
 @wfh_bp.route('/all_events', methods=['GET'])
 @login_required
 # @role_required([1,2,3])
@@ -41,6 +42,7 @@ def get_all_events():
         return jsonify({'error': 'Failed to fetch events data'}), 500
     print(events)
     return jsonify(events)
+
 
 @wfh_bp.route('/events/<int:staff_id>', methods=['GET'])
 def get_events_for_current_user(staff_id):
@@ -52,6 +54,7 @@ def get_events_for_current_user(staff_id):
     if events is None:
         return jsonify({'error': 'Failed to fetch events data'}), 500
     return jsonify(events)
+
 
 @wfh_bp.route('/requests/<int:user_id>', methods=['GET'])
 def get_user_req(user_id):
@@ -69,6 +72,7 @@ def get_user_req(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+
 @wfh_bp.route('/requests/approver/<int:approver_id>', methods=['GET'])
 def get_requests_by_approver(approver_id):
     try:
@@ -86,6 +90,7 @@ def get_requests_by_approver(approver_id):
         # Catch any unexpected errors and return a 500 response
         return jsonify({'error': str(e)}), 500
     
+
 @wfh_bp.route('/requests/withdraw', methods=['POST'])
 def withdraw_request():
     data = request.get_json()
@@ -104,29 +109,6 @@ def withdraw_request():
             )
     return jsonify(result), status_code
 
-#------------------------------------------------------------------------------
-# Isolated conflict check from create_request() for easier testing
-
-def check_conflict(staff_id, requested_dates, time_of_day):
-    conflict_response = supabase.rpc('check_overlapping_requests', {
-        'p_staff_id': staff_id,
-        'p_requested_dates': requested_dates,
-        'p_time': time_of_day
-    }).execute()
-    # print(conflict_response)
-    return conflict_response
-
-def log_activity(request_id, old_status, new_status, changed_by, change_message, reason):
-    log_response = supabase.rpc('log_activity', {
-        'p_request_id': request_id,
-        'p_old_status': old_status,
-        'p_new_status': new_status,
-        'p_changed_by': changed_by,
-        'p_change_message': change_message,
-        'p_reason': reason
-    }).execute()
-        
-    return log_response
 
 @wfh_bp.route('/requests', methods=['POST'])
 def create_request():
@@ -166,12 +148,12 @@ def create_request():
             message = response.data[0]['message']
 
             log_response = log_activity(
-                request_id=first_request_id,
-                old_status='Pending',
-                new_status=status,
-                changed_by=staff_id,
-                change_message='Request created successfully',
-                reason=reason
+                request_id = first_request_id,
+                old_status = None,
+                new_status = status,
+                changed_by = staff_id,
+                change_message = 'Request created successfully',
+                reason = reason
             )
 
             if log_response.data is None: 
@@ -187,7 +169,6 @@ def create_request():
         print("Error:", str(e))
         return jsonify({'error': str(e)}), 500
 
-#------------------------------------------------------------------------------
 
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():
@@ -210,7 +191,6 @@ def cancel_request():
                 change_message = 'Request cancelled successfully',
                 reason =  data.get('Withdrawal_Reason') 
             )
-    
     return jsonify(result), result['status']
 
     
