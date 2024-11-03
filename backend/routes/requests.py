@@ -193,7 +193,7 @@ def cancel_request():
             )
     return jsonify(result), result['status']
 
-
+    
 @wfh_bp.route('/requests/approve', methods=['POST'])
 def update_request():
     try:
@@ -212,6 +212,7 @@ def update_request():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+
 @wfh_bp.route('/requests/approvewithdrawal', methods=['POST'])
 def approve_withdrawal_request():
     try:
@@ -228,6 +229,15 @@ def approve_withdrawal_request():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+    
+@wfh_bp.route('/requests/rejectwithdrawal', methods=['POST'])
+def reject_withdrawal_request():
+    data = request.get_json()
+    print(123456)
+    request_id = data.get('Request_ID')
+    rejection_reason = data.get('Withdrawal_Reason')
+    result, status_code = reject_wfh_withdrawal_request(request_id, rejection_reason)
     
 
 @wfh_bp.route('/requests/reject', methods=['POST'])

@@ -61,6 +61,7 @@
 
 <script>
 import axios from 'axios';
+import { useAuthStore } from "../../stores/auth";
 
 export default {
     name: "StaffRequests",
@@ -82,6 +83,9 @@ export default {
         );
     }
     return this.requestsData;
+    },
+    authStore() {
+      return useAuthStore();
     }
   },
   methods: {
@@ -95,8 +99,14 @@ export default {
     async fetchRequests() {
       try {
           // Get staffId from route params (if using Vue Router) or from a state
-          const staffId = this.$route.params.staff_id || 150076; 
-          const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${this.staff_id}`);
+          const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${this.authStore.user.staff_id}`, 
+          {
+            headers: {
+              'X-Staff-ID': this.authStore.user.staff_id,
+              'X-Staff-Role': this.authStore.user.role,
+            },
+          }
+          );
           if(response.data){
             this.requestsData = response.data
           }

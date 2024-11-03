@@ -73,13 +73,13 @@
 <script>
 import axios from 'axios';
 import PopupWrapper from '../PopupWrapper.vue';
+import { useAuthStore } from "../../stores/auth";
 
 export default {
     name: "StaffRequests",
     data() {
         return {
             selectedStatus: "Approved", // Default filter is Approved
-            staffId: 150076,
             requestsData: [],
             withdrawalReason: '',
             showSuccessModal: false,
@@ -108,7 +108,10 @@ export default {
                     endDate <= plus91Days
                 );
             });
-        }
+        },
+        authStore() {
+            return useAuthStore();
+    }
     },
     methods: {
         formatDate(dateString) {
@@ -124,7 +127,13 @@ export default {
                 // Get staffId from route params (if using Vue Router) or from a state
                 const staffId = this.$route.params.staffId || 150076;
                 const response = await axios.get(
-                    `http://127.0.0.1:5000/api/wfh/requests/${staffId}`
+                    `http://127.0.0.1:5000/api/wfh/requests/${this.authStore.user.staff_id}`,
+                    {
+                        headers: {
+                            'X-Staff-ID': this.authStore.user.staff_id,
+                            'X-Staff-Role': this.authStore.user.role,
+                        }
+                    }
                 );
                 if (response.data) {
                     this.requestsData = response.data;
