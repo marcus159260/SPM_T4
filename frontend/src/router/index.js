@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import StaffRequests from '@/views/StaffRequests.vue'
 import TeamScheduleView from '../views/TeamScheduleView.vue';
+import TeamScheduleViewManager from '../views/TeamScheduleViewManager.vue';
+import TeamScheduleViewStaff from '../views/TeamScheduleViewStaff.vue';
 import ManagerScheduleView from '../views/ManagerScheduleView.vue';
 import HRScheduleView from '../views/HRScheduleView.vue';
 import MyScheduleView from '@/views/MyScheduleView.vue';
@@ -24,7 +26,12 @@ const router = createRouter({
       component: Login
     },
     {
-      path:"/staff-requests", //change to ownrequest
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path:"/staff-requests",
       name:"StaffRequests",
       component:StaffRequests,
       meta: { requiresAuth: true }
@@ -35,6 +42,18 @@ const router = createRouter({
       component: MyScheduleView,
       meta: { requiresAuth: true }
     },
+    // {
+    //   path: '/team-schedule-manager',
+    //   name: 'TeamScheduleManager',
+    //   component: TeamScheduleViewManager,
+    //   meta: { requiresAuth: true, requiredRoles: [3] },
+    // },
+    // {
+    //   path: '/team-schedule-staff',
+    //   name: 'TeamScheduleStaff',
+    //   component: TeamScheduleViewStaff,
+    //   meta: { requiresAuth: true, requiredRoles: [1,2,3] },
+    // },
     {
       path: '/team-schedule',
       name: 'TeamSchedule',
@@ -45,7 +64,7 @@ const router = createRouter({
       path: '/manager-schedule',
       name: 'ManagerSchedule',
       component: ManagerScheduleView,
-      meta: { requiresAuth: true, requiredRoles: [2] },
+      meta: { requiresAuth: true, requiredRoles: [3] },
     },
     {
       path: '/hr-schedule',
@@ -76,7 +95,6 @@ router.beforeEach(async (to, from, next) => {
       // console.log(authStore.user.staff_id);
       // console.log('requiredRoles:', requiredRoles);
 
-      // Check if user's role is included in requiredRoles
       if (
         requiredRoles.length > 0 &&
         !requiredRoles.includes(authStore.user.role)

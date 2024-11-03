@@ -34,14 +34,20 @@
 
       <!--View My Schedule-->
       <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <MyScheduleView/>
+        <h1><MyCalendar /></h1>
       </div>
       <!-- End of View My Schedule-->
 
       <!--View My Team Schedule-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <TeamScheduleView/>
+        <h1><TeamCalendar /></h1>
       </div>
+      <!--End of All Requests-->
+
+      <!--View (M/D) My Team Schedule-->
+      <!-- <div v-if="user && Number(user.role) === 3" class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+        <h1><TeamCalendarManager /></h1>
+      </div> -->
       <!--End of All Requests-->
 
       <!--Create Request-->
@@ -83,8 +89,9 @@ import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequ
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
 import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vue';
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
-import MyScheduleView from '../views/MyScheduleView.vue';
-import TeamScheduleView from '../views/TeamScheduleView.vue';
+import TeamCalendar from "@/components/StaffScheduleView/teamCalendar.vue";
+import MyCalendar from "@/components/myCalendar.vue";
+// import TeamCalendarManager from "@/components/teamCalendarManager.vue";
 
 
 export default {
@@ -110,8 +117,9 @@ export default {
     ViewApprovedRequests,
     ViewAllRequests2,
     ApplicationForm,
-    MyScheduleView,
-    TeamScheduleView
+    MyCalendar,
+    // TeamCalendarManager,
+    TeamCalendar
   },
 }
 

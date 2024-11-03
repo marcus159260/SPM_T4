@@ -3,16 +3,16 @@
       <div v-if="requestsData?.length > 0">
         <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
 
-        <div class="filter-container mb-3">
-        <label for="statusFilter" class="status-label">Status</label>
-        <select id="statusFilter" v-model="selectedStatus" class="status-dropdown">
-          <option value="">All</option>
-          <option value="Approved">Approved</option>
-          <option value="Pending">Pending</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Withdrawn">Withdrawn</option>
-        </select>
-      </div>
+      <div class="filter-container mb-3">
+      <label for="statusFilter" class="status-label">Status</label>
+      <select id="statusFilter" v-model="selectedStatus" class="status-dropdown">
+        <option value="">All</option>
+        <option value="Approved">Approved</option>
+        <option value="Pending">Pending</option>
+        <option value="Rejected">Rejected</option>
+        <option value="Withdrawn">Withdrawn</option>
+      </select>
+    </div>
 
       <div class="table-responsive">
         <table class="table table-striped">
@@ -61,6 +61,7 @@
 
 <script>
 import axios from 'axios';
+import { useAuthStore } from "../../stores/auth";
 
 export default {
     name: "StaffRequests",
@@ -80,42 +81,97 @@ export default {
         return this.requestsData.filter(
           (request) => request.Status.includes(this.selectedStatus)
         );
-      }
-      return this.requestsData;
-      }
-    },
-    methods: {
-      formatDate(dateString) {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-      const year = date.getFullYear();
-      return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
-    }, 
-      async fetchRequests() {
-        try {
-            // Get staffId from route params (if using Vue Router) or from a state
-            const staffId = this.$route.params.staff_id || 150076; 
-            const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${this.staff_id}`);
-            if(response.data){
-              this.requestsData = response.data
-            }
-            else {
-            console.log("No data found for this staff ID");
-            }
-        } catch (error) {
-        console.error("Error fetching requests:", error);
-      }
-    }},
-
-    mounted() {
-    this.fetchRequests();
-  }
-
-
     }
+    return this.requestsData;
+    },
+    authStore() {
+      return useAuthStore();
+    }
+  },
+  methods: {
+    formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
+  }, 
+    async fetchRequests() {
+      try {
+          // Get staffId from route params (if using Vue Router) or from a state
+          const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${this.authStore.user.staff_id}`, 
+          {
+            headers: {
+              'X-Staff-ID': this.authStore.user.staff_id,
+              'X-Staff-Role': this.authStore.user.role,
+            },
+          }
+          );
+          if(response.data){
+            this.requestsData = response.data
+          }
+          else {
+          console.log("No data found for this staff ID");
+          }
+      } catch (error) {
+      console.error("Error fetching requests:", error);
+    }
+  }},
+
+  mounted() {
+  this.fetchRequests();
+}
+
+
+  }
 </script>
 
+<!-- <style>
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* space between label and dropdown */
+}
+
+.status-label {
+  font-weight: bold;
+  margin-left: 15px;
+  margin-right: 10px;
+}
+
+.status-dropdown {
+  padding: 3px;
+  font-size: 14px;
+}
+
+/* Increase the row height */
+tr {
+  height: 80px;
+}
+
+td, th {
+  vertical-align: middle; /* Center content vertically in rows */
+  padding: 15px; /* Add more padding for increased row size */
+  text-align: center;
+}
+
+h2 {
+  padding:8px;
+  font-weight: bolder;
+  margin-left: 8px;
+}
+
+p{
+  font-weight: bold;
+  margin-left: 15px;
+}
+
+.table-responsive {
+overflow-x: auto; /* Makes table scrollable on small screens */
+} 
+
+
+</style> -->
 <style>
   @import '../style.css';
 </style>

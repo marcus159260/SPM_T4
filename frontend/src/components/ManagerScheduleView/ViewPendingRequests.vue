@@ -70,7 +70,6 @@
               <img src="../../assets/checked.png" alt="Approve">
             </button>
 
-
             <button @click="rejectRequestPopup(staff.Request_ID, staff.Status)" class="icon-button mb-5"
               style="padding-top: 40px;">
               <img src="../../assets/x-button.png" alt="Reject">
@@ -100,6 +99,10 @@
                 placeholder="Enter reason for rejection"></textarea>
               <div class="d-flex flex-column my-2">
                 <p id="errormsg" class="text-danger mx-0"></p>
+                <button v-if="selectedRequestStatus == 'Pending'" type="button" class="btn btn-primary"
+                  @click="rejectRequest(selectedRequestId)">Submit</button>
+                <button v-if="selectedRequestStatus == 'Withdrawn-pending'" type="button" class="btn btn-primary"
+                  @click="rejectWithdrawalRequest(selectedRequestId)">Submit</button>
                 <button v-if="selectedRequestStatus == 'Pending'" type="button" class="btn btn-primary"
                   @click="rejectRequest(selectedRequestId)">Submit</button>
                 <button v-if="selectedRequestStatus == 'Withdrawn-pending'" type="button" class="btn btn-primary"
@@ -142,6 +145,9 @@ export default {
 
           //console.log("Request object:", request);
 
+
+          //console.log("Request object:", request);
+
           // Calculate the date 2 months before the Application_Date
           const twoMonthsBeforeApplicationDate = new Date(applicationDate);
           twoMonthsBeforeApplicationDate.setMonth(applicationDate.getMonth() - 2);
@@ -153,6 +159,7 @@ export default {
           // console.log("threeMonthsAfterApplicationDate: " + threeMonthsAfterApplicationDate)
 
 
+
           // Check if the Start_Date is within the range of 2 months before to 3 months after the Application_Date
           const isWithinRange = (
             startDate >= twoMonthsBeforeApplicationDate &&
@@ -161,6 +168,7 @@ export default {
 
           // Return true if the request is pending, matches managerId, and Start_Date is within range
           return (
+            (request.Status === 'Pending' || request.Status === 'Withdrawn-pending') &&
             (request.Status === 'Pending' || request.Status === 'Withdrawn-pending') &&
             request.Approver_ID === this.managerId &&
             isWithinRange
@@ -187,6 +195,8 @@ export default {
           this.allRequests = response.data;
           // console.log(this.allRequests)
           // console.log(this.pendingRequests)
+          // console.log(this.allRequests)
+          // console.log(this.pendingRequests)
 
         })
         .catch(error => {
@@ -197,13 +207,14 @@ export default {
       // console.log("Request ID clicked:", requestId); 
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
-          if (response.status === 200) {
+          console.log('response.data', response.data);
+          if (response.data.status != 200) {
             alert(response.data.message);
             this.fetchRequests();  // Refresh the request list
           }
         })
         .catch(error => {
-          if (error.response.status === 400) { //A (forward)
+          if (error.status === 400) { //A (forward)
             alert(error.response.data.error);  // Show the error message from the backend
           }
           else if (error.response.status === 409) { //B (backdated)
@@ -234,6 +245,8 @@ export default {
         .then(response => {
           // console.log('response.data', response.data);
           console.log('approveWithdrawalRequest');
+          // console.log('response.data', response.data);
+          console.log('approveWithdrawalRequest');
           if (response.data == 'error') {
             alert(response.data);
           }
@@ -259,7 +272,27 @@ export default {
           if (response.data == 'error') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
-            document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;
+            document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
+          }
+          else {
+            this.fetchRequests();
+            this.isPopupVisible = false; // Hide the popup after submission
+            document.getElementById('popup').style.border = '';
+
+          }
+        })
+        .catch(error => {
+          console.error('Error rejecting request:', error);
+        });
+    },
+    rejectWithdrawalRequest(requestId) {
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
+        .then(response => {
+          console.log('response.data', response.data);
+          if (response.data == 'error') {
+            // console.log(response.data.error);
+            console.log('error from popup: no error msg');
+            document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
 
           }
           else {

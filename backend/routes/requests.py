@@ -35,11 +35,12 @@ def get_staff_requests(user_id):
 
 @wfh_bp.route('/all_events', methods=['GET'])
 @login_required
-@role_required([1])
+# @role_required([1,2,3])
 def get_all_events():
     events = get_all_events_data()
     if events is None:
         return jsonify({'error': 'Failed to fetch events data'}), 500
+    print(events)
     return jsonify(events)
 
 
@@ -91,7 +92,6 @@ def get_requests_by_approver(approver_id):
     
 
 @wfh_bp.route('/requests/withdraw', methods=['POST'])
-# @login_required
 def withdraw_request():
     data = request.get_json()
     request_id = data.get('Request_ID')
@@ -193,7 +193,7 @@ def cancel_request():
             )
     return jsonify(result), result['status']
 
-
+    
 @wfh_bp.route('/requests/approve', methods=['POST'])
 def update_request():
     try:
@@ -206,12 +206,39 @@ def update_request():
         # print(request_id, status)
         if not request_id or not status:
             return jsonify({"error": "Missing request ID or status"}), 400
-        result, status_code = approve_wfh_request(request_id, status, force_approval)
-        print("result, status code:", result, status_code)
+        result, status_code = approve_wfh_request(request_id, status)
+        print("line 143:", result, status_code)
         return jsonify(result), status_code
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@wfh_bp.route('/requests/approvewithdrawal', methods=['POST'])
+def approve_withdrawal_request():
+    try:
+        request_data = request.json
+        print(request_data)
+        request_id = request_data.get('Request_ID')
+        
+        # print(request_id, status)
+        if not request_id:
+            return jsonify({"error": "Missing request ID"}), 400
+        result, status_code = approve_withdrawal_wfh_request(request_id)
+     
+        return jsonify(result), status_code
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    
+@wfh_bp.route('/requests/rejectwithdrawal', methods=['POST'])
+def reject_withdrawal_request():
+    data = request.get_json()
+    print(123456)
+    request_id = data.get('Request_ID')
+    rejection_reason = data.get('Withdrawal_Reason')
+    result, status_code = reject_wfh_withdrawal_request(request_id, rejection_reason)
     
 
 @wfh_bp.route('/requests/reject', methods=['POST'])
