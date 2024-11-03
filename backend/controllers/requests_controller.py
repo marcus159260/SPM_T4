@@ -277,55 +277,12 @@ def get_wfh_count(requested_date):
             .eq('Status', 'Approved')\
             .lte('Start_Date', requested_date)\
             .gte('End_Date', requested_date).execute()
-        print('get wfh count')
-        return len(response.data) if response.data else 0
-
-    except Exception as e:
-        print(f"Error retrieving WFH count: {str(e)}")
-        return 0
-
-
-def get_total_office_strength(requested_date):
-    return 10
-
-def get_wfh_count(requested_date):
-    # forward: 2024-10-28 (use example id: 4,5,7,10,13, -> 23)
-    # backdated: 2024-10-14 (use example id: 30, 31, 35, 36, 37, -> 38)
-    try:
-        # Query the database for approved WFH requests between start and end dates that include current_date
-        # Check how many are currently approved for WFH between start_date and end_date
-        response = supabase.table('request').select("*")\
-            .eq('Status', 'Approved')\
-            .lte('Start_Date', requested_date)\
-            .gte('End_Date', requested_date).execute()
         
         return len(response.data) if response.data else 0
 
     except Exception as e:
         print(f"Error retrieving WFH count: {str(e)}")
         return 0
-
-
-def get_total_office_strength(requested_date):
-    return 10
-
-def get_wfh_count(requested_date):
-    # forward: 2024-10-28 (use example id: 4,5,7,10,13, -> 23)
-    # backdated: 2024-10-14 (use example id: 30, 31, 35, 36, 37, -> 38)
-    try:
-        # Query the database for approved WFH requests between start and end dates that include current_date
-        # Check how many are currently approved for WFH between start_date and end_date
-        response = supabase.table('request').select("*")\
-            .eq('Status', 'Approved')\
-            .lte('Start_Date', requested_date)\
-            .gte('End_Date', requested_date).execute()
-        
-        return len(response.data) if response.data else 0
-
-    except Exception as e:
-        print(f"Error retrieving WFH count: {str(e)}")
-        return 0
-
 
 def reject_wfh_request(request_id, reason):
     try:

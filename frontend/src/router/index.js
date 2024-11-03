@@ -40,18 +40,18 @@ const router = createRouter({
       component: MyScheduleView,
       meta: { requiresAuth: true }
     },
-    {
-      path: '/team-schedule-manager',
-      name: 'TeamScheduleManager',
-      component: TeamScheduleViewManager,
-      meta: { requiresAuth: true, requiredRoles: [3] },
-    },
-    {
-      path: '/team-schedule-staff',
-      name: 'TeamScheduleStaff',
-      component: TeamScheduleViewStaff,
-      meta: { requiresAuth: true, requiredRoles: [1,2,3] },
-    },
+    // {
+    //   path: '/team-schedule-manager',
+    //   name: 'TeamScheduleManager',
+    //   component: TeamScheduleViewManager,
+    //   meta: { requiresAuth: true, requiredRoles: [3] },
+    // },
+    // {
+    //   path: '/team-schedule-staff',
+    //   name: 'TeamScheduleStaff',
+    //   component: TeamScheduleViewStaff,
+    //   meta: { requiresAuth: true, requiredRoles: [1,2,3] },
+    // },
     {
       path: '/team-schedule',
       name: 'TeamSchedule',

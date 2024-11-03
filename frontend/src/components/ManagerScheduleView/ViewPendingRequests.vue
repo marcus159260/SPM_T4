@@ -63,21 +63,12 @@
           <td class="d-flex align-items-center">
             <button v-if="staff.Status == 'Withdrawn-pending'" @click="approveWithdrawalRequest(staff.Request_ID)"
               class="icon-button mb-5" style="padding-top: 40px;">
-            <button v-if="staff.Status == 'Withdrawn-pending'" @click="approveWithdrawalRequest(staff.Request_ID)"
-              class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/checked.png" alt="Approve Withdrawal">
             </button>
             <button v-if="staff.Status == 'Pending'" @click="approveRequest(staff.Request_ID)" class="icon-button mb-5"
               style="padding-top: 40px;">
-            <button v-if="staff.Status == 'Pending'" @click="approveRequest(staff.Request_ID)" class="icon-button mb-5"
-              style="padding-top: 40px;">
               <img src="../../assets/checked.png" alt="Approve">
             </button>
-
-
-            <button @click="rejectRequestPopup(staff.Request_ID, staff.Status)" class="icon-button mb-5"
-              style="padding-top: 40px;">
-
 
             <button @click="rejectRequestPopup(staff.Request_ID, staff.Status)" class="icon-button mb-5"
               style="padding-top: 40px;">
@@ -279,11 +270,9 @@ export default {
         .then(response => {
           console.log('response.data', response.data);
           if (response.data == 'error') {
-          if (response.data == 'error') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
             document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
-
           }
           else {
             this.fetchRequests();
