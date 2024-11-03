@@ -48,4 +48,3 @@ def test_submit_application_with_conflict(client):
     
     
     
-

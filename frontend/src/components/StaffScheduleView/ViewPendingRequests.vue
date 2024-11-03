@@ -84,6 +84,7 @@ export default {
     name: "StaffRequests",
     data() {
         return {
+            
             staffId: 150076,
             requestsData: [],
             showSuccessModal: false, // Track success modal visibility

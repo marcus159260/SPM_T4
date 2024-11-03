@@ -28,7 +28,13 @@ def get_user_data_by_id(user_id):
     else:
         return None
     
-  
+def find_manager_details_data(staff_id):
+    response = supabase.table('employee').select('Reporting_Manager').eq('Staff_ID', staff_id).execute() #eq is filter
+    if response.data:
+        return response.data[0]
+    else:
+        return None
+
 def get_manager_details_data(manager_id: int):
     # Query to get manager details by Staff_ID (which is manager_id)
     response = (
@@ -139,12 +145,11 @@ def build_resource_tree(data):
             'children': build_department_hierarchy(employees)
         }
         resources.append(dept_node)
+        print(str(resources)) 
     return resources
 
 # get team members (same reporting manager)
-def get_employees_by_reporting_manager(reporting_manager_id:int):
-    # reporting_manager_id = 140894
-
+def get_employees_by_reporting_manager(reporting_manager_id: int):
     # Query the employee table for employees with the specified Reporting_Manager
     team_response = (
         supabase.table('employee')
@@ -153,9 +158,25 @@ def get_employees_by_reporting_manager(reporting_manager_id:int):
         .execute()
     )
 
-    manager_response = (supabase.table("employee").select("*").eq("Staff_ID", reporting_manager_id).execute())
+    # Query for the reporting manager
+    manager_response = (
+        supabase.table("employee")
+        .select("*")
+        .eq("Staff_ID", reporting_manager_id)
+        .execute()
+    )
 
-   
-    # Return the list of employees
-    # print(str(team_response.data))
-    return team_response.data+ manager_response.data
+    # Create a list to store the final result
+    result = []
+
+    # Add team members if they exist
+    if team_response.data:
+        result.extend(team_response.data)
+
+    # Always add the reporting manager to the result if not already included
+    if manager_response.data:
+        # Only add if the manager is not already in the result
+        if not any(emp['Staff_ID'] == reporting_manager_id for emp in result):
+            result.extend(manager_response.data)
+
+    return result

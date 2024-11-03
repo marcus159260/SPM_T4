@@ -126,6 +126,8 @@ export default {
       managerId: 151408,
       isPopupVisible: false,
       rejectionReason: '',
+      withdrawalReason: '',
+      selectedRequestStatus: '',
       selectedRequestId: null
     };
   },
@@ -197,13 +199,14 @@ export default {
       // console.log("Request ID clicked:", requestId); 
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
-          if (response.status === 200) {
+          console.log('response.data', response.data);
+          if (response.data.status != 200) {
             alert(response.data.message);
             this.fetchRequests();  // Refresh the request list
           }
         })
         .catch(error => {
-          if (error.response.status === 400) { //A (forward)
+          if (error.status === 400) { //A (forward)
             alert(error.response.data.error);  // Show the error message from the backend
           }
           else if (error.response.status === 409) { //B (backdated)
@@ -248,6 +251,8 @@ export default {
 
     rejectRequestPopup(requestId, status) {
       this.selectedRequestId = requestId; // Store the request ID for rejection
+      this.selectedRequestStatus = status;
+      console.log(status);
       this.isPopupVisible = true; // Show the popup
       document.getElementById('popup').style.display = 'flex';
       document.getElementById('popup').style.border = '1px black solid';
@@ -259,7 +264,28 @@ export default {
           if (response.data == 'error') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
-            document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;
+            document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
+
+          }
+          else {
+            this.fetchRequests();
+            this.isPopupVisible = false; // Hide the popup after submission
+            document.getElementById('popup').style.border = '';
+
+          }
+        })
+        .catch(error => {
+          console.error('Error rejecting request:', error);
+        });
+    },
+    rejectWithdrawalRequest(requestId) {
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
+        .then(response => {
+          console.log('response.data', response.data);
+          if (response.data == 'error') {
+            // console.log(response.data.error);
+            console.log('error from popup: no error msg');
+            document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
 
           }
           else {

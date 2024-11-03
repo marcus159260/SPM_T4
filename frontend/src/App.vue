@@ -8,7 +8,7 @@
 <script>
 import { useAuthStore } from '@/stores/auth';
 import { computed } from 'vue';
-import NavBar from '@/components/Navbar.vue';
+import NavBar from '@/components/NavBar.vue';
 
 export default {
   name: 'App',
@@ -20,7 +20,7 @@ export default {
     const user = computed(() => authStore.user);
 
     // Debugging
-    // console.log('user:', user.value);
+    console.log('user:', user.value);
     // console.log('user.role:', typeof user.value?.role, user.value?.role);
 
     return {

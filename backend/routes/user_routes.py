@@ -33,7 +33,7 @@ def get_user_by_id(user_id):
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
     
-@user_bp.route('get-manager/<int:manager_id>', methods=['GET'])
+@user_bp.route('/get-manager/<int:manager_id>', methods=['GET'])
 def get_manager_details(manager_id):
     manager = get_manager_details_data(manager_id)
     if manager:
@@ -41,7 +41,15 @@ def get_manager_details(manager_id):
     else:
         return jsonify({"status": "error", "message": "User not found"}), 404
     
-@user_bp.route('by-dept-employees', methods=['GET'])
+@user_bp.route('/find-manager/<int:staff_id>', methods=['GET'])
+def find_manager_details(staff_id):
+    manager = find_manager_details_data(staff_id)
+    if manager:
+        return jsonify({"status": "success", "data": manager}), 200
+    else:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+    
+@user_bp.route('/by-dept-employees', methods=['GET'])
 def get_employees_by_dept():
     user = get_employees_by_dept_data() 
     if user:
@@ -51,7 +59,7 @@ def get_employees_by_dept():
     
 @user_bp.route('/resources', methods=['GET'])
 @login_required
-@role_required([1])
+@role_required(['1'])
 def get_resources_endpoint():
     resources = get_resources()
     if resources is None:
