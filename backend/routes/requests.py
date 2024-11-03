@@ -34,11 +34,12 @@ def get_staff_requests(user_id):
     
 @wfh_bp.route('/all_events', methods=['GET'])
 @login_required
-@role_required([1])
+# @role_required([1,2,3])
 def get_all_events():
     events = get_all_events_data()
     if events is None:
         return jsonify({'error': 'Failed to fetch events data'}), 500
+    print(events)
     return jsonify(events)
 
 @wfh_bp.route('/events/<int:staff_id>', methods=['GET'])
