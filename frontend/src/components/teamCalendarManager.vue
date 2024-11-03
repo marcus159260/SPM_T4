@@ -1,4 +1,10 @@
 <template>
+    <CalendarNavigation
+    :currentDate="config.startDate"
+    :earliestDate="earliestDate"
+    :latestDate="latestDate"
+    @dateChanged="onDateChanged"
+    />
     <DayPilotScheduler :config="config" ref="schedulerRef" />
     <div>
   <!-- <button @click=this.changeView()>Change View</button> -->
@@ -8,8 +14,12 @@
   <script setup>
   import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
   import { ref, reactive, onMounted } from 'vue';
+  import { ref, reactive, watch, defineProps, defineEmits } from 'vue';
+  import CalendarNavigation from './CalendarNavigation.vue';
   import axios from 'axios';
+  
 
+  const emit = defineEmits(['dateChanged']);
 
   
   const config = reactive({
@@ -42,30 +52,16 @@
     treeEnabled: true,
   });
   const schedulerRef = ref(null);
-  
-  const changeView = () => {
-      if (this.config.days === 7) {
-        this.config.days = 1;
-        this.config.startDate = DayPilot.Date.today();
-      } else {
-        this.config.days = 7;
-        this.config.startDate = DayPilot.Date.today().firstDayOfWeek();
-      }
-      // Emit the event when the view changes
-      this.$emit('view-changed');
-    }
-  
-  // const changeView = () => {
-  //   if(config.days = 7){
-  //     config.days = 1;
-  //     config.startDate = DayPilot.Date.today();
-  //   }else{
-  //     config.days = 7;
-  //     config.startDate = DayPilot.Date.today().firstDayOfWeek();
-  //   }
 
-  //   this.$emit('view-changed');
-  // }
+  const today = DayPilot.Date.today();
+  const currentDayOfWeek = today.getDayOfWeek(); // 1 = Monday, 7 = Sunday
+  const daysToMonday = currentDayOfWeek - 1; // Subtract to get back to Monday
+  const startOfWeek = today.addDays(-daysToMonday);
+  config.startDate = startOfWeek;
+  const earliestDate = startOfWeek.addDays(-60); // 60 days back
+  const latestDate = startOfWeek.addDays(90);    // 90 days forward
+  
+  
   
   const loadEvents = () => {
     loadResources();
@@ -115,8 +111,18 @@
         config.resources = temp.data;
         console.log("Loaded resources:", temp);
 
+        const params = {
+        startDate: this.startDate.toString(),
+        days: this.days,
+      };
+
         axios
-          .get("http://127.0.0.1:5000/api/wfh/all_events")
+          .get("http://127.0.0.1:5000/api/wfh/all_events"), {
+        headers: {
+          'X-Staff-ID': this.authStore.user.staff_id,
+          'X-Staff-Role': this.authStore.user.role,
+        },
+        params: params,}
           .then((r) => {
             
             if (r.data){
@@ -209,6 +215,11 @@
 
 
   };
+
+  function onDateChanged(newStartDate) {
+  config.startDate = newStartDate;
+  emit('dateChanged', newStartDate);
+}
   
   onMounted(() => {
     config.events = [];
