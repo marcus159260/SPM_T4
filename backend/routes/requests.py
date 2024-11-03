@@ -43,7 +43,6 @@ def get_all_events():
 
 @wfh_bp.route('/events/<int:staff_id>', methods=['GET'])
 def get_events_for_current_user(staff_id):
-    # print(staff_id)
     # staff_id = session.get('staff_id')
     if not staff_id:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -104,6 +103,30 @@ def withdraw_request():
             )
     return jsonify(result), status_code
 
+#------------------------------------------------------------------------------
+# Isolated conflict check from create_request() for easier testing
+
+def check_conflict(staff_id, requested_dates, time_of_day):
+    conflict_response = supabase.rpc('check_overlapping_requests', {
+        'p_staff_id': staff_id,
+        'p_requested_dates': requested_dates,
+        'p_time': time_of_day
+    }).execute()
+    # print(conflict_response)
+    return conflict_response
+
+def log_activity(request_id, old_status, new_status, changed_by, change_message, reason):
+    log_response = supabase.rpc('log_activity', {
+        'p_request_id': request_id,
+        'p_old_status': old_status,
+        'p_new_status': new_status,
+        'p_changed_by': changed_by,
+        'p_change_message': change_message,
+        'p_reason': reason
+    }).execute()
+        
+    return log_response
+
 @wfh_bp.route('/requests', methods=['POST'])
 def create_request():
     try:
@@ -142,12 +165,12 @@ def create_request():
             message = response.data[0]['message']
 
             log_response = log_activity(
-                request_id = first_request_id,
-                old_status = None,
-                new_status = status,
-                changed_by = staff_id,
-                change_message = 'Request created successfully',
-                reason = reason
+                request_id=first_request_id,
+                old_status='Pending',
+                new_status=status,
+                changed_by=staff_id,
+                change_message='Request created successfully',
+                reason=reason
             )
 
             if log_response.data is None: 
@@ -163,6 +186,7 @@ def create_request():
         print("Error:", str(e))
         return jsonify({'error': str(e)}), 500
 
+#------------------------------------------------------------------------------
 
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():
@@ -211,18 +235,16 @@ def cancel_request():
 def update_request():
     try:
         request_data = request.json
-        print(request_data)
         request_id = request_data.get('Request_ID')
         status = request_data.get('request_Status')
         force_approval = request_data.get('force_approval', False) 
-
+        
         # print(request_id, status)
         if not request_id or not status:
             return jsonify({"error": "Missing request ID or status"}), 400
-        response = approve_wfh_request(request_id, status, force_approval)
-        print(type(response))
-        print("line 143:", response)
-        return response, response['status']
+        result, status_code = approve_wfh_request(request_id, status)
+        print("line 143:", result, status_code)
+        return jsonify(result), status_code
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -249,15 +271,6 @@ def reject_request():
     data = request.get_json()
     request_id = data.get('Request_ID')
     rejection_reason = data.get('Rejection_Reason')
-    result, status_code = reject_wfh_request(request_id, rejection_reason)
-    return jsonify(result), status_code
-
-@wfh_bp.route('/requests/rejectwithdrawal', methods=['POST'])
-def reject_withdrawal_request():
-    data = request.get_json()
-    print(123456)
-    request_id = data.get('Request_ID')
-    rejection_reason = data.get('Withdrawal_Reason')
-    result, status_code = reject_wfh_withdrawal_request(request_id, rejection_reason)
-    
+    staff_id = data.get('Staff_ID'); 
+    result, status_code = reject_wfh_request(request_id, rejection_reason, staff_id)
     return jsonify(result), status_code

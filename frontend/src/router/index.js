@@ -1,8 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import StaffRequests from '@/views/StaffRequests.vue'
-import TeamScheduleViewManager from '../views/TeamScheduleViewManager.vue';
-import TeamScheduleViewStaff from '../views/TeamScheduleViewStaff.vue';
+import TeamScheduleView from '../views/TeamScheduleView.vue';
 import ManagerScheduleView from '../views/ManagerScheduleView.vue';
 import HRScheduleView from '../views/HRScheduleView.vue';
 import MyScheduleView from '@/views/MyScheduleView.vue';
@@ -25,7 +24,12 @@ const router = createRouter({
       component: Login
     },
     {
-      path:"/staff-requests", //change to ownrequest
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
+      path:"/staff-requests",
       name:"StaffRequests",
       component:StaffRequests,
       meta: { requiresAuth: true }
@@ -47,6 +51,12 @@ const router = createRouter({
       name: 'TeamScheduleStaff',
       component: TeamScheduleViewStaff,
       meta: { requiresAuth: true, requiredRoles: [1,2,3] },
+    },
+    {
+      path: '/team-schedule',
+      name: 'TeamSchedule',
+      component: TeamScheduleView,
+      meta: { requiresAuth: true, requiredRoles: [2,3] },
     },
     {
       path: '/manager-schedule',
@@ -72,30 +82,17 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  // if (!authStore.user) {
-  //   localStorage.getItem('user') ? authStore.user = JSON.parse(localStorage.getItem('user')) : null;
-
-  // }
-
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
   if (requiresAuth) {
     if (authStore.user) {
-      // Collect requiredRoles from all matched route records
-      // const requiredRoles = to.matched.reduce((roles, record) => {
-      //   if (record.meta.requiredRoles) {
-      //     roles.push(...record.meta.requiredRoles);
-      //   }
-      //   return roles;
-      // }, []);
 
       const requiredRoles = to.matched[0]?.meta?.requiredRoles || [];
 
-      console.log('authStore.user.role:', authStore.user.role);
-      console.log(authStore.user.staff_id);
-      console.log('requiredRoles:', requiredRoles);
+      // console.log('authStore.user.role:', authStore.user.role);
+      // console.log(authStore.user.staff_id);
+      // console.log('requiredRoles:', requiredRoles);
 
-      // Check if user's role is included in requiredRoles
       if (
         requiredRoles.length > 0 &&
         !requiredRoles.includes(authStore.user.role)

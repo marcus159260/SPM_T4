@@ -24,6 +24,12 @@ def group_employees_by_department(data):
 def create_employee_node(employee):
     staff_id = employee['Staff_ID']
     staff_name = f"{employee['Staff_FName']} {employee['Staff_LName']}"
+    role = employee['Role']
+
+    if role in [1, 3]:
+        position = employee['Position']
+        staff_name = f"{staff_name} (Position: {position})"
+
     return {
         'name': staff_name,
         'id': f"E_{staff_id}",
@@ -52,7 +58,7 @@ def build_department_hierarchy(employees):
             ]
 
             # Separate managers and staff
-            managers = [emp for emp in subordinates if get_employee_level(emp['Position']) == 3]
+            managers = [emp for emp in subordinates if get_employee_level(emp['Position']) in [1,3]]
             staff_members = [emp for emp in subordinates if get_employee_level(emp['Position']) == 2]
 
             # Process managers

@@ -1,14 +1,13 @@
 <template>
   <div>
     <teamCalendar
-      :title="'My Team Schedule'"
       :resources="resources"
     />
   </div>
 </template>
 
 <script>
-import teamCalendar from '../components/teamCalendarManager.vue';
+import teamCalendar from '../components/teamCalendar.vue';
 import axios from 'axios';
 // import { getTeamEvents, getTeamResources } from '../services/apiService';
 
@@ -22,12 +21,12 @@ export default {
       teamResources: [],
       employees:[],
       resources:[],
-      Staff_ID: 140894 //hardcode team manager
+      Reporting_Manager: 140894 //hardcode team manager
       
     };
   },
   mounted() {
-    var url = "http://127.0.0.1:5000/api/users/by-team-employees/" + this.Staff_ID;
+    var url = "http://127.0.0.1:5000/api/users/by-team-employees/" + this.Reporting_Manager;
     axios
       .get(url)
       .then((response) => {

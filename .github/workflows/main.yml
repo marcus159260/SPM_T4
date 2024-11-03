@@ -1,0 +1,57 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  
+  pull_request:
+    branches:
+      - main  
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Supabase environment variables
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> $GITHUB_ENV
+          echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> $GITHUB_ENV
+          
+      - name: Set timezone to Singapore
+        run: echo "TZ=Asia/Singapore" >> $GITHUB_ENV
+      
+      # Backend Testing
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12.1'  
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt  # Adjust this if your requirements file has a different name
+
+      - name: Run pytest
+        run: |
+          cd backend
+          pytest  # Add any options you need
+
+      # Frontend Testing
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.20.3'  
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install  # Adjust if you have a different setup
+
+      - name: Run Jest tests
+        run: |
+          cd frontend
+          npm test  # Add any options you need

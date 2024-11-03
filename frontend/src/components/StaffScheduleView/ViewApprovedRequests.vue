@@ -48,7 +48,7 @@
                     <textarea style='width:400px;height:150px' class="form-control" v-model="withdrawalReason"
                         placeholder="Enter reason for withdrawal"></textarea>
                     <div class="d-flex flex-column my-2">
-                        <p id="errormsg" class="text-danger mx-0"></p>
+                        <p class="text-danger mx-0">{{ errorMessage }}</p>
                         <button type="button" class="btn btn-primary" @click="confirmWithdrawal">Submit</button>
                     </div>
                     </form>
@@ -58,7 +58,7 @@
         </div>
 
         <!-- Withdrawal Success Modal -->
-        <div v-if="showSuccessModal" class="modal">
+        <div v-if="showSuccessModal" class="modal-overlay">
             <div class="modal-content">
                 <h4>Withdrawal Successful</h4>
                 <p>Your request has been successfully withdrawn.</p>
@@ -84,7 +84,8 @@ export default {
             withdrawalReason: '',
             showSuccessModal: false,
             isPopupVisible: false,
-            selectedRequest: null
+            selectedRequest: null,
+            errorMessage: ''
         };
     },
     components: {
@@ -198,25 +199,27 @@ export default {
         padding-left: 20px;
     }
 
-    /* .modal {
-    display: block; 
+.modal-overlay {
     position: fixed;
-    z-index: 1;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    }
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-    .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
+.modal-content {
+    background-color: white;
     padding: 20px;
-    width: 50%;
-    border-radius: 5px;
-    }
+    border-radius: 8px;
+    width: 500px;
+    max-width: 100%;
+    z-index: 1001;
+}
 
     .close {
     color: #aaa;
@@ -225,13 +228,10 @@ export default {
     cursor: pointer;
     }
 
-    .modal-actions {
-    margin-top: 15px;
-    }
-
-    .modal-actions button {
-    margin-right: 10px;
-    } */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+}
 
     .withdrawal-success-message {
     background-color: #dff0d8;

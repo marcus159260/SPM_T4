@@ -4,6 +4,7 @@ from flask import request, jsonify
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # headers = {k.lower(): v for k, v in request.headers.items()}
         staff_id = request.headers.get('X-Staff-ID')
         if not staff_id:
             return jsonify({'error': 'Authentication required'}), 401
