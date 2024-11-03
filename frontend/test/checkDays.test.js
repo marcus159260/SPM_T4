@@ -54,7 +54,3 @@ describe('check90Days testing', () => {
         expect(check90Days(currentDate,checkDate)).toBe(false);
     })
 });
-
-
-
-

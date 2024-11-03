@@ -39,7 +39,8 @@ def get_all_events_data():
             'Start_Date',
             'End_Date',
             'Time',
-            'Status'
+            'Status',
+            'Request_Type'
         ).execute()
         data = response.data
     except Exception as e:
@@ -59,8 +60,9 @@ def build_events(data):
         start_date = row['Start_Date']  
         end_date = row['End_Date']      
         time_slot = row['Time']         
-        status = row['Status']         
-
+        status = row['Status']
+        request_type = row['Request_Type']         
+        
         if status != 'Approved':
             continue
 
@@ -70,33 +72,56 @@ def build_events(data):
         date_range = [start_date_obj + timedelta(days=i) for i in range((end_date_obj - start_date_obj).days + 1)]
 
         for single_date in date_range:
+            date_str = single_date.strftime('%Y-%m-%d')
+
             if time_slot == 'AM':
-                start_time = '09:00:00'
-                end_time = '13:00:00'
+                start = f"{date_str}T09:00:00"
+                end = f"{date_str}T13:00:00"
+                event_id = f"{request_id}_{date_str}_AM"
+                events.append({
+                    'id': event_id,
+                    'start': start,
+                    'end': end,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             elif time_slot == 'PM':
-                start_time = '14:00:00'
-                end_time = '18:00:00'
+                start = f"{date_str}T13:00:00"
+                end = f"{date_str}T18:00:00"
+                event_id = f"{request_id}_{date_str}_PM"
+                events.append({
+                    'id': event_id,
+                    'start': start,
+                    'end': end,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             elif time_slot == 'FULL DAY':
-                start_time = '09:00:00'
-                end_time = '18:00:00'
+                # AM Event
+                start_am = f"{date_str}T09:00:00"
+                end_am = f"{date_str}T13:00:00"
+                event_id_am = f"{request_id}_{date_str}_AM"
+                events.append({
+                    'id': event_id_am,
+                    'start': start_am,
+                    'end': end_am,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
+                # PM Event
+                start_pm = f"{date_str}T13:00:00"
+                end_pm = f"{date_str}T18:00:00"
+                event_id_pm = f"{request_id}_{date_str}_PM"
+                events.append({
+                    'id': event_id_pm,
+                    'start': start_pm,
+                    'end': end_pm,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             else:
                 print(f"Unknown time slot: {time_slot}")
                 continue
-
-            date_str = single_date.strftime('%Y-%m-%d')
-            start = f"{date_str}T{start_time}"
-            end = f"{date_str}T{end_time}"
-
-            event_id = f"{request_id}_{date_str}"
-
-            event = {
-                'id': event_id,
-                'start': start,
-                'end': end,
-                'text': 'WFH', 
-                'resource': f"E_{staff_id}", 
-            }
-            events.append(event)
 
     return events
 
@@ -192,10 +217,13 @@ def approve_wfh_request(request_id, status, force_approval=False):
         # print(request_data)
         if not request_data:
             return {'error': 'Request not found.', 'status': 404}
-
         requested_date = datetime.strptime(request_data['Application_Date'], "%Y-%m-%d").date()
+        
+
         start_date = datetime.strptime(request_data['Start_Date'], "%Y-%m-%d").date()
+        
         end_date = datetime.strptime(request_data['End_Date'], "%Y-%m-%d").date()
+        print('hiiiiiii')
         print(requested_date, start_date, end_date)
 
         current_date = datetime.now().date()
@@ -242,6 +270,7 @@ def approve_wfh_request(request_id, status, force_approval=False):
 
 
 def get_total_office_strength(requested_date):
+    print('get total office strength')
     return 10
 
 
@@ -261,7 +290,6 @@ def get_wfh_count(requested_date):
     except Exception as e:
         print(f"Error retrieving WFH count: {str(e)}")
         return 0
-
 
 def reject_wfh_request(request_id, reason):
     try:
@@ -289,6 +317,45 @@ def reject_wfh_request(request_id, reason):
     except Exception as e:
         return {'error': str(e), 'status': 500}
     
+def reject_wfh_withdrawal_request(request_id, reason):
+    try:
+        # Fetch the request details by ID
+        if reason == '':
+            return {'message':'Reason cannot be empty.'},200
+        
+        response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
+        request_data = response.data[0]
+        
+        # Handle adhoc vs recurring request
+        update_response = supabase.table('request').update({
+        'Status': 'Approved',
+        'Rejection_Reason': reason
+        }).eq('Request_ID', request_id).execute()
+        
+        print(update_response)  # Check if update was successful
+
+        return {'message': 'Request rejected successfully.'},200
+
+    except Exception as e:
+        return {'error': str(e), 'status': 500}
+    
+
+def approve_withdrawal_wfh_request(request_id):
+    try:
+       
+        # Handle adhoc vs recurring request
+        update_response = supabase.table('request').update({
+        'Status': 'Withdrawn'
+      
+        }).eq('Request_ID', request_id).execute()
+        
+        print(update_response)  # Check if update was successful
+
+        return {'message': 'Request withdrawn successfully.'},200
+
+    except Exception as e:
+        return {'error': str(e), 'status': 500}
+    
 
 def check_conflict(staff_id, requested_dates, time_of_day):
     conflict_response = supabase.rpc('check_overlapping_requests', {
@@ -298,7 +365,6 @@ def check_conflict(staff_id, requested_dates, time_of_day):
     }).execute()
     # print(conflict_response)
     return conflict_response
-
 
 def log_activity(request_id, old_status, new_status, changed_by, change_message, reason):
     log_response = supabase.rpc('log_activity', {

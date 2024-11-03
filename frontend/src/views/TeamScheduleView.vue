@@ -1,7 +1,6 @@
 <template>
   <div>
     <teamCalendar
-      :title="'My Team Schedule'"
       :resources="resources"
     />
   </div>

@@ -150,9 +150,10 @@ export default {
             if (today >= twoWeeksAgo && today <= twoWeeksLater) {
                 this.selectedRequest = request;
                 this.isPopupVisible = true; 
-                document.getElementById('popup').style.display = 'flex';
-                document.getElementById('popup').style.border = '1px black solid';
+                document.getElementById('withdrawalPopup').style.display = 'flex';
+                document.getElementById('withdrawalPopup').style.border = '1px black solid';
             } else {
+                document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
                 alert('You can only withdraw requests within 2 weeks backward and forward.');
 
             }
@@ -170,7 +171,7 @@ export default {
                 Staff_ID: this.staffId
             }).then((response) => {
                 this.isPopupVisible = false;
-                document.getElementById('popup').style.border = '';
+                document.getElementById('withdrawalPopup').style.border = '';
                 this.showSuccessModal = true;
                 this.fetchRequests();
             }).catch((error) => {
@@ -196,6 +197,27 @@ export default {
     .content-wrapper {
         padding-left: 20px;
     }
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 100%;
+    z-index: 1001;
+}
+
+    .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+    }
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+}
 
     .withdrawal-success-message {
     background-color: #dff0d8;

@@ -12,7 +12,6 @@ def test_get_resources_with_tree_building(mocker):
         {'Dept': 'Sales', 'Position': 'Sales Manager', 'Staff_ID': 101, 'Staff_FName': 'John', 'Staff_LName': 'Doe', 'Reporting_Manager': None}
     ]
     mock_supabase.table.return_value.select.return_value.execute.return_value = mock_response
-
     # Optionally, if `group_employees_by_department` and `build_department_hierarchy` are complex,
     # you could mock them as well if you only need to validate the higher-level flow.
     
