@@ -189,24 +189,28 @@ def cancel_wfh_request(request_id, reason, staff_id):
 def auto_reject_pending_requests(managerId):
     try:
         current_date = datetime.now().date()
-        # for testing: current_date = datetime(2025, 8, 8).date()
 
         # Fetch pending requests older than 2 months
         response = supabase.table('request').select("*").eq('Status', 'Pending').eq('Approver_ID', managerId).execute()
         pending_requests = response.data
 
+        rejected_count = 0  # Counter for rejected requests
+
         # Loop through the pending requests and auto-reject them if they exceed 2 months
         for request in pending_requests:
-            start_date = request['Start_Date'] 
-            # print(start_date)
-
+            start_date = request['Start_Date']
             start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
 
             if current_date > start_date_obj + relativedelta(months=2):
                 supabase.table('request').update({'Status': 'Rejected', 'Rejection_Reason': 'Auto-rejected after 2 months'}).eq('Request_ID', request['Request_ID']).execute()
+                rejected_count += 1  # Increment the counter for each rejected request
+
+        return rejected_count  # Return the count of rejected requests
 
     except Exception as e:
         print("Error in auto-rejecting requests:", str(e))
+        return 0  # Return 0 on error
+
 
 
 def approve_wfh_request(managerId, request_id, status, force_approval=False):
@@ -280,24 +284,22 @@ def get_total_office_strength(managerId):
         print(f"Error retrieving total office strength: {str(e)}")
         return 0
 
+
 def get_wfh_count(managerId, requested_date):
-    # forward: 2024-10-28 (use example id: 4,5,7,10,13, -> 23)
-    # backdated: 2024-10-14 (use example id: 30, 31, 35, 36, 37, -> 38)
     try:
-        # Query the database for approved WFH requests between start and end dates that include current_date
-        # Check how many are currently approved for WFH between start_date and end_date
         response = supabase.table('request').select("*")\
             .eq('Approver_ID', managerId)\
             .eq('Status', 'Approved')\
-            .lte('Start_Date', requested_date) \
-            .gte('End_Date', requested_date) \
+            .eq('Start_Date', requested_date) \
             .execute()
-        print(response)
+        
+        print(response)  # This will print the response if no exception is raised
         return len(response.data) if response.data else 0
 
     except Exception as e:
         print(f"Error retrieving WFH count: {str(e)}")
         return 0
+
 
 def reject_wfh_request(request_id, reason):
     try:
@@ -329,11 +331,16 @@ def reject_wfh_withdrawal_request(request_id, reason):
     try:
         # Fetch the request details by ID
         if reason == '':
-            return {'message':'Reason cannot be empty.'},200
+            return {'message':'Reason cannot be empty.'},500
         
         response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
-        request_data = response.data[0]
+
+         # Check if the response has data
+        if not response.data:
+            return {'error': 'No request found for the given ID'}, 500
         
+        request_data = response.data[0]
+
         # Handle adhoc vs recurring request
         update_response = supabase.table('request').update({
         'Status': 'Approved',
@@ -350,6 +357,11 @@ def reject_wfh_withdrawal_request(request_id, reason):
 
 def approve_withdrawal_wfh_request(request_id):
     try:
+        response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
+
+         # Check if the response has data
+        if not response.data:
+            return {'error': 'No request found for the given ID'}, 500
        
         # Handle adhoc vs recurring request
         update_response = supabase.table('request').update({
