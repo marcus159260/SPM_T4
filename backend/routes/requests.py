@@ -199,15 +199,15 @@ def cancel_request():
 def update_request():
     try:
         request_data = request.json
+        managerId = request_data.get('managerId')
         request_id = request_data.get('Request_ID')
         status = request_data.get('request_Status')
         force_approval = request_data.get('force_approval', False) 
         
-        # print(request_id, status)
         if not request_id or not status:
             return jsonify({"error": "Missing request ID or status"}), 400
-        result, status_code = approve_wfh_request(request_id, status, force_approval)
-        print("result, status code:", result, status_code)
+        
+        result, status_code = approve_wfh_request(managerId, request_id, status, force_approval)
         return jsonify(result), status_code
     
     except Exception as e:
