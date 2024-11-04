@@ -66,6 +66,7 @@
 
 <script>
 import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
 
 export default {
   data() {
@@ -114,7 +115,7 @@ export default {
     },
     
     fetchRequests() {
-      axios.get(`http://127.0.0.1:5000/api/wfh/requests/approver/${this.approver_id}`)
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approver/${this.approver_id}`)
         .then(response => {
           if (response.data.length > 0 && response.data[0].Error) {
             // If there is an error in the response, display the error message

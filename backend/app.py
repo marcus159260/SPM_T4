@@ -16,8 +16,8 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 Session(app)
-
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}},expose_headers=['staff_id','role'])
+# http://localhost:5173
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "https://spm-t4.vercel.app"}},expose_headers=['staff_id','role'])
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth/')
 app.register_blueprint(user_bp, url_prefix='/api/users/') #url_prefix is the url that you call to see the data
@@ -29,4 +29,4 @@ def index():
 
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')

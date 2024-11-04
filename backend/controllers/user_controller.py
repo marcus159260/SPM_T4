@@ -170,9 +170,20 @@ def get_employees_by_reporting_manager(reporting_manager_id: int):
     )
 
    
-    # Return the list of employees
-    # print(str(team_response.data))
-    return team_response.data+ manager_response.data
+    # Create a list to store the final result
+    result = []
+
+    # Add team members if they exist
+    if team_response.data:
+        result.extend(team_response.data)
+
+    # Always add the reporting manager to the result if not already included
+    if manager_response.data:
+        # Only add if the manager is not already in the result
+        if not any(emp['Staff_ID'] == reporting_manager_id for emp in result):
+            result.extend(manager_response.data)
+    
+    return result
 
 def get_department_wfh_wfo_counts(start_date=None, end_date=None):
     try:
@@ -182,7 +193,7 @@ def get_department_wfh_wfo_counts(start_date=None, end_date=None):
 
         departments = build_departments_mapping(employees)
 
-        requests = fetch_approved_wfh_requests(start_date, end_date)
+        requests = fetch_approved_wfh_requests()
 
         process_wfh_requests(requests, employees, departments, start_date, end_date)
 
@@ -234,13 +245,11 @@ def build_departments_mapping(employees):
         departments[dept_name]['total'] += 1
     return departments
 
-def fetch_approved_wfh_requests(start_date, end_date):
+def fetch_approved_wfh_requests():
     """
     Fetches approved WFH requests within the specified date range.
     """
     # Convert dates to strings for the query
-    start_date_str = start_date.strftime('%Y-%m-%d')
-    end_date_str = end_date.strftime('%Y-%m-%d')
 
     request_response = supabase.table('request').select(
         'Staff_ID',
