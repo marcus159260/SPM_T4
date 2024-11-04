@@ -178,7 +178,7 @@ export default {
 
   methods: {
     get_manager_details(managerId) {
-      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${managerId}`)
         .then(response => {
           this.managerDetails = response.data.data; // Store manager details
         })
@@ -188,7 +188,7 @@ export default {
     },
     fetchRequests() {
       // Fetch WFH requests using Axios
-      axios.get(`http://127.0.0.1:5000/api/wfh/requests?managerId=${this.managerId}`)
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
         .then(response => {
           this.allRequests = response.data;
 
@@ -289,7 +289,7 @@ export default {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
         .then(response => {
           console.log('response.data', response.data);
-          if (response.data == 'error') {
+          if (response.data.message == 'Reason cannot be empty.') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
             document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;

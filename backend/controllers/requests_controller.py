@@ -289,9 +289,10 @@ def get_wfh_count(managerId, requested_date):
         response = supabase.table('request').select("*")\
             .eq('Approver_ID', managerId)\
             .eq('Status', 'Approved')\
-            .eq('Start_Date', requested_date)\
+            .lte('Start_Date', requested_date) \
+            .gte('End_Date', requested_date) \
             .execute()
-        
+        print(response)
         return len(response.data) if response.data else 0
 
     except Exception as e:

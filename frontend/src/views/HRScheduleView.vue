@@ -65,7 +65,7 @@ export default {
         startDate: this.startDate.toString(),
         days: this.days,
       };
-      return axios.get('http://127.0.0.1:5000/api/wfh/all_events', {
+      return axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/all_events`, {
         headers: {
           'X-Staff-ID': this.authStore.user.staff_id,
           'X-Staff-Role': this.authStore.user.role,
@@ -79,7 +79,7 @@ export default {
     },
 
     async loadResources() {
-      return axios.get('http://127.0.0.1:5000/api/users/resources', {
+      return axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/resources`, {
         headers: {
           'X-Staff-ID': this.authStore.user.staff_id,
           'X-Staff-Role': this.authStore.user.role,
@@ -96,7 +96,7 @@ export default {
         start_date: this.startDate.toString('yyyy-MM-dd'),
         end_date: this.startDate.addDays(this.days - 1).toString('yyyy-MM-dd'),
       };
-      return axios.get('http://127.0.0.1:5000/api/users/department_counts', {
+      return axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/department_counts`, {
         headers: {
           'X-Staff-ID': this.authStore.user.staff_id,
           'X-Staff-Role': this.authStore.user.role,

@@ -133,7 +133,7 @@ export default {
         async fetchRequests() {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:5000/api/wfh/requests/${this.authStore.user.staff_id}`,
+                    `${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/${this.authStore.user.staff_id}`,
                     {
                         headers: {
                         'X-Staff-ID': this.authStore.user.staff_id,
