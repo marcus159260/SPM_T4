@@ -14,7 +14,6 @@ def test_get_employees_by_dept_data(mocker):
         {'Staff_ID': 2, 'Dept': 'Engineering', 'Position': 'Call Centre', 'Reporting_Manager': 102}
     ]
     mock_supabase.table.return_value.select.return_value.eq.return_value.eq.return_value.execute.return_value = mock_employee_response
-
     # Mock response for managers based on Reporting_Manager IDs
     mock_managers_response = MagicMock()
     mock_managers_response.data = [

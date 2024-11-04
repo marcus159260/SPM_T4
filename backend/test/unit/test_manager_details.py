@@ -18,7 +18,6 @@ def test_get_manager_details_data_success(mocker):
         'Country': 'USA'
     }]
     mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_manager_response
-
     # Mock response for employees reporting to the manager
     mock_reporting_response = MagicMock()
     mock_reporting_response.data = [
@@ -46,7 +45,6 @@ def test_get_manager_details_data_success(mocker):
             ['Sales - Sales Representative - Canada']
         ]
     }
-
     # Assertions
     assert result['Staff_ID'] == expected_result['Staff_ID']
     assert result['Full_Name'] == expected_result['Full_Name']
