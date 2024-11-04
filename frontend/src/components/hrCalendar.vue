@@ -1,17 +1,10 @@
 <template>
-  <CalendarNavigation
-    :currentDate="config.startDate"
-    :earliestDate="earliestDate"
-    :latestDate="latestDate"
-    @dateChanged="onDateChanged"
-  />
   <DayPilotScheduler :config="config" ref="schedulerRef" />
 </template>
 
 <script setup>
 import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
 import { ref, reactive, watch, defineProps, defineEmits } from 'vue';
-import CalendarNavigation from './CalendarNavigation.vue';
 
 const props = defineProps({
   resources: {
@@ -20,6 +13,14 @@ const props = defineProps({
   },
   events: {
     type: Array,
+    required: true,
+  },
+  startDate: {
+    type: Object, 
+    required: true,
+  },
+  days: {
+    type: Number,
     required: true,
   },
 });
@@ -33,7 +34,8 @@ const config = reactive({
 ],
   scale: "Manual",
   cellDuration: 720,
-  days: 7,
+  startDate: props.startDate,
+  days: props.days,
   timeRangeSelectedHandling: "Disabled",
   eventClickHandling: "Disabled",
   treeEnabled: true,
@@ -50,14 +52,6 @@ const daysToMonday = currentDayOfWeek - 1; // Subtract to get back to Monday
 const startOfWeek = today.addDays(-daysToMonday);
 
 config.startDate = startOfWeek;
-
-const earliestDate = startOfWeek.addDays(-60); // 60 days back
-const latestDate = startOfWeek.addDays(90);    // 90 days forward
-
-function onDateChanged(newStartDate) {
-  config.startDate = newStartDate;
-  emit('dateChanged', newStartDate);
-}
 
 function generateTimeline(startDate, days) {
   const timeline = [];
@@ -97,11 +91,12 @@ watch(
 );
 
 watch(
-  () => config.startDate,
-  (newStartDate) => {
-    config.timeline = generateTimeline(newStartDate, config.days);
-  },
-  { immediate: true }
+  () => [props.startDate, props.days],
+  ([newStartDate, newDays]) => {
+    config.startDate = newStartDate;
+    config.days = newDays;
+    config.timeline = generateTimeline(newStartDate, newDays);
+  }
 );
 
 </script>

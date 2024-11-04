@@ -1,9 +1,16 @@
 <template>
   <div>
+    <CalendarNavigation
+      :currentDate="startDate"
+      :earliestDate="earliestDate"
+      :latestDate="latestDate"
+      @dateChanged="onDateChanged"
+    />
     <hrCalendar
       :resources="resources"
       :events="events"
-      @dateChanged="onDateChanged"
+      :startDate="startDate"
+      :days="days"
     />
   </div>
 </template>
@@ -13,10 +20,12 @@ import hrCalendar from '../components/hrCalendar.vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
 import { DayPilot } from 'daypilot-pro-vue';
+import CalendarNavigation from '../components/CalendarNavigation.vue';
 
 export default {
   components: {
     hrCalendar,
+    CalendarNavigation
   },
 
   computed: {
@@ -26,12 +35,19 @@ export default {
   },
 
   data() {
+    const today = DayPilot.Date.today();
+    const currentDayOfWeek = today.getDayOfWeek(); // 1 = Monday, 7 = Sunday
+    const daysToMonday = currentDayOfWeek - 1;
+    const startOfWeek = today.addDays(-daysToMonday);
     return {
-      employees: [],
+      // employees: [],
       resources: [],
       events: [],
       startDate: DayPilot.Date.today(),
-      departmentCounts: []
+      days: 7,
+      departmentCounts: [],
+      earliestDate: startOfWeek.addDays(-60),
+      latestDate: startOfWeek.addDays(90),
     };
   },
 

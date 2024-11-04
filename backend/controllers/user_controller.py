@@ -191,7 +191,7 @@ def get_department_wfh_wfo_counts(start_date=None, end_date=None):
         return result
 
     except Exception as e:
-        print(f"Error calculating department counts: {e}")
+        c(f"Error calculating department counts: {e}")
         return None
 
 def set_default_date_range(start_date, end_date):
