@@ -118,9 +118,8 @@ export default{
             this.validPeriod = PeriodChecker(currentDate, this.startDate);
         },
         checkDateRange() {
-            const startDateCheck = new Date(this.startDate);
-            const endDateCheck = new Date(this.endDate);
-            this.validRecurringDuration = check90Days(startDateCheck, endDateCheck)
+            this.validRecurringDuration = PeriodChecker(this.startDate, this.endDate)
+            console.log(this.validRecurringDuration)
     },
         validateRequestReason() {
             this.isRequestReasonValid = this.requestReason.length > 0 ;
