@@ -61,7 +61,6 @@ def build_events(data):
         end_date = row['End_Date']      
         time_slot = row['Time']         
         status = row['Status']
-        request_type = row['Request_Type']         
         
         if status != 'Approved':
             continue
