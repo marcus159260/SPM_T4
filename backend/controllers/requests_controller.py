@@ -215,7 +215,7 @@ def approve_wfh_request(managerId, request_id, status, force_approval=False):
         request_data = response.data[0] if response.data else None
         # print(request_data)
         if not request_data:
-            return {'error': 'Request not found.', 'status': 404}
+            return {'error': 'Request not found.', 'status': 404}, 404
 
         requested_date = datetime.strptime(request_data['Application_Date'], "%Y-%m-%d").date()
         start_date = datetime.strptime(request_data['Start_Date'], "%Y-%m-%d").date()

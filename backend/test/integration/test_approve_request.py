@@ -11,7 +11,12 @@ def client():
     with app.test_client() as client:
         yield client
         
-def test_role_required_allowed(client):
-    headers = {'X-Staff-ID': '151408', 'X-Staff-Role': 1}  # Role is allowed
-    response = client.post('/requests/approve', headers=headers, json={'Request_ID': 263, 'request_Status': 'Pending'})
-    assert response.status_code == 200  # Assuming a successful response if role is allowed
+def test_approve_request_allowed(client):
+    request = {
+        "managerId": 151408,
+        "Request_ID": 263,
+        "request_Status":"Approved" 
+    }
+    response = client.post('/api/wfh/requests/approve', headers=headers, json=request)
+    assert response.status_code == 200  
+    
