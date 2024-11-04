@@ -11,26 +11,25 @@ def get_staff_requests_data(user_id):
     else:
         return None
 
-def get_staff_events_data(staff_id):
-    # print('hi')
-        try:
-            response = supabase.table('request').select(
-                'Request_ID',
-                'Staff_ID',
-                'Start_Date',
-                'End_Date',
-                'Time',
-                'Status',
-                'Request_Type'
-            ).eq('Staff_ID',staff_id).execute()
-            data = response.data
-        except Exception as e:
-            print(f"Error fetching events data: {e}")
-            return None
 
-        events = build_events(data)
-        return events
-    
+def get_staff_events_data(staff_id):
+    try:
+        response = supabase.table('request').select(
+            'Request_ID',
+            'Staff_ID',
+            'Start_Date',
+            'End_Date',
+            'Time',
+            'Status'
+        ).eq('Staff_ID', staff_id).execute()
+        data = response.data
+    except Exception as e:
+        print(f"Error fetching events data: {e}")
+        return None
+
+    events = build_events(data)
+    return events
+
 
 def get_all_events_data():
     try:
@@ -51,6 +50,7 @@ def get_all_events_data():
     events = build_events(data)
     return events
 
+
 def build_events(data):
     events = []
 
@@ -60,9 +60,9 @@ def build_events(data):
         start_date = row['Start_Date']  
         end_date = row['End_Date']      
         time_slot = row['Time']         
-        status = row['Status']       
-        request_type = row['Request_Type']  
-
+        status = row['Status']
+        request_type = row['Request_Type']         
+        
         if status != 'Approved':
             continue
 
@@ -72,36 +72,56 @@ def build_events(data):
         date_range = [start_date_obj + timedelta(days=i) for i in range((end_date_obj - start_date_obj).days + 1)]
 
         for single_date in date_range:
+            date_str = single_date.strftime('%Y-%m-%d')
+
             if time_slot == 'AM':
-                start_time = '00:00:00'
-                end_time = '12:00:00'
+                start = f"{date_str}T09:00:00"
+                end = f"{date_str}T13:00:00"
+                event_id = f"{request_id}_{date_str}_AM"
+                events.append({
+                    'id': event_id,
+                    'start': start,
+                    'end': end,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             elif time_slot == 'PM':
-                start_time = '12:00:00'
-                end_time = '24:00:00'
+                start = f"{date_str}T13:00:00"
+                end = f"{date_str}T18:00:00"
+                event_id = f"{request_id}_{date_str}_PM"
+                events.append({
+                    'id': event_id,
+                    'start': start,
+                    'end': end,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             elif time_slot == 'FULL DAY':
-                start_time = '00:00:00'
-                end_time = '24:00:00'
+                # AM Event
+                start_am = f"{date_str}T09:00:00"
+                end_am = f"{date_str}T13:00:00"
+                event_id_am = f"{request_id}_{date_str}_AM"
+                events.append({
+                    'id': event_id_am,
+                    'start': start_am,
+                    'end': end_am,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
+                # PM Event
+                start_pm = f"{date_str}T13:00:00"
+                end_pm = f"{date_str}T18:00:00"
+                event_id_pm = f"{request_id}_{date_str}_PM"
+                events.append({
+                    'id': event_id_pm,
+                    'start': start_pm,
+                    'end': end_pm,
+                    'status': 'WFH',
+                    'resource': f"E_{staff_id}",
+                })
             else:
                 print(f"Unknown time slot: {time_slot}")
                 continue
-
-            date_str = single_date.strftime('%Y-%m-%d')
-            start = f"{date_str}T{start_time}"
-            end = f"{date_str}T{end_time}"
-
-            event_id = f"{request_id}_{date_str}"
-
-            event = {
-                'id': event_id,
-                'time': time_slot,
-                'start': start,
-                'status': status,
-                'request_type': request_type,
-                'end': end,
-                'text': 'WFH', 
-                'resource': f"E_{staff_id}", 
-            }
-            events.append(event)
 
     return events
 
@@ -166,6 +186,7 @@ def cancel_wfh_request(request_id, reason, staff_id):
     except Exception as e:
         return {'error': str(e), 'status': 500}
     
+
 def auto_reject_pending_requests():
     try:
         current_date = datetime.now().date()
@@ -188,11 +209,12 @@ def auto_reject_pending_requests():
     except Exception as e:
         print("Error in auto-rejecting requests:", str(e))
 
+
 def approve_wfh_request(request_id, status, force_approval=False):
     try:
         response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
         request_data = response.data[0] if response.data else None
-        print(request_data)
+        # print(request_data)
         if not request_data:
             return {'error': 'Request not found.', 'status': 404}
         requested_date = datetime.strptime(request_data['Application_Date'], "%Y-%m-%d").date()
@@ -201,7 +223,7 @@ def approve_wfh_request(request_id, status, force_approval=False):
         start_date = datetime.strptime(request_data['Start_Date'], "%Y-%m-%d").date()
         
         end_date = datetime.strptime(request_data['End_Date'], "%Y-%m-%d").date()
-        print('hiiiiiii')
+        # print('hiiiiiii')
         print(requested_date, start_date, end_date)
 
         current_date = datetime.now().date()
@@ -246,9 +268,11 @@ def approve_wfh_request(request_id, status, force_approval=False):
     except Exception as e:
         return {"error": str(e),'status': 500}
 
+
 def get_total_office_strength(requested_date):
     print('get total office strength')
     return 10
+
 
 def get_wfh_count(requested_date):
     # forward: 2024-10-28 (use example id: 4,5,7,10,13, -> 23)
@@ -260,13 +284,12 @@ def get_wfh_count(requested_date):
             .eq('Status', 'Approved')\
             .lte('Start_Date', requested_date)\
             .gte('End_Date', requested_date).execute()
-        print('get wfh count')
+        
         return len(response.data) if response.data else 0
 
     except Exception as e:
         print(f"Error retrieving WFH count: {str(e)}")
         return 0
-
 
 def reject_wfh_request(request_id, reason):
     try:
