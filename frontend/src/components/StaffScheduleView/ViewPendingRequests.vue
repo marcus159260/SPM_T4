@@ -159,7 +159,7 @@ export default {
         },
 
         async confirmCancellation(selectedRequestId) {
-            axios.post('http://127.0.0.1:5000/api/wfh/requests/cancel', {
+            axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/cancel`, {
                 Request_ID: selectedRequestId,
                 Withdrawal_Reason: this.cancellationReason,
                 Staff_id: this.authStore.user.staff_id

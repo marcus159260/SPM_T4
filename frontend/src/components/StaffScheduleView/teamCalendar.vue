@@ -89,7 +89,7 @@ const find_manager_details= () => {
 
 const loadResources = () => {
   
-  var teamurl = "http://127.0.0.1:5000/api/users/by-team-employees/" + config.reporting_manager;
+  var teamurl = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + config.reporting_manager;
   axios
     .get(teamurl)
     .then((response) => {
@@ -105,7 +105,7 @@ const loadResources = () => {
       console.log("Loaded resources:", config.resources);
 
       axios
-        .get("http://127.0.0.1:5000/api/wfh/all_events", {
+        .get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/all_events`, {
         headers: {
           'X-Staff-ID': useAuthStore().user.staff_id,
           'X-Staff-Role': useAuthStore().user.role,

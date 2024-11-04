@@ -84,7 +84,7 @@
     console.log(resources);
 
     for(emp of resources){
-      var requesturl = "http://127.0.0.1:5000/api/wfh/" + emp.id;
+      var requesturl = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/` + emp.id;
 
       axios
         .get(requesturl)
@@ -112,7 +112,7 @@
   
   const loadResources = () => {
     
-    var teamurl = "http://127.0.0.1:5000/api/users/by-team-employees/" + config.Staff_ID;
+    var teamurl = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + config.Staff_ID;
     // console.log(teamurl);
     axios
       .get(teamurl)
@@ -131,7 +131,7 @@
 
 
         axios
-          .get("http://127.0.0.1:5000/api/wfh/all_events", {
+          .get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/all_events`, {
         headers: {
           'X-Staff-ID': useAuthStore().user.staff_id,
           'X-Staff-Role': useAuthStore().user.role,
