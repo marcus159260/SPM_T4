@@ -25,8 +25,6 @@ import { useRouter } from 'vue-router';
 export default {
   name: 'Login',
   setup() {
-    console.log(import.meta.env.VITE_API_BASE_URL)
-
     const staff_id = ref('');
     const errorMessage = ref('');
     const successMessage = ref('');

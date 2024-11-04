@@ -117,28 +117,22 @@
 <script>
 import axios from 'axios';
 import PopupWrapper from '../PopupWrapper.vue';
-import { useAuthStore } from '../../stores/auth';
 
 export default {
   data() {
     return {
       allRequests: [],     // All WFH requests fetched from the API
       managerDetails: [],
+      managerId: 151408,
       isPopupVisible: false,
       rejectionReason: '',
-      withdrawalReason: '',
-      selectedRequestStatus: '',
-      selectedRequestId: null,
-      managerId: null
+      selectedRequestId: null
     };
   },
   components: {
     PopupWrapper
   },
   computed: {
-    authStore() {
-      return useAuthStore(); // Access the auth store
-    },
     pendingRequests() {
       // Filter by status 'Pending' and Approver_ID matching managerId
       return this.allRequests
@@ -188,14 +182,12 @@ export default {
     },
     fetchRequests() {
       // Fetch WFH requests using Axios
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests`)
         .then(response => {
           this.allRequests = response.data;
-
-          //auto-reject pending requests comes in here
-
           // console.log(this.allRequests)
-        
+          // console.log(this.pendingRequests)
+
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
@@ -203,23 +195,21 @@ export default {
     },
     approveRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved' })
+      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
-          console.log('response.data', response.data);
-          if (response.data.status != 200) {
+          if (response.status === 200) {
             alert(response.data.message);
             this.fetchRequests();  // Refresh the request list
           }
         })
         .catch(error => {
-          console.log(error.response)
-          if (error.response && error.response.status === 400) { //A (forward)
+          if (error.response.status === 400) { //A (forward)
             alert(error.response.data.error);  // Show the error message from the backend
           }
-          else if (error.response && error.response.status === 409) { //B (backdated)
+          else if (error.response.status === 409) { //B (backdated)
             const confirmation = confirm(`${error.response.data.error}\n\nDo you still want to approve this request despite the violation?`);
             if (confirmation) {
-              axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
+              axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
                 .then(response => {
                   if (response.status === 200) {
                     alert(response.data.message); 
@@ -258,8 +248,6 @@ export default {
 
     rejectRequestPopup(requestId, status) {
       this.selectedRequestId = requestId; // Store the request ID for rejection
-      this.selectedRequestStatus = status;
-      console.log(status);
       this.isPopupVisible = true; // Show the popup
       document.getElementById('popup').style.display = 'flex';
       document.getElementById('popup').style.border = '1px black solid';
@@ -271,28 +259,7 @@ export default {
           if (response.data == 'error') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
-            document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
-
-          }
-          else {
-            this.fetchRequests();
-            this.isPopupVisible = false; // Hide the popup after submission
-            document.getElementById('popup').style.border = '';
-
-          }
-        })
-        .catch(error => {
-          console.error('Error rejecting request:', error);
-        });
-    },
-    rejectWithdrawalRequest(requestId) {
-      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
-        .then(response => {
-          console.log('response.data', response.data);
-          if (response.data.message == 'Reason cannot be empty.') {
-            // console.log(response.data.error);
-            console.log('error from popup: no error msg');
-            document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
+            document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;
 
           }
           else {
@@ -310,9 +277,6 @@ export default {
   },
   mounted() {
     // Fetch requests when the component is mounted
-    this.managerId = this.authStore.user.staff_id || null;
-    console.log(this.managerId);
-
     this.fetchRequests();
     this.get_manager_details(this.managerId);
   },

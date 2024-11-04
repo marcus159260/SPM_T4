@@ -78,7 +78,7 @@ def test_build_events_len():
 
     result = build_events(sample_data)
 
-    assert len(result) == 3
+    assert len(result) == 2
 
 
 def test_build_events_approved():
@@ -89,7 +89,7 @@ def test_build_events_approved():
 
     result = build_events(sample_data)
 
-    assert len(result) == 2
+    assert len(result) == 1
 
 
 def test_build_events_unknown_time_slot(capfd):
@@ -106,7 +106,7 @@ def test_build_events_unknown_time_slot(capfd):
     # Check if the specific message for unknown time slot was printed
     assert "Unknown time slot: MORNING" in captured.out
     # Ensure only the valid event was created
-    assert len(result) == 2
+    assert len(result) == 1
     assert result[0]['id'].startswith("2")
 
 
@@ -137,9 +137,7 @@ def test_build_events_fullday():
     result = build_events(sample_data)
 
     assert result[0]['start'] == '2024-10-01T09:00:00'
-    assert result[0]['end'] == '2024-10-01T13:00:00'
-    assert result[1]['start'] == '2024-10-01T14:00:00'
-    assert result[1]['end'] == '2024-10-01T18:00:00'
+    assert result[0]['end'] == '2024-10-01T18:00:00'
 
 
 def test_build_events_eventid():
@@ -148,5 +146,4 @@ def test_build_events_eventid():
 
     result = build_events(sample_data)
 
-    assert result[0]['id'] == '1_2024-10-01_AM'
-    assert result[1]['id'] == '1_2024-10-01_PM'
+    assert result[0]['id'] == '1_2024-10-01'

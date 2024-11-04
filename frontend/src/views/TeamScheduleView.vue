@@ -1,13 +1,14 @@
 <template>
   <div>
     <teamCalendar
+      :title="'My Team Schedule'"
       :resources="resources"
     />
   </div>
 </template>
 
 <script>
-import teamCalendar from '../components/StaffScheduleView/teamCalendar.vue';
+import teamCalendar from '../components/teamCalendar.vue';
 import axios from 'axios';
 // import { getTeamEvents, getTeamResources } from '../services/apiService';
 

@@ -6,7 +6,6 @@ auth_bp = Blueprint('auth_bp', __name__)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    
     data = request.json
     staff_id = data.get('Staff_ID')
     # get user data from supabase

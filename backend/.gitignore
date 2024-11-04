@@ -20,4 +20,5 @@ __pycache__
 .vscode
 
 secret_key.py
+
 flask_session

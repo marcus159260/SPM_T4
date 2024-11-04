@@ -79,12 +79,12 @@
 <script>
 import axios from 'axios';
 import PopupWrapper from '../PopupWrapper.vue';
-import { useAuthStore } from "../../stores/auth";
 
 export default {
     name: "StaffRequests",
     data() {
         return {
+            staffId: 150076,
             requestsData: [],
             showSuccessModal: false, // Track success modal visibility
             selectedRequest: null, // Track the selected request
@@ -111,9 +111,6 @@ export default {
                     endDate <= plus91Days
                 );
             });
-        },
-        authStore() {
-            return useAuthStore();
         }
     },
 
@@ -132,14 +129,9 @@ export default {
 
         async fetchRequests() {
             try {
+                const staffId = this.$route.params.staffId || 150076;
                 const response = await axios.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/${this.authStore.user.staff_id}`,
-                    {
-                        headers: {
-                        'X-Staff-ID': this.authStore.user.staff_id,
-                        'X-Staff-Role': this.authStore.user.role,
-                        },
-                    }
+                    `http://127.0.0.1:5000/api/wfh/requests/${staffId}`
                 );
                 if (response.data) {
                     this.requestsData = response.data;
@@ -159,10 +151,10 @@ export default {
         },
 
         async confirmCancellation(selectedRequestId) {
-            axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/cancel`, {
+            axios.post('http://127.0.0.1:5000/api/wfh/requests/cancel', {
                 Request_ID: selectedRequestId,
                 Withdrawal_Reason: this.cancellationReason,
-                Staff_id: this.authStore.user.staff_id
+                Staff_id: this.staffId
             })
 
             .then(response => {

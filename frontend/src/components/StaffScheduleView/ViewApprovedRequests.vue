@@ -39,7 +39,7 @@
             <p>No approved requests available within the date range.</p>
         </div>
         <div>
-            <PopupWrapper id='withdrawalPopup' class="flex-container justify-content-center pop" :visible="isPopupVisible"
+            <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
                 @update:visible="isPopupVisible = $event">
                 <template #content>
                 <div width="100%" class="justify-content-center">
@@ -73,13 +73,13 @@
 <script>
 import axios from 'axios';
 import PopupWrapper from '../PopupWrapper.vue';
-import { useAuthStore } from "../../stores/auth";
 
 export default {
     name: "StaffRequests",
     data() {
         return {
             selectedStatus: "Approved", // Default filter is Approved
+            staffId: 150076,
             requestsData: [],
             withdrawalReason: '',
             showSuccessModal: false,
@@ -108,10 +108,7 @@ export default {
                     endDate <= plus91Days
                 );
             });
-        },
-        authStore() {
-            return useAuthStore();
-    }
+        }
     },
     methods: {
         formatDate(dateString) {
@@ -125,15 +122,9 @@ export default {
         async fetchRequests() {
             try {
                 // Get staffId from route params (if using Vue Router) or from a state
-                // const staffId = this.$route.params.staffId || 150076;
+                const staffId = this.$route.params.staffId || 150076;
                 const response = await axios.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/${this.authStore.user.staff_id}`,
-                    {
-                        headers: {
-                            'X-Staff-ID': this.authStore.user.staff_id,
-                            'X-Staff-Role': this.authStore.user.role,
-                        }
-                    }
+                    `http://127.0.0.1:5000/api/wfh/requests/${staffId}`
                 );
                 if (response.data) {
                     this.requestsData = response.data;
@@ -159,10 +150,9 @@ export default {
             if (today >= twoWeeksAgo && today <= twoWeeksLater) {
                 this.selectedRequest = request;
                 this.isPopupVisible = true; 
-                document.getElementById('withdrawalPopup').style.display = 'flex';
-                document.getElementById('withdrawalPopup').style.border = '1px black solid';
+                document.getElementById('popup').style.display = 'flex';
+                document.getElementById('popup').style.border = '1px black solid';
             } else {
-                document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
                 alert('You can only withdraw requests within 2 weeks backward and forward.');
 
             }
@@ -174,13 +164,13 @@ export default {
                 document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
-            axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/withdraw`, {
+            axios.post('http://127.0.0.1:5000/api/wfh/requests/withdraw', {
                 Request_ID: this.selectedRequest.Request_ID,
                 Rejection_Reason: this.withdrawalReason,
-                Staff_ID: this.authStore.user.staff_id
+                Staff_ID: this.staffId
             }).then((response) => {
                 this.isPopupVisible = false;
-                document.getElementById('withdrawalPopup').style.border = '';
+                document.getElementById('popup').style.border = '';
                 this.showSuccessModal = true;
                 this.fetchRequests();
             }).catch((error) => {
@@ -207,32 +197,12 @@ export default {
         padding-left: 20px;
     }
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 500px;
-    max-width: 100%;
-    z-index: 1001;
-}
-
-    .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    cursor: pointer;
+    .withdrawal-success-message {
+    background-color: #dff0d8;
+    color: #3c763d;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 5px;
     }
 
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.withdrawal-success-message {
-background-color: #dff0d8;
-color: #3c763d;
-padding: 15px;
-margin-top: 20px;
-border-radius: 5px;
-}
 </style>

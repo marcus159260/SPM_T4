@@ -1,9 +1,9 @@
 <template>
   <div>
     <myCalendar
+      :title="'My Schedule'"
       :events="events"
       :resources="resources"
-      @dateChanged="onDateChanged"
     />
   </div>
 </template>
@@ -11,28 +11,22 @@
 <script>
 import myCalendar from '../components/myCalendar.vue';
 import axios from 'axios';
-import { DayPilot } from 'daypilot-pro-vue';
-import { useAuthStore } from '@/stores/auth';
 
 export default {
   components: {
     myCalendar,
   },
-  computed: {
-    authStore() {
-      return useAuthStore();
-    },
-  },
   data() {
     return {
       events: [],
       resources: [],
-      startDate: DayPilot.Date.today(),
+      // hardcoded for now
+      staff_id: "150076"
     };
   },
 
   mounted() {
-    var url = `${import.meta.env.VITE_API_BASE_URL}/api/users/` + this.authStore.user.staff_id;
+    var url = `${import.meta.env.VITE_API_BASE_URL}/api/users/` + this.staff_id;
       axios.get(url).then((response) => {
         const staffData = response.data.data;
         this.resources = [
@@ -50,17 +44,12 @@ export default {
 
   methods: {
     loadEvents() {
-      var url = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/events/` + this.authStore.user.staff_id;
+      var url = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/events/` + this.staff_id;
       axios.get(url).then((response) => {
         this.events = response.data;
       }).catch((error) => {
         console.error('Error fetching events:', error);
       });
-    },
-
-    onDateChanged(newStartDate) {
-      this.startDate = newStartDate;
-      this.loadEvents();
     },
   }
 
