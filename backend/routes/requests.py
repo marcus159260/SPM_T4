@@ -194,41 +194,20 @@ def cancel_request():
     
     return jsonify(result), result['status']
 
-# @wfh_bp.route('/requests/approve', methods=['POST'])
-# def update_request():
-#     try:
-#         request_data = request.json
-#         request_id = request_data.get('Request_ID')
-#         status = request_data.get('request_Status')
-#         force_approval = request_data.get('force_approval', False) 
-        
-#         # print(request_id, status)
-#         if not request_id or not status:
-#             return jsonify({"error": "Missing request ID or status"}), 400
-#         response = approve_wfh_request(request_id, status, force_approval)
-#         print("result, status code:", response.error, response.status)
-#         # return jsonify(result), status_code
-#         return jsonify(response.data)
-    
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-    
 @wfh_bp.route('/requests/approve', methods=['POST'])
 def update_request():
     try:
         request_data = request.json
-        print(request_data)
+        managerId = request_data.get('managerId')
         request_id = request_data.get('Request_ID')
         status = request_data.get('request_Status')
         force_approval = request_data.get('force_approval', False) 
-
-        # print(request_id, status)
+        
         if not request_id or not status:
             return jsonify({"error": "Missing request ID or status"}), 400
-        response = approve_wfh_request(request_id, status, force_approval)
-        print(type(response))
-        print("line 143:", response)
-        return response, response['status']
+        
+        result, status_code = approve_wfh_request(managerId, request_id, status, force_approval)
+        return jsonify(result), status_code
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
