@@ -64,6 +64,7 @@ def test_get_employees_by_reporting_manager_no_team(mocker):
 
     # Run the function
     result = get_employees_by_reporting_manager(reporting_manager_id=140894)
+    print(result)
 
     # Assertions
     expected_result = [

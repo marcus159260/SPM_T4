@@ -169,10 +169,21 @@ def get_employees_by_reporting_manager(reporting_manager_id: int):
         .execute()
     )
 
-   
-    # Return the list of employees
-    # print(str(team_response.data))
-    return team_response.data+ manager_response.data
+    # Create a list to store the final result
+    result = []
+
+    # Add team members if they exist
+    if team_response.data:
+        result.extend(team_response.data)
+
+    # Always add the reporting manager to the result if not already included
+    if manager_response.data:
+        # Only add if the manager is not already in the result
+        if not any(emp['Staff_ID'] == reporting_manager_id for emp in result):
+            result.extend(manager_response.data)
+    
+    return result
+
 
 def get_department_wfh_wfo_counts(start_date=None, end_date=None):
     try:
