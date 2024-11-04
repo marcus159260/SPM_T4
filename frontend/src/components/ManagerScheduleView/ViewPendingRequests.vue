@@ -289,7 +289,7 @@ export default {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
         .then(response => {
           console.log('response.data', response.data);
-          if (response.data == 'error') {
+          if (response.data.message == 'Reason cannot be empty.') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
             document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
