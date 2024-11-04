@@ -74,19 +74,21 @@
 
 <script>
 import axios from 'axios';
+import { useAuthStore } from '../../stores/auth';
+
 
 export default {
     data() {
         return {
             allRequests: [], // Holds the data fetched from the API
             managerDetails: [],
-            managerId: 151408,
+            managerId: null,
             // refreshInterval: null
         };
     },
     methods: {
         get_manager_details(managerId) {
-            axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${managerId}`)
                 .then(response => {
                     this.managerDetails = response.data.data; // Store manager details
                 })
@@ -96,9 +98,9 @@ export default {
         },
         fetchRequests() {
             // Fetch WFH requests using Axios
-            axios.get('http://127.0.0.1:5000/api/wfh/requests')
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
+
                 .then(response => {
-                    console.log(123)
                     this.allRequests = response.data;
                     console.log(this.allRequests)
                 })
@@ -106,20 +108,12 @@ export default {
                     console.error('Error fetching requests:', error);
                 });
         },
-        // startAutoRefresh() {
-        //     // Set the refresh interval (e.g., every 30 seconds)
-        //     this.refreshInterval = setInterval(() => {
-        //         this.fetchRequests();  // Auto-refresh requests
-        //     }, 5000); // 2 seconds
-        // },
-        // stopAutoRefresh() {
-        //     // Clear the interval when no longer needed
-        //     if (this.refreshInterval) {
-        //         clearInterval(this.refreshInterval);
-        //     }
-        // },
+
     },
     computed: {
+        authStore() {
+            return useAuthStore(); // Access the auth store
+        },
         rejectedRequests() {
             // Filter for approved requests
             return this.allRequests.filter(request => 
@@ -131,13 +125,10 @@ export default {
     mounted() {
         // Fetch requests when the component is mounted
         this.fetchRequests();
+        this.managerId = this.authStore.user.staff_id || null;
         this.get_manager_details(this.managerId);
-        // this.startAutoRefresh();
     },
-    // beforeDestroy() {
-    //     // Stop the auto-refresh when the component is destroyed
-    //     this.stopAutoRefresh();
-    // },
+
 };
 </script>
 

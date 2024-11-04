@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 Session(app)
-
+# http://localhost:5173
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "https://spm-t4.vercel.app"}},expose_headers=['staff_id','role'])
 
 app.register_blueprint(auth_bp, url_prefix='/api/auth/')
@@ -29,4 +29,4 @@ def index():
 
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0')

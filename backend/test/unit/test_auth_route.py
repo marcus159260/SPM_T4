@@ -3,7 +3,6 @@ import pytest
 from flask import Flask
 from unittest.mock import patch
 from routes.auth import auth_bp 
-
 # Create a test Flask app
 @pytest.fixture
 def app():
@@ -21,7 +20,6 @@ def test_login_success(client):
     # Mock the authenticate_user function
     with patch('routes.auth.authenticate_user') as mock_authenticate:
         mock_authenticate.return_value = {'Staff_ID': '140008', 'name': 'Jaclyn Lee'}
-
         response = client.post('/login', json={'Staff_ID': '140008'})
         
         assert response.status_code == 200
@@ -34,7 +32,6 @@ def test_login_failure(client):
     # Mock the authenticate_user function
     with patch('routes.auth.authenticate_user') as mock_authenticate:
         mock_authenticate.return_value = None
-
         response = client.post('/login', json={'Staff_ID': '140008'})
         
         assert response.status_code == 401
