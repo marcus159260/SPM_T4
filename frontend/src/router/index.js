@@ -40,7 +40,7 @@ const router = createRouter({
       path: '/team-schedule-manager',
       name: 'TeamScheduleManager',
       component: TeamScheduleViewManager,
-      meta: { requiresAuth: true, requiredRoles: [3] },
+      meta: { requiresAuth: true, requiredRoles: [1,3] },
     },
     {
       path: '/team-schedule-staff',
