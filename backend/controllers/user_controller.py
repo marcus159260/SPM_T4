@@ -169,6 +169,7 @@ def get_employees_by_reporting_manager(reporting_manager_id: int):
         .execute()
     )
 
+   
     # Create a list to store the final result
     result = []
 
@@ -183,7 +184,6 @@ def get_employees_by_reporting_manager(reporting_manager_id: int):
             result.extend(manager_response.data)
     
     return result
-
 
 def get_department_wfh_wfo_counts(start_date=None, end_date=None):
     try:
