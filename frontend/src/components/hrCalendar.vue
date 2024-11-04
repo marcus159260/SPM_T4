@@ -65,6 +65,11 @@ function generateTimeline(startDate, days) {
     });
     timeline.push({
       start: date + "T13:00:00",
+      end: date + "T14:00:00",
+      label: "LUNCH",
+    });
+    timeline.push({
+      start: date + "T14:00:00",
       end: date + "T18:00:00",
       label: "PM",
     });

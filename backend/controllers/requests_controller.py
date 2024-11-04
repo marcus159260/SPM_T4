@@ -86,7 +86,7 @@ def build_events(data):
                     'resource': f"E_{staff_id}",
                 })
             elif time_slot == 'PM':
-                start = f"{date_str}T13:00:00"
+                start = f"{date_str}T14:00:00"
                 end = f"{date_str}T18:00:00"
                 event_id = f"{request_id}_{date_str}_PM"
                 events.append({
@@ -109,7 +109,7 @@ def build_events(data):
                     'resource': f"E_{staff_id}",
                 })
                 # PM Event
-                start_pm = f"{date_str}T13:00:00"
+                start_pm = f"{date_str}T14:00:00"
                 end_pm = f"{date_str}T18:00:00"
                 event_id_pm = f"{request_id}_{date_str}_PM"
                 events.append({
