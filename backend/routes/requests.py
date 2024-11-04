@@ -37,8 +37,8 @@ def get_staff_requests(user_id):
         return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
     
 @wfh_bp.route('/all_events', methods=['GET'])
-@login_required
-@role_required([1,3])
+# @login_required
+# @role_required([1,3])
 def get_all_events():
     events = get_all_events_data()
     if events is None:
