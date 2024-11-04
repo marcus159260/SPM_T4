@@ -171,7 +171,6 @@ def create_request():
         print("Error:", str(e))
         return jsonify({'error': str(e)}), 500
 
-
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():
     data = request.get_json()
