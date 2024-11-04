@@ -103,10 +103,6 @@
                   @click="rejectRequest(selectedRequestId)">Submit</button>
                 <button v-if="selectedRequestStatus == 'Withdrawn-pending'" type="button" class="btn btn-primary"
                   @click="rejectWithdrawalRequest(selectedRequestId)">Submit</button>
-                <button v-if="selectedRequestStatus == 'Pending'" type="button" class="btn btn-primary"
-                  @click="rejectRequest(selectedRequestId)">Submit</button>
-                <button v-if="selectedRequestStatus == 'Withdrawn-pending'" type="button" class="btn btn-primary"
-                  @click="rejectWithdrawalRequest(selectedRequestId)">Submit</button>
 
               </div>
             </form>
@@ -120,15 +116,10 @@
 <script>
 import axios from 'axios';
 import PopupWrapper from '../PopupWrapper.vue';
-// import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '../../stores/auth';
 
 export default {
-  props: {
-    // managerId: {
-    //   type: Number,
-    //   required: true
-    // } 
-  },
+
   data() {
     return {
       allRequests: [],     // All WFH requests fetched from the API
@@ -137,22 +128,22 @@ export default {
       rejectionReason: '',
       selectedRequestId: null,
       selectedRequestStatus: '',
-      managerId: 151408
+      managerId: null
     };
   },
   components: {
     PopupWrapper
   },
   computed: {
+    authStore() {
+      return useAuthStore(); // Access the auth store
+    },
     pendingRequests() {
       // Filter by status 'Pending' and Approver_ID matching managerId
       return this.allRequests
         .filter(request => {
           const applicationDate = new Date(request.Application_Date + 'T00:00:00'); // Use Application_Date for filtering
           const startDate = new Date(request.Start_Date + 'T00:00:00'); // Use Start_Date for filtering
-
-          //console.log("Request object:", request);
-
 
           //console.log("Request object:", request);
 
@@ -166,8 +157,6 @@ export default {
           threeMonthsAfterApplicationDate.setMonth(applicationDate.getMonth() + 3);
           // console.log("threeMonthsAfterApplicationDate: " + threeMonthsAfterApplicationDate)
 
-
-
           // Check if the Start_Date is within the range of 2 months before to 3 months after the Application_Date
           const isWithinRange = (
             startDate >= twoMonthsBeforeApplicationDate &&
@@ -176,7 +165,6 @@ export default {
 
           // Return true if the request is pending, matches managerId, and Start_Date is within range
           return (
-            (request.Status === 'Pending' || request.Status === 'Withdrawn-pending') &&
             (request.Status === 'Pending' || request.Status === 'Withdrawn-pending') &&
             request.Approver_ID === this.managerId &&
             isWithinRange
@@ -188,7 +176,7 @@ export default {
 
   methods: {
     get_manager_details(managerId) {
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${managerId}`)
+      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
         .then(response => {
           this.managerDetails = response.data.data; // Store manager details
         })
@@ -198,14 +186,14 @@ export default {
     },
     fetchRequests() {
       // Fetch WFH requests using Axios
-      axios.get('http://127.0.0.1:5000/api/wfh/requests')
+      axios.get(`http://127.0.0.1:5000/api/wfh/requests?managerId=${this.managerId}`)
         .then(response => {
           this.allRequests = response.data;
-          // console.log(this.allRequests)
-          // console.log(this.pendingRequests)
-          // console.log(this.allRequests)
-          // console.log(this.pendingRequests)
 
+          //auto-reject pending requests comes in here
+
+          // console.log(this.allRequests)
+        
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
@@ -222,7 +210,7 @@ export default {
           }
         })
         .catch(error => {
-          if (error.status === 400) { //A (forward)
+          if (error.response.status === 400) { //A (forward)
             alert(error.response.data.error);  // Show the error message from the backend
           }
           else if (error.response.status === 409) { //B (backdated)
@@ -251,8 +239,6 @@ export default {
       // console.log("Request ID clicked:", requestId); 
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/approvewithdrawal`, { Request_ID: requestId })
         .then(response => {
-          // console.log('response.data', response.data);
-          console.log('approveWithdrawalRequest');
           // console.log('response.data', response.data);
           console.log('approveWithdrawalRequest');
           if (response.data == 'error') {
@@ -318,6 +304,7 @@ export default {
   },
   mounted() {
     // Fetch requests when the component is mounted
+    this.managerId = this.authStore.user.staff_id || null;
     console.log(this.managerId);
 
     this.fetchRequests();

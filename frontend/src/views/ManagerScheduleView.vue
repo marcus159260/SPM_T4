@@ -103,7 +103,6 @@
       <!--Pending WFH-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
         <ViewPendingRequests 
-          :managerId="managerId" 
         />
 
       </div>

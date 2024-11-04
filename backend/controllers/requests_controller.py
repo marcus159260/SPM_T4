@@ -187,13 +187,13 @@ def cancel_wfh_request(request_id, reason, staff_id):
         return {'error': str(e), 'status': 500}
     
 
-def auto_reject_pending_requests():
+def auto_reject_pending_requests(managerId):
     try:
         current_date = datetime.now().date()
-        # current_date = datetime(2025, 8, 8).date()
+        # for testing: current_date = datetime(2025, 8, 8).date()
 
         # Fetch pending requests older than 2 months
-        response = supabase.table('request').select("*").eq('Status', 'Pending').eq('Approver_ID', 151408).execute()
+        response = supabase.table('request').select("*").eq('Status', 'Pending').eq('Approver_ID', managerId).execute()
         pending_requests = response.data
 
         # Loop through the pending requests and auto-reject them if they exceed 2 months
@@ -217,13 +217,10 @@ def approve_wfh_request(request_id, status, force_approval=False):
         # print(request_data)
         if not request_data:
             return {'error': 'Request not found.', 'status': 404}
-        requested_date = datetime.strptime(request_data['Application_Date'], "%Y-%m-%d").date()
-        
 
+        requested_date = datetime.strptime(request_data['Application_Date'], "%Y-%m-%d").date()
         start_date = datetime.strptime(request_data['Start_Date'], "%Y-%m-%d").date()
-        
         end_date = datetime.strptime(request_data['End_Date'], "%Y-%m-%d").date()
-        print('hiiiiiii')
         print(requested_date, start_date, end_date)
 
         current_date = datetime.now().date()
@@ -270,7 +267,6 @@ def approve_wfh_request(request_id, status, force_approval=False):
 
 
 def get_total_office_strength(requested_date):
-    print('get total office strength')
     return 10
 
 

@@ -9,7 +9,8 @@ wfh_bp = Blueprint('wfh_bp', __name__)
 @wfh_bp.route('/requests', methods=['GET'])
 def get_wfh_requests():
     try:
-        auto_reject_pending_requests()
+        managerId = request.args.get('managerId', type=int)
+        auto_reject_pending_requests(managerId)
         
         # Call the function to fetch the data
         data, error = supabase.rpc('get_requests').execute()
@@ -205,8 +206,8 @@ def update_request():
         # print(request_id, status)
         if not request_id or not status:
             return jsonify({"error": "Missing request ID or status"}), 400
-        result, status_code = approve_wfh_request(request_id, status)
-        print("line 143:", result, status_code)
+        result, status_code = approve_wfh_request(request_id, status, force_approval)
+        print("result, status code:", result, status_code)
         return jsonify(result), status_code
     
     except Exception as e:
