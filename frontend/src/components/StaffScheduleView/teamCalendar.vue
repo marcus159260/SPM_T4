@@ -71,7 +71,7 @@ const schedulerRef = ref(null);
       this.$emit('view-changed');
     }
 const find_manager_details= () => { 
-    let url = `http://127.0.0.1:5000/api/users/find-manager/` + config.Staff_ID;
+    let url = `${import.meta.env.VITE_API_BASE_URL}/api/users/find-manager/` + config.Staff_ID;
     axios.get(url)
       .then(response => {
         config.reporting_manager = response.data.data.Reporting_Manager; // Store manager details

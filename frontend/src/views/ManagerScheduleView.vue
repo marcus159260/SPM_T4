@@ -203,7 +203,7 @@ export default {
   },
   methods: {
     get_employees_by_dept() {
-      axios.get('http://127.0.0.1:5000/api/users/by-dept-employees')
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/by-dept-employees`)
         .then(response => {
           this.employees = response.data.data; // Assign fetched data to the staffSchedules array
           this.isLoading = false;
