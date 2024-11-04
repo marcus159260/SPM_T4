@@ -74,6 +74,8 @@ def get_user_req(user_id):
     
 
 @wfh_bp.route('/requests/approver/<int:approver_id>', methods=['GET'])
+@login_required
+@role_required([1,3])
 def get_requests_by_approver(approver_id):
     try:
         # Call the Supabase RPC function
@@ -195,6 +197,8 @@ def cancel_request():
 
     
 @wfh_bp.route('/requests/approve', methods=['POST'])
+# @login_required
+# @role_required([1,3])
 def update_request():
     try:
         request_data = request.json
