@@ -29,7 +29,7 @@
                   </a>
                 </li>
 
-                <li v-if="user && (Number(user.role) === 3 || Number(user.role) === 1" class="nav-item">
+                <li v-if="user && (Number(user.role) === 3 || Number(user.role) === 1)" class="nav-item">
                   <a class="nav-link" href="#">
                     <RouterLink to="/team-schedule-manager">(M/D)Team Schedule</RouterLink>
                   </a>
