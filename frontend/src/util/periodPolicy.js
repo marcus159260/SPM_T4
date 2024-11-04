@@ -12,6 +12,8 @@ export function getDaysDifference(date1Str, date2Str) {
     // Convert the date strings to Date objects
     const date1 = new Date(date1Str);
     const date2 = new Date(date2Str);
+    console.log(date1);
+    console.log(date2);
     
     // Reset the time portion to midnight (00:00:00) for both dates
     date1.setHours(0, 0, 0, 0);
@@ -22,6 +24,7 @@ export function getDaysDifference(date1Str, date2Str) {
 
     // Convert the time difference from milliseconds to days
     const dayDifference = timeDifference / (1000 * 60 * 60 * 24);
+    console.log(dayDifference);
 
     return dayDifference;
 }
@@ -36,7 +39,8 @@ export function check60Days(currentDate, checkDate){
 }
 
 export function check90Days(currentDate, checkDate){
-    if(getDaysDifference(checkDate, currentDate) > 91){
+    console.log("90 days triggered");
+    if(getDaysDifference(currentDate, checkDate) > 91){
         return false;
     }
     return true;

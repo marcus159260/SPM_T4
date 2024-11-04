@@ -40,7 +40,7 @@ def get_all_events():
     events = get_all_events_data()
     if events is None:
         return jsonify({'error': 'Failed to fetch events data'}), 500
-    print(events)
+    # print(events)
     return jsonify(events)
 
 

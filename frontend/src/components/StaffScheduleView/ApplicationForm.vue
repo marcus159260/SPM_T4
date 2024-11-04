@@ -24,7 +24,7 @@
                         <div class="mb-3">
                             <label for="startDate" class="form-label">Start Date</label>
                             <input type="date" class="form-control" id="StartDate" v-model="startDate" @input = "checkPeriod">
-                            <span class="text-danger" v-if="validPeriod == false">Start date can only be 2 months back or 3 months forward</span>
+                            <span class="text-danger" v-if="validPeriod == false">Start date cannot be more than 2 months back or 3 months forward from today</span>
                         </div>
 
                         <div class="mb-3" v-if="requestType === 'RECURRING'">
@@ -77,12 +77,13 @@
 import axios from 'axios';
 import { formatDate, PeriodChecker, check90Days} from '@/util/periodPolicy';
 import { generateRecurringDates } from '@/util/recurringDates';
+import { useAuthStore } from "../../stores/auth";
 
 export default{
     name: "ApplicationForm",
     data(){
         return{
-            staffId: 150076, 
+            // staffId: 150076, 
             staff_name: "",
             approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
             startDate: null,
@@ -97,10 +98,36 @@ export default{
             responseMessage: ''
         }
     },
+    computed:{
+        canSubmit(){
+            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
+                return true;
+            } return false;
+        },
+        startEndDate(){
+            if(this.requestType == "RECURRING" && this.endDate !== null && this.startDate <= this.endDate){
+                return true;
+            }
+            else if(this.requestType == "ADHOC" && this.startDate !== null){
+                return true
+            }
+            return false;
+        },
+        authStore() {
+            return useAuthStore();
+        }
+    },
     methods:{
         async getStaffApprover(){
             try{
-                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.staffId}`);
+                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.authStore.user.staff_id}`, 
+                {
+                headers: {
+                'X-Staff-ID': this.authStore.user.staff_id,
+                'X-Staff-Role': this.authStore.user.role,
+                },
+            }
+        );
                 if(response.data){
                     this.staff_name = response.data.data.Staff_FName + " " + response.data.data.Staff_LName;
                     this.approverId = response.data.data.Reporting_Manager;
@@ -118,9 +145,8 @@ export default{
             this.validPeriod = PeriodChecker(currentDate, this.startDate);
         },
         checkDateRange() {
-            const startDateCheck = new Date(this.startDate);
-            const endDateCheck = new Date(this.endDate);
-            this.validRecurringDuration = check90Days(startDateCheck, endDateCheck)
+            this.validRecurringDuration = PeriodChecker(this.startDate, this.endDate)
+            console.log(this.validRecurringDuration)
     },
         validateRequestReason() {
             this.isRequestReasonValid = this.requestReason.length > 0 ;
@@ -130,7 +156,7 @@ export default{
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
                 const payload = {
-                    staff_id: this.staffId,
+                    staff_id: this.authStore.user.staff_id,
                     start_date: this.startDate,
                     end_date: formattedEndDate,  
                     time_of_day: this.wfhTime, 
@@ -175,22 +201,6 @@ export default{
             this.showModal = false;
         },
 
-    },
-    computed:{
-        canSubmit(){
-            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
-                return true;
-            } return false;
-        },
-        startEndDate(){
-            if(this.requestType == "RECURRING" && this.endDate !== null && this.startDate <= this.endDate){
-                return true;
-            }
-            else if(this.requestType == "ADHOC" && this.startDate !== null){
-                return true
-            }
-            return false;
-        }
     },
     mounted(){
         this.getStaffApprover();

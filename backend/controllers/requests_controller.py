@@ -223,7 +223,7 @@ def approve_wfh_request(request_id, status, force_approval=False):
         start_date = datetime.strptime(request_data['Start_Date'], "%Y-%m-%d").date()
         
         end_date = datetime.strptime(request_data['End_Date'], "%Y-%m-%d").date()
-        print('hiiiiiii')
+        # print('hiiiiiii')
         print(requested_date, start_date, end_date)
 
         current_date = datetime.now().date()
