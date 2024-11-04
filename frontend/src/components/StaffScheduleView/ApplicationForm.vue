@@ -77,12 +77,13 @@
 import axios from 'axios';
 import { formatDate, PeriodChecker, check90Days} from '@/util/periodPolicy';
 import { generateRecurringDates } from '@/util/recurringDates';
+import { useAuthStore } from "../../stores/auth";
 
 export default{
     name: "ApplicationForm",
     data(){
         return{
-            staffId: 150076, 
+            // staffId: 150076, 
             staff_name: "",
             approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
             startDate: null,
@@ -97,10 +98,36 @@ export default{
             responseMessage: ''
         }
     },
+    computed:{
+        canSubmit(){
+            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
+                return true;
+            } return false;
+        },
+        startEndDate(){
+            if(this.requestType == "RECURRING" && this.endDate !== null && this.startDate <= this.endDate){
+                return true;
+            }
+            else if(this.requestType == "ADHOC" && this.startDate !== null){
+                return true
+            }
+            return false;
+        },
+        authStore() {
+            return useAuthStore();
+        }
+    },
     methods:{
         async getStaffApprover(){
             try{
-                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.staffId}`);
+                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.authStore.user.staff_id}`, 
+                {
+                headers: {
+                'X-Staff-ID': this.authStore.user.staff_id,
+                'X-Staff-Role': this.authStore.user.role,
+                },
+            }
+        );
                 if(response.data){
                     this.staff_name = response.data.data.Staff_FName + " " + response.data.data.Staff_LName;
                     this.approverId = response.data.data.Reporting_Manager;
@@ -129,7 +156,7 @@ export default{
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
                 const payload = {
-                    staff_id: this.staffId,
+                    staff_id: this.authStore.user.staff_id,
                     start_date: this.startDate,
                     end_date: formattedEndDate,  
                     time_of_day: this.wfhTime, 
@@ -174,22 +201,6 @@ export default{
             this.showModal = false;
         },
 
-    },
-    computed:{
-        canSubmit(){
-            if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
-                return true;
-            } return false;
-        },
-        startEndDate(){
-            if(this.requestType == "RECURRING" && this.endDate !== null && this.startDate <= this.endDate){
-                return true;
-            }
-            else if(this.requestType == "ADHOC" && this.startDate !== null){
-                return true
-            }
-            return false;
-        }
     },
     mounted(){
         this.getStaffApprover();
