@@ -7,6 +7,8 @@ from util.auth_decorators import login_required, role_required
 wfh_bp = Blueprint('wfh_bp', __name__)
 
 @wfh_bp.route('/requests', methods=['GET'])
+@login_required
+@role_required([1])
 def get_wfh_requests():
     try:
         managerId = request.args.get('managerId', type=int)
@@ -44,6 +46,8 @@ def get_all_events():
     return jsonify(events)
 
 @wfh_bp.route('/events/<int:staff_id>', methods=['GET'])
+@login_required
+@role_required([1,2,3])
 def get_events_for_current_user(staff_id):
     # print(staff_id)
     # staff_id = session.get('staff_id')

@@ -193,7 +193,7 @@ def get_department_wfh_wfo_counts(start_date=None, end_date=None):
 
         departments = build_departments_mapping(employees)
 
-        requests = fetch_approved_wfh_requests(start_date, end_date)
+        requests = fetch_approved_wfh_requests()
 
         process_wfh_requests(requests, employees, departments, start_date, end_date)
 
@@ -245,13 +245,11 @@ def build_departments_mapping(employees):
         departments[dept_name]['total'] += 1
     return departments
 
-def fetch_approved_wfh_requests(start_date, end_date):
+def fetch_approved_wfh_requests():
     """
     Fetches approved WFH requests within the specified date range.
     """
     # Convert dates to strings for the query
-    start_date_str = start_date.strftime('%Y-%m-%d')
-    end_date_str = end_date.strftime('%Y-%m-%d')
 
     request_response = supabase.table('request').select(
         'Staff_ID',

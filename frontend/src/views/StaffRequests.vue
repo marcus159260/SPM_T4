@@ -69,6 +69,10 @@ import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequ
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
 import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vue';
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
+import TeamCalendar from "@/components/StaffScheduleView/teamCalendar.vue";
+import MyCalendar from "@/components/myCalendar.vue";
+import { useAuthStore } from '@/stores/auth';
+import TeamCalendarManager from "@/components/teamCalendarManager.vue";
 
 
 export default {
@@ -85,6 +89,7 @@ export default {
   data() {
     return {
       employees: [], //initialize
+      managerId: this.authStore.user.staff_id,
       isLoading: true // Add loading state
     }
   },
@@ -93,6 +98,14 @@ export default {
     ViewApprovedRequests,
     ViewAllRequests2,
     ApplicationForm,
+    MyCalendar,
+    TeamCalendarManager,
+    TeamCalendar
+  },
+  computed: {
+    authStore() {
+      return useAuthStore();
+    },
   },
 }
 
