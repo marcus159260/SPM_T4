@@ -84,12 +84,13 @@ export default {
     rippleSurface.map(s => {
       return new MDCRipple(s)
     })
+    this.managerId = this.authStore.user.staff_id;
   },
 
   data() {
     return {
       employees: [], //initialize
-      managerId: this.authStore.user.staff_id,
+      managerId:null,
       isLoading: true // Add loading state
     }
   },
