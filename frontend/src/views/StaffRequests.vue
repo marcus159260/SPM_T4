@@ -3,7 +3,7 @@
     <!-- Tabs navs -->
     <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
       <li class="nav-item" role="presentation">
-        <a data-mdb-tab-init class="nav-link" id="ex1-tab-1" href="#ex1-tabs-1" role="tab" aria-controls="ex1-tabs-1"
+        <a data-mdb-tab-init class="nav-link active" id="ex1-tab-1" href="#ex1-tabs-1" role="tab" aria-controls="ex1-tabs-1"
           aria-selected="false">Create Request</a>
       </li>
       <li class="nav-item" role="presentation">
