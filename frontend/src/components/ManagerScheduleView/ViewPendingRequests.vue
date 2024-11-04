@@ -117,24 +117,28 @@
 <script>
 import axios from 'axios';
 import PopupWrapper from '../PopupWrapper.vue';
+import { useAuthStore } from '../../stores/auth';
 
 export default {
   data() {
     return {
       allRequests: [],     // All WFH requests fetched from the API
       managerDetails: [],
-      managerId: 151408,
       isPopupVisible: false,
       rejectionReason: '',
       withdrawalReason: '',
       selectedRequestStatus: '',
-      selectedRequestId: null
+      selectedRequestId: null,
+      managerId: null
     };
   },
   components: {
     PopupWrapper
   },
   computed: {
+    authStore() {
+      return useAuthStore(); // Access the auth store
+    },
     pendingRequests() {
       // Filter by status 'Pending' and Approver_ID matching managerId
       return this.allRequests
@@ -184,12 +188,14 @@ export default {
     },
     fetchRequests() {
       // Fetch WFH requests using Axios
-      axios.get('http://127.0.0.1:5000/api/wfh/requests')
+      axios.get(`http://127.0.0.1:5000/api/wfh/requests?managerId=${this.managerId}`)
         .then(response => {
           this.allRequests = response.data;
-          // console.log(this.allRequests)
-          // console.log(this.pendingRequests)
 
+          //auto-reject pending requests comes in here
+
+          // console.log(this.allRequests)
+        
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
@@ -197,22 +203,20 @@ export default {
     },
     approveRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved' })
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
           console.log('response.data', response.data);
           if (response.data.status != 200) {
             alert(response.data.message);
-          }
-          else if (response.data.status == 200) {
             this.fetchRequests();  // Refresh the request list
-
           }
         })
         .catch(error => {
-          if (error.status === 400) { //A (forward)
+          console.log(error.response)
+          if (error.response && error.response.status === 400) { //A (forward)
             alert(error.response.data.error);  // Show the error message from the backend
           }
-          else if (error.response.status === 409) { //B (backdated)
+          else if (error.response && error.response.status === 409) { //B (backdated)
             const confirmation = confirm(`${error.response.data.error}\n\nDo you still want to approve this request despite the violation?`);
             if (confirmation) {
               axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
@@ -306,6 +310,9 @@ export default {
   },
   mounted() {
     // Fetch requests when the component is mounted
+    this.managerId = this.authStore.user.staff_id || null;
+    console.log(this.managerId);
+
     this.fetchRequests();
     this.get_manager_details(this.managerId);
   },
