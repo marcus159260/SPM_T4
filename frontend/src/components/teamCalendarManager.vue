@@ -13,14 +13,17 @@
   
   <script setup>
   import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
-  import { ref, reactive, onMounted } from 'vue';
-  import { ref, reactive, watch, defineProps, defineEmits } from 'vue';
+  import { ref, reactive, watch, defineProps, defineEmits, onMounted, computed } from 'vue';
   import CalendarNavigation from './CalendarNavigation.vue';
+  import { useAuthStore } from '@/stores/auth';
+
   import axios from 'axios';
-  
+
 
   const emit = defineEmits(['dateChanged']);
-
+  
+  const authStore = useAuthStore();
+  console.log(authStore);
   
   const config = reactive({
     timeHeaders: [{"groupBy":"Month"},{"groupBy":"Day","format":"d"},{"groupBy":"Cell","format":"tt"}],
@@ -77,7 +80,13 @@
       var requesturl = "http://127.0.0.1:5000/api/wfh/" + emp.id;
 
       axios
-        .get(requesturl)
+        .get(requesturl
+        // , {
+        // headers: {
+        //   'X-Staff-ID': this.authStore.user.staff_id,
+        //   'X-Staff-Role': this.authStore.user.role,
+        // }}
+      )
         .then((response) => {
           data = response.data;
           temp = [];
@@ -104,7 +113,15 @@
     var teamurl = "http://127.0.0.1:5000/api/users/by-team-employees/" + config.Staff_ID;
     // console.log(teamurl);
     axios
-      .get(teamurl)
+      .get(teamurl
+      // , {
+      //   headers: {
+      //     'X-Staff-ID': authStore.user.staff_id,
+      //     'X-Staff-Role': authStore.user.role,
+      //   }
+      // }
+    )
+      
       .then((response) => {
         // console.log(response);
         var temp = response.data;
@@ -112,17 +129,17 @@
         console.log("Loaded resources:", temp);
 
         const params = {
-        startDate: this.startDate.toString(),
-        days: this.days,
+        startDate: config.startDate.toString(),
+        days: config.days,
       };
 
         axios
-          .get("http://127.0.0.1:5000/api/wfh/all_events"), {
+          .get("http://127.0.0.1:5000/api/wfh/all_events", {
         headers: {
-          'X-Staff-ID': this.authStore.user.staff_id,
-          'X-Staff-Role': this.authStore.user.role,
+          'X-Staff-ID': authStore.user.staff_id,
+          'X-Staff-Role': authStore.user.role,
         },
-        params: params,}
+        params: params})
           .then((r) => {
             
             if (r.data){
@@ -220,6 +237,8 @@
   config.startDate = newStartDate;
   emit('dateChanged', newStartDate);
 }
+
+
   
   onMounted(() => {
     config.events = [];
