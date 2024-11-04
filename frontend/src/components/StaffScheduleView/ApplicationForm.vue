@@ -168,7 +168,7 @@ export default{
                 };
                 console.log(payload);
 
-                const response = await axios.post('http://127.0.0.1:5000/api/wfh/requests', payload);
+                const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests`, payload);
                 if (response.data.message) {
                     console.log("Request submitted:", response.data);
                     // alert('Request submitted successfully');
