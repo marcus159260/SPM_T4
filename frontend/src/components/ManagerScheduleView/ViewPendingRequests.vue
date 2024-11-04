@@ -219,7 +219,7 @@ export default {
           else if (error.response && error.response.status === 409) { //B (backdated)
             const confirmation = confirm(`${error.response.data.error}\n\nDo you still want to approve this request despite the violation?`);
             if (confirmation) {
-              axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
+              axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
                 .then(response => {
                   if (response.status === 200) {
                     alert(response.data.message); 
