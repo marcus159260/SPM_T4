@@ -116,13 +116,13 @@ const loadResources = () => {
           if (r.data){
               console.log(r.data);
               for(let e of r.data){
-                if(e.status == 'Approved'){
+                
 
                   let bubbleHtml = `<ul><li>Date: `+new Date(e.start).toISOString().slice(0, 10)+ `</li><li>Time: `+e.time+`</li><li>Status: `+e.status+`</li><li>Request Type: `+ e.request_type+`</li></ul>`;
                   e.bubbleHtml = bubbleHtml;
                   config.events.push(e);
 
-                }
+                
                 
 
               }

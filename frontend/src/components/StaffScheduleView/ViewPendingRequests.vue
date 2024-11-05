@@ -32,7 +32,7 @@
                             <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
                             <td>{{ request.Withdrawal_Reason }}</td>
                             <td class="fixed-column">
-                                <button @click="openCancelModal(request.Request_ID)">Cancel</button>
+                                <button v-if="request.Status === 'Pending'" @click="openCancelModal(request.Request_ID)">Cancel</button>
                             </td>
                         </tr>
                     </tbody>
@@ -106,7 +106,7 @@ export default {
             return this.requestsData.filter((request) => {
                 const endDate = new Date(request.End_Date);
                 return (
-                    request.Status === "Pending" &&
+                    (request.Status === "Pending" || request.Status === "Withdrawn - Pending") &&
                     endDate >= minus61Days &&
                     endDate <= plus91Days
                 );
