@@ -72,10 +72,15 @@ export default {
   data() {
     return {
       selectedStatus: '', // Holds the value selected in the dropdown
-      approver_id: 140008, // Set this to the name you want to filter by
+      approver_id: null, // Set this to the name you want to filter by
       allRequests: [], // All WFH requests fetched from the API
       filteredRequests: [], // The filtered WFH requests
     };
+  },
+  computed: {
+    authStore() {
+            return useAuthStore(); // Access the auth store
+        },
   },
   methods: {
     applyFilter() {
@@ -115,7 +120,12 @@ export default {
     },
     
     fetchRequests() {
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approver/${this.approver_id}`)
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approver/${this.approver_id}`, {
+        headers: {
+          'X-Staff-ID': this.authStore.user.staff_id,
+          'X-Staff-Role': this.authStore.user.role,
+        },
+      })
         .then(response => {
           if (response.data.length > 0 && response.data[0].Error) {
             // If there is an error in the response, display the error message
@@ -146,6 +156,8 @@ export default {
   },
   mounted() {
     this.fetchRequests(); // Fetch requests when component is mounted
+    this.approver_id = this.authStore.user.staff_id || null;
+    console.log(this.approver_id) 
   },
 };
 </script>
