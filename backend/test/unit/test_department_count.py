@@ -162,3 +162,15 @@ def test_get_department_wfh_wfo_counts(mocker, sample_employees, sample_requests
         '2024-11-10'
     )
     mock_calculate_department_counts.assert_called_once_with(departments)
+
+
+def test_get_department_wfh_wfo_counts_exception(mocker):
+    # Arrange: Mock `fetch_all_employees` to raise an exception
+    mock_fetch_all_employees = mocker.patch('controllers.user_controller.fetch_all_employees', side_effect=Exception("Mocked error"))
+
+    # Act: Call the function, which should handle the exception and return None
+    result = get_department_wfh_wfo_counts()
+
+    # Assert: Check if the result is None and the exception was caught
+    assert result is None
+    mock_fetch_all_employees.assert_called_once()
