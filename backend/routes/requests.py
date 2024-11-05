@@ -237,7 +237,17 @@ def approve_withdrawal_request():
         if not request_id:
             return jsonify({"error": "Missing request ID"}), 400
         result, status_code = approve_withdrawal_wfh_request(request_id)
-     
+
+        if status_code == 200:
+            log_activity(
+                    request_id = request_data.get('Request_ID'),
+                    old_status = 'Withdrawn - Pending',
+                    new_status = 'Withdrawn',
+                    changed_by = request_data.get('Manager_ID'),
+                    change_message = result['message'],
+                    reason =  '-'
+                )
+
         return jsonify(result), status_code
     
     except Exception as e:
@@ -249,6 +259,17 @@ def reject_request():
     request_id = data.get('Request_ID')
     rejection_reason = data.get('Rejection_Reason')
     result, status_code = reject_wfh_request(request_id, rejection_reason)
+
+    if status_code == 200:
+            log_activity(
+                    request_id = data.get('Request_ID'),
+                    old_status = 'Pending',
+                    new_status = 'Rejected',
+                    changed_by = data.get('Manager_ID'),
+                    change_message = result['message'],
+                    reason =  data.get('Rejection_Reason')
+                )
+
     return jsonify(result), status_code
 
 @wfh_bp.route('/requests/rejectwithdrawal', methods=['POST'])
@@ -259,4 +280,13 @@ def reject_withdrawal_request():
     rejection_reason = data.get('Withdrawal_Reason')
     result, status_code = reject_wfh_withdrawal_request(request_id, rejection_reason)
     
+    if status_code == 200:
+            log_activity(
+                    request_id = data.get('Request_ID'),
+                    old_status = 'Withdrawn - Pending',
+                    new_status = 'Approved',
+                    changed_by = data.get('Manager_ID'),
+                    change_message = result['message'],
+                    reason =  data.get('Withdrawal_Reason')
+                )
     return jsonify(result), status_code

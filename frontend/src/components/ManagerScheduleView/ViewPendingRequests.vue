@@ -241,7 +241,7 @@ export default {
     },
     approveWithdrawalRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approvewithdrawal`, { Request_ID: requestId })
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/approvewithdrawal`, { Request_ID: requestId, Manager_ID: this.managerId })
         .then(response => {
           // console.log('response.data', response.data);
           console.log('approveWithdrawalRequest');
@@ -266,7 +266,7 @@ export default {
       document.getElementById('popup').style.border = '1px black solid';
     },
     rejectRequest(requestId) {
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason, Manager_ID: this.managerId})
         .then(response => {
           console.log('response.data', response.data);
           if (response.data == 'error') {
@@ -287,7 +287,7 @@ export default {
         });
     },
     rejectWithdrawalRequest(requestId) {
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason, Manager_ID: this.managerId })
         .then(response => {
           console.log('response.data', response.data);
 
