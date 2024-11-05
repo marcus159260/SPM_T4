@@ -266,7 +266,7 @@ export default {
       document.getElementById('popup').style.border = '1px black solid';
     },
     rejectRequest(requestId) {
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason, Manager_ID: this.managerId})
         .then(response => {
           console.log('response.data', response.data);
           if (response.data == 'error') {

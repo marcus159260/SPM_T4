@@ -249,6 +249,17 @@ def reject_request():
     request_id = data.get('Request_ID')
     rejection_reason = data.get('Rejection_Reason')
     result, status_code = reject_wfh_request(request_id, rejection_reason)
+
+    if status_code == 200:
+            log_activity(
+                    request_id = data.get('Request_ID'),
+                    old_status = 'Pending',
+                    new_status = 'Rejected',
+                    changed_by = data.get('Manager_ID'),
+                    change_message = result['message'],
+                    reason =  data.get('Rejection_Reason')
+                )
+
     return jsonify(result), status_code
 
 @wfh_bp.route('/requests/rejectwithdrawal', methods=['POST'])
