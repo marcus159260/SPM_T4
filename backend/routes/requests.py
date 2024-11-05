@@ -82,6 +82,7 @@ def get_requests_by_approver(approver_id):
     try:
         # Call the Supabase RPC function
         response = supabase.rpc('get_requests_by_approver', {'approver_id': approver_id}).execute()
+        print(response)
 
         # Check if there's an error in the SQL response
         if len(response.data) > 0 and response.data[0]['Error']:
@@ -196,8 +197,6 @@ def cancel_request():
     return jsonify(result), result['status']
 
 @wfh_bp.route('/requests/approve', methods=['POST'])
-# @login_required
-# @role_required([1,3])
 def update_request():
     try:
         request_data = request.json
