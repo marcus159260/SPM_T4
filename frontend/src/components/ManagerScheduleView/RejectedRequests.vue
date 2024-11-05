@@ -88,7 +88,7 @@ export default {
     },
     methods: {
         get_manager_details(managerId) {
-            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${managerId}`)
+            axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
                 .then(response => {
                     this.managerDetails = response.data.data; // Store manager details
                 })
@@ -98,7 +98,7 @@ export default {
         },
         fetchRequests() {
             // Fetch WFH requests using Axios
-            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
+            axios.get(`http://127.0.0.1:5000/api/wfh/requests?managerId=${this.managerId}`)
 
                 .then(response => {
                     this.allRequests = response.data;

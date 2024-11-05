@@ -54,7 +54,7 @@ export default {
 
   methods: {
     loadResources() {
-      var url = `${import.meta.env.VITE_API_BASE_URL}/api/users/` + this.authStore.user.staff_id;
+      var url = `http://127.0.0.1:5000/api/users/` + this.authStore.user.staff_id;
       axios.get(url).then((response) => {
         const staffData = response.data.data;
         this.resources = [
@@ -71,7 +71,7 @@ export default {
     },
 
     loadEvents() {
-      var url = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/events/` + this.authStore.user.staff_id;
+      var url = `http://127.0.0.1:5000/api/wfh/events/` + this.authStore.user.staff_id;
       axios.get(url).then((response) => {
         this.events = response.data;
       }).catch((error) => {
