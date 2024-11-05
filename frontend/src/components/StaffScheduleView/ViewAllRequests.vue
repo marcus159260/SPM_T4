@@ -70,7 +70,6 @@ export default {
             staff_fname: "",
             staff_lname: "",
             selectedStatus: "",
-            staff_id: 150076,
             approverName: "",
             requestsData : []
         }
