@@ -12,12 +12,10 @@ def test_request_invalid_requestid(mocker):
     mock_response.data = []  # Simulate no data returned
     mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_response
 
-    # Run the function
-    result = reject_wfh_request(request_id=1, reason="No longer needed")
-    
-    # Assertions
+    result, status_code = reject_wfh_request(request_id=1, reason="No longer needed")
     assert result['error'] == 'Request not found.'
     assert result['status'] == 404
+    assert status_code == 404
 
 
 def test_empty_reason(mocker):
@@ -29,12 +27,10 @@ def test_empty_reason(mocker):
     mock_response.data = [{'Request_ID': 1, 'Staff_ID': 140008, 'Status': 'Pending','Start_Date': '2024-10-01', 'End_Date': '2024-10-01', 'Time': 'FULL DAY','Reason': 'Sick'}]
     mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_response
 
-    # Run the function with an empty reason
-    result = reject_wfh_request(request_id=1, reason="")
-    
-    # Assertions
+    result, status_code = reject_wfh_request(request_id=1, reason="")
     assert result['error'] == 'Reason cannot be empty.'
     assert result['status'] == 404
+    assert status_code == 404
 
 
 def test_successful_rejection(mocker):
@@ -51,12 +47,10 @@ def test_successful_rejection(mocker):
     mock_update_response.data = None  # Assuming update response doesn't return data
     mock_supabase.table.return_value.update.return_value.eq.return_value.execute.return_value = mock_update_response
 
-    # Run the function
-    result = reject_wfh_request(request_id=1, reason="No longer needed")
-    
-    # Assertions
+    result, status_code = reject_wfh_request(request_id=1, reason="No longer needed")
     assert result['message'] == 'Request cancelled successfully.'
     assert result['status'] == 200
+    assert status_code == 200
 
 
 def test_general_exception_database(mocker):
@@ -64,12 +58,10 @@ def test_general_exception_database(mocker):
     mock_supabase = mocker.patch('controllers.requests_controller.supabase')
     mock_supabase.table.side_effect = Exception("Database connection failed")
 
-    # Run the function
-    result = reject_wfh_request(request_id=1, reason="No longer needed")
-    
-    # Assertions
+    result, status_code = reject_wfh_request(request_id=1, reason="No longer needed")
     assert result['error'] == "Database connection failed"
     assert result['status'] == 500
+    assert status_code == 500
 
 
 def test_general_exception_unsuccessful(mocker):
@@ -83,9 +75,7 @@ def test_general_exception_unsuccessful(mocker):
     # Simulate update failure
     mock_supabase.table.return_value.update.return_value.eq.return_value.execute.side_effect = Exception("Update failed")
 
-    # Run the function
-    result = reject_wfh_request(request_id=1, reason="No longer needed")
-    
-    # Assertions
+    result, status_code = reject_wfh_request(request_id=1, reason="No longer needed")
     assert result['error'] == 'Update failed'
     assert result['status'] == 500
+    assert status_code == 500

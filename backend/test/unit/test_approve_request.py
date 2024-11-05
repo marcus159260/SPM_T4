@@ -14,11 +14,13 @@ def test_request_invalid_requestid(mocker):
     mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_response
 
     # Run the function
-    result = approve_wfh_request(managerId=1, request_id=1, status='Approved')
+    result, status_code = approve_wfh_request(managerId=1, request_id=1, status='Approved')
 
     # Assertions
     assert result['error'] == 'Request not found.'
     assert result['status'] == 404
+    assert status_code == 404  # Check the status code separately
+
 
 
 def test_approve_future_request_valid(mocker):
