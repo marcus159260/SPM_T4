@@ -7,6 +7,7 @@
       Position: <span>{{ managerDetails.Position }}</span> <br />
     </h6>
 
+    <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
     <table v-if="pendingRequests.length > 0" class="table align-middle mt-10 bg-white">
       <thead class="bg-light">
         <tr>

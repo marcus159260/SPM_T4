@@ -3,8 +3,8 @@
     <!-- Tabs navs -->
     <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
       <li class="nav-item" role="presentation">
-        <a data-mdb-tab-init class="nav-link" id="ex1-tab-1" href="#ex1-tabs-1" role="tab" aria-controls="ex1-tabs-1"
-          aria-selected="false">Pending</a>
+        <a data-mdb-tab-init class="nav-link active" id="ex1-tab-1" href="#ex1-tabs-1" role="tab"
+          aria-controls="ex1-tabs-1" aria-selected="true">Pending</a>
       </li>
       <li class="nav-item" role="presentation">
         <a data-mdb-tab-init class="nav-link" id="ex1-tab-2" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
@@ -25,10 +25,8 @@
     <div class="tab-content" id="ex1-content">
 
       <!--Pending WFH-->
-      <div class="tab-pane fade" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <ViewPendingRequests 
-        />
-
+      <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+        <ViewPendingRequests />
       </div>
       <!--End of Pending WFH-->
 

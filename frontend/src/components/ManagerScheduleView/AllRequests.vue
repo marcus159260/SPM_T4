@@ -155,9 +155,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchRequests(); // Fetch requests when component is mounted
     this.approver_id = this.authStore.user.staff_id || null;
     console.log(this.approver_id) 
+    this.fetchRequests(); // Fetch requests when component is mounted
+
   },
 };
 </script>
