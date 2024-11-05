@@ -10,6 +10,8 @@
 
 <script>
 import teamCalendar from '../components/teamCalendarManager.vue';
+import { useAuthStore } from '@/stores/auth';
+
 
 export default {
   components: {
@@ -21,6 +23,8 @@ export default {
       teamResources: [],
       employees:[],
       resources:[],
+      Staff_ID: useAuthStore().user.staff_id
+
       
     };
   },
