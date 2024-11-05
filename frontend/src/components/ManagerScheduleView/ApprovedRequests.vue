@@ -18,12 +18,11 @@
                     <th scope="col">Department</th>
                     <th scope="col">Position</th>
                     <th scope="col">Status</th>
-                    <th scope="col" class="date-column">Request Date</th>
+                    <th scope="col" class="date-column">Requested Date</th>
                     <th scope="col">Time</th>
                     <th scope="col">Request Type</th>
                     <th scope="col">Request Reason</th>
                     <th scope="col" class="date-column">Application Date</th>
-                    <th scope="col" class="date-column">WFH Start Date</th>
                     <th scope="col">Reason of Application</th>
                     <th scope="col">Withdrawal Reason</th>
                 </tr>
@@ -40,7 +39,6 @@
                     <td>{{ staff.Request_Type }}</td>
                     <td>{{ staff.Reason }}</td>
                     <td>{{ formatDate(staff.Application_Date) }}</td>
-                    <td>{{ formatDate(staff.Start_Date) }}</td>
                     <td>{{ staff.Rejection_Reason }}</td>
                     <td>{{ staff.Withdrawal_Reason }}</td>
                 </tr>
