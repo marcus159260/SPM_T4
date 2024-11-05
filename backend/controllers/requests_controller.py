@@ -322,7 +322,7 @@ def reject_wfh_request(request_id, reason):
         
         # print(update_response)  # Check if update was successful
 
-        return {'message': 'Request cancelled successfully.', 'status': 200}, 200
+        return {'message': 'Request rejected successfully.', 'status': 200}, 200
 
     except Exception as e:
         return {'error': str(e), 'status': 500}, 500
