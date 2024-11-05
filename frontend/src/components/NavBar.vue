@@ -13,12 +13,6 @@
   
                 <li class="nav-item">
                   <a class="nav-link" href="#">
-                    <RouterLink to="/login">Login</RouterLink>
-                  </a>
-                </li>
-  
-                <li class="nav-item">
-                  <a class="nav-link" href="#">
                     <RouterLink to="/my-schedule">My Schedule</RouterLink>
                   </a>
                 </li>
