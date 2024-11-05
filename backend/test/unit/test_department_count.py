@@ -37,12 +37,15 @@ def mock_supabase(mocker):
 
 def test_set_default_date_range_no_date():
     start_date, end_date = set_default_date_range(None, None)
-    today = datetime.today()
+    today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     expected_start = today - timedelta(days=today.weekday())
     expected_end = expected_start + timedelta(days=6)
+    
+    start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = end_date.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    assert start_date.date() == expected_start.date()
-    assert end_date.date() == expected_end.date()
+    assert start_date == expected_start
+    assert end_date == expected_end
 
 def test_set_default_date_range_date():
     start_date, end_date = set_default_date_range('2024-11-01', '2024-11-05')
