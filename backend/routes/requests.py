@@ -210,6 +210,17 @@ def update_request():
             return jsonify({"error": "Missing request ID or status"}), 400
         
         result, status_code = approve_wfh_request(managerId, request_id, status, force_approval)
+
+        if status_code == 200:
+            log_activity(
+                request_id = request_id,
+                old_status = 'Pending',
+                new_status = 'Approved',
+                changed_by = managerId,
+                change_message = result['message'],
+                reason = '-'
+            )
+
         return jsonify(result), status_code
     
     except Exception as e:
