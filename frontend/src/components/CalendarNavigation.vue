@@ -29,14 +29,14 @@ const emit = defineEmits(['dateChanged']);
 function goPreviousWeek() {
   const newStartDate = props.currentDate.addDays(-7);
   if (newStartDate.getTime() >= props.earliestDate.getTime()) {
-    emit('dateChanged', newStartDate);
+    emit('dateChanged', newStartDate.firstDayOfWeek().addDays(1));
   }
 }
 
 function goNextWeek() {
   const newStartDate = props.currentDate.addDays(7);
   if (newStartDate.getTime() <= props.latestDate.getTime()) {
-    emit('dateChanged', newStartDate);
+    emit('dateChanged', newStartDate.firstDayOfWeek().addDays(1));
   }
 }
 

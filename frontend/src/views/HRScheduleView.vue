@@ -128,6 +128,7 @@ export default {
         } else {
           console.warn(`No counts found for department: ${deptName}`);
         }
+        console.log(this.resources);
       });
     },
 
@@ -142,4 +143,5 @@ export default {
   }
 
 };
+
 </script>
