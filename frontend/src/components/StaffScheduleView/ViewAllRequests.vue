@@ -99,7 +99,7 @@ export default {
     async fetchRequests() {
       try {
           // Get staffId from route params (if using Vue Router) or from a state
-          const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/${this.authStore.user.staff_id}`, 
+          const response = await axios.get(`http://127.0.0.1:5000//api/wfh/requests/${this.authStore.user.staff_id}`, 
           {
             headers: {
               'X-Staff-ID': this.authStore.user.staff_id,

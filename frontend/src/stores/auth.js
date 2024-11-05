@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', {
     async login(staff_id) {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/api/auth/login`,
+          `http://127.0.0.1:5000//api/auth/login`,
           { Staff_ID: staff_id },
           { withCredentials: true }
         );

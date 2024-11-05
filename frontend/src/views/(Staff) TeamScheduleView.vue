@@ -15,7 +15,7 @@
   
   const loadResources = () => {
       
-      var teamurl = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + config.reporting_manager;
+      var teamurl = `http://127.0.0.1:5000//api/users/by-team-employees/` + config.reporting_manager;
       // console.log(teamurl);
       axios
         .get(teamurl)
@@ -26,7 +26,7 @@
           console.log("Loaded resources:", temp);
           
           for(let emp of temp.data){
-            var requesturl = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/` + emp.id;
+            var requesturl = `http://127.0.0.1:5000//api/wfh/` + emp.id;
   
             axios
               .get(requesturl)
@@ -87,7 +87,7 @@
       };
     },
     // mounted() {
-    // //   var url = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + this.Reporting_Manager;
+    // //   var url = `http://127.0.0.1:5000//api/users/by-team-employees/` + this.Reporting_Manager;
     // //   axios
     // //     .get(url)
     // //     .then((response) => {

@@ -178,7 +178,7 @@ export default {
 
   methods: {
     get_manager_details(managerId) {
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${managerId}`)
+      axios.get(`http://127.0.0.1:5000//api/users/get-manager/${managerId}`)
         .then(response => {
           this.managerDetails = response.data.data; // Store manager details
         })
@@ -188,7 +188,7 @@ export default {
     },
     fetchRequests() {
       // Fetch WFH requests using Axios
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
+      axios.get(`http://127.0.0.1:5000//api/wfh/requests?managerId=${this.managerId}`)
         .then(response => {
           this.allRequests = response.data;
 
@@ -203,7 +203,7 @@ export default {
     },
     approveRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved' })
+      axios.post(`http://127.0.0.1:5000//api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved' })
         .then(response => {
           console.log('response.data', response.data);
           if (response.data.status != 200) {
@@ -219,7 +219,7 @@ export default {
           else if (error.response && error.response.status === 409) { //B (backdated)
             const confirmation = confirm(`${error.response.data.error}\n\nDo you still want to approve this request despite the violation?`);
             if (confirmation) {
-              axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
+              axios.post(`http://127.0.0.1:5000//api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
                 .then(response => {
                   if (response.status === 200) {
                     alert(response.data.message); 
@@ -240,7 +240,7 @@ export default {
     },
     approveWithdrawalRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
-      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approvewithdrawal`, { Request_ID: requestId })
+      axios.post(`http://127.0.0.1:5000//api/wfh/requests/approvewithdrawal`, { Request_ID: requestId })
         .then(response => {
           // console.log('response.data', response.data);
           console.log('approveWithdrawalRequest');
@@ -265,7 +265,7 @@ export default {
       document.getElementById('popup').style.border = '1px black solid';
     },
     rejectRequest(requestId) {
-      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
+      axios.post(`http://127.0.0.1:5000//api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason })
         .then(response => {
           console.log('response.data', response.data);
           if (response.data == 'error') {
@@ -286,7 +286,7 @@ export default {
         });
     },
     rejectWithdrawalRequest(requestId) {
-      axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
+      axios.post(`http://127.0.0.1:5000//api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason })
         .then(response => {
           console.log('response.data', response.data);
           if (response.data.message == 'Reason cannot be empty.') {
