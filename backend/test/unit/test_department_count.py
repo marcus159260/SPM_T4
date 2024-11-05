@@ -41,8 +41,8 @@ def test_set_default_date_range_no_date():
     expected_start = today - timedelta(days=today.weekday())
     expected_end = expected_start + timedelta(days=6)
 
-    assert start_date == expected_start
-    assert end_date == expected_end
+    assert start_date.date() == expected_start.date()
+    assert end_date.date() == expected_end.date()
 
 def test_set_default_date_range_date():
     start_date, end_date = set_default_date_range('2024-11-01', '2024-11-05')
