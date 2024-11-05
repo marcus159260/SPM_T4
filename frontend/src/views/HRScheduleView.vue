@@ -40,7 +40,6 @@ export default {
     const daysToMonday = currentDayOfWeek - 1;
     const startOfWeek = today.addDays(-daysToMonday);
     return {
-      // employees: [],
       resources: [],
       events: [],
       startDate: DayPilot.Date.today(),
