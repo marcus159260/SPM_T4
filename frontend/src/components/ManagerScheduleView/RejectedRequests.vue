@@ -13,61 +13,41 @@
         <table v-if="rejectedRequests.length > 0" class="table align-middle mt-10 bg-white">
             <thead class="bg-light">
                 <tr>
-                    <th>Request_ID</th>
-                    <th>Name & Staff_ID</th>
-                    <th>Department & Position</th>
-                    <th>Request_Type / Time of WFH requested days</th>
-                    <th>Application_Date</th>
-                    <th>WFH_Start_Date</th>
-                    <th>Rejection Reason</th>
-                    <th>Status</th>
-                    <th>Withdrawal_Reason</th>
+                    <th scope="col">Request ID</th>
+                    <th scope="col">Staff Name</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Position</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="date-column">Request Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Request Type</th>
+                    <th scope="col">Request Reason</th>
+                    <th scope="col" class="date-column">Application Date</th>
+                    <th scope="col" class="date-column">WFH Start Date</th>
+                    <th scope="col">Reason of Application</th>
+                    <th scope="col">Withdrawal Reason</th>
                 </tr>
             </thead>
             <tbody v-for="staff in rejectedRequests" :key="staff.Staff_ID">
                 <tr>
-                    <td>
-                        <p class="mb-1">{{ staff.Request_ID }}</p>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="ms-3">
-                                <p class="fw-bold mb-1">{{ staff.Staff_Name }}</p>
-                                <p class="text-muted mb-0">{{ staff.Staff_ID }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="ms-3">
-                                <p class="fw-bold mb-1">{{ staff.Staff_Department }}</p>
-                                <p class="text-muted mb-0">{{ staff.Staff_Position }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Request_Type }} / {{ staff.Time }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Application_Date }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Start_Date }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Rejection_Reason }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Status }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Withdrawal_Reason }}</p>
-                    </td>
+                    <th scope="row">{{ staff.Request_ID }}</th>
+                    <td>{{ staff.Staff_Name }}</td>
+                    <td>{{ staff.Staff_Department }}</td>
+                    <td>{{ staff.Staff_Position }}</td>
+                    <td>{{ staff.Status }}</td>
+                    <td>{{ formatDate(staff.Start_Date) }}</td>
+                    <td>{{ staff.Time }}</td>
+                    <td>{{ staff.Request_Type }}</td>
+                    <td>{{ staff.Reason }}</td>
+                    <td>{{ formatDate(staff.Application_Date) }}</td>
+                    <td>{{ formatDate(staff.Start_Date) }}</td>
+                    <td>{{ staff.Rejection_Reason }}</td>
+                    <td>{{ staff.Withdrawal_Reason }}</td>
                 </tr>
             </tbody>
         </table>
         <div v-if="rejectedRequests.length === 0" class="text-center mt-3">
-            <p>No Approved requests.</p>
+            <p>No Rejected requests.</p>
         </div>
     </div>
 </template>
@@ -87,6 +67,13 @@ export default {
         };
     },
     methods: {
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
+        },
         get_manager_details(managerId) {
             axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
                 .then(response => {
@@ -136,5 +123,9 @@ export default {
 /* Add your styles here */
 #pending-header span {
     color: green;
+}
+
+.date-column {
+    min-width: 120px; /* Adjust width as needed */
 }
 </style>
