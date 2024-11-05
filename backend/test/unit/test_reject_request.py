@@ -48,7 +48,7 @@ def test_successful_rejection(mocker):
     mock_supabase.table.return_value.update.return_value.eq.return_value.execute.return_value = mock_update_response
 
     result, status_code = reject_wfh_request(request_id=1, reason="No longer needed")
-    assert result['message'] == 'Request cancelled successfully.'
+    assert result['message'] == 'Request rejected successfully.'
     assert result['status'] == 200
     assert status_code == 200
 

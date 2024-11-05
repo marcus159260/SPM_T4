@@ -1,6 +1,11 @@
 <template>
   <div class="content-wrapper">
-    <h2 class="mt-4">{{ allRequests.length > 0 ? allRequests[0].Approver : 'Invalid Manager or Director' }}</h2>
+    <h6 id="pending-header" v-if="managerDetails" class="mt-10">
+      Manager Name: <span>{{ managerDetails.Full_Name }}</span> <br />
+      Manager ID: <span>{{ managerDetails.Staff_ID }}</span> <br>
+      Department: <span>{{ managerDetails.Department }}</span> <br />
+      Position: <span>{{ managerDetails.Position }}</span> <br />
+    </h6>
 
     <div class="filter-container mb-3">
       <label for="statusFilter" class="status-label">Status</label>
@@ -75,6 +80,7 @@ export default {
       approver_id: null, // Set this to the name you want to filter by
       allRequests: [], // All WFH requests fetched from the API
       filteredRequests: [], // The filtered WFH requests
+      managerDetails: [],
     };
   },
   computed: {
@@ -118,6 +124,16 @@ export default {
         return isWithinDateRange && matchesStatus;
       });
     },
+
+    get_manager_details(approver_id) {
+      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${approver_id}`)
+        .then(response => {
+          this.managerDetails = response.data.data; // Store manager details
+        })
+        .catch(error => {
+          console.error("Error fetching manager details:", error);
+        });
+    },
     
     fetchRequests() {
       axios.get(`http://127.0.0.1:5000/api/wfh/requests/approver/${this.approver_id}`, {
@@ -157,6 +173,7 @@ export default {
   mounted() {
     this.approver_id = this.authStore.user.staff_id || null;
     console.log(this.approver_id) 
+    this.get_manager_details(this.approver_id);
     this.fetchRequests(); // Fetch requests when component is mounted
 
   },
@@ -203,4 +220,8 @@ export default {
     font-weight: bold;
     margin-left: 15px;
   }
+
+  #pending-header span {
+  color: green;
+}
 </style>

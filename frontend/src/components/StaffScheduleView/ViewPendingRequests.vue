@@ -44,14 +44,14 @@
         </div>
 
         <!-- Cancel Modal -->
-        <div>
-            <PopupWrapper id='cancelPopup' class="flex-container justify-content-center" :visible="isPopupVisible"
+        <div v-if="isPopupVisible">
+            <PopupWrapper id="cancelPopup" class="flex-container justify-content-center" :visible="isPopupVisible"
             @update:visible="isPopupVisible = $event">
                 <template #content>
-                    <div width="100%" class="justify-content-center">
+                    <div class="justify-content-center">
                         <h3 class="my-4" style="color:black">Reason for Rejection</h3>
                         <form>
-                            <textarea style='width:400px;height:150px' class="form-control" v-model="cancellationReason"
+                            <textarea style="width:400px; height:150px" class="form-control" v-model="cancellationReason"
                                 placeholder="Enter reason for cancellation"></textarea>
                             <div class="d-flex flex-column my-2">
                                 <p id="errormsg" class="text-danger mx-0"></p>
@@ -62,6 +62,7 @@
                 </template>
             </PopupWrapper>
         </div>
+
 
         <!-- Success Modal -->
         <div v-if="showSuccessModal" class="modal-overlay">
@@ -222,4 +223,18 @@ export default {
     display: flex;
     justify-content: flex-end;
 }
+
+/* Popup wrapper styling */
+.flex-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1002; /* Ensure it's above other content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 </style>
