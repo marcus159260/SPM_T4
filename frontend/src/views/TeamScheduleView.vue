@@ -26,7 +26,7 @@ export default {
     };
   },
   mounted() {
-    var url = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + this.Reporting_Manager;
+    var url = `http://127.0.0.1:5000/api/users/by-team-employees/` + this.Reporting_Manager;
     axios
       .get(url)
       .then((response) => {

@@ -120,7 +120,7 @@ export default {
     },
     
     fetchRequests() {
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approver/${this.approver_id}`, {
+      axios.get(`http://127.0.0.1:5000/api/wfh/requests/approver/${this.approver_id}`, {
         headers: {
           'X-Staff-ID': this.authStore.user.staff_id,
           'X-Staff-Role': this.authStore.user.role,
