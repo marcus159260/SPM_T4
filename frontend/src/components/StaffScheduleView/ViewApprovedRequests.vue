@@ -39,7 +39,7 @@
             <p>No approved requests available within the date range.</p>
         </div>
         <div>
-            <PopupWrapper id='popup' class="flex-container justify-content-center" :visible="isPopupVisible"
+            <PopupWrapper id='withdrawalPopup' class="flex-container justify-content-center pop" :visible="isPopupVisible"
                 @update:visible="isPopupVisible = $event">
                 <template #content>
                 <div width="100%" class="justify-content-center">
@@ -125,9 +125,9 @@ export default {
         async fetchRequests() {
             try {
                 // Get staffId from route params (if using Vue Router) or from a state
-                const staffId = this.$route.params.staffId || 150076;
+                // const staffId = this.$route.params.staffId || 150076;
                 const response = await axios.get(
-                    `http://127.0.0.1:5000/api/wfh/requests/${this.authStore.user.staff_id}`,
+                    `${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/${this.authStore.user.staff_id}`,
                     {
                         headers: {
                             'X-Staff-ID': this.authStore.user.staff_id,
@@ -162,7 +162,7 @@ export default {
                 document.getElementById('withdrawalPopup').style.display = 'flex';
                 document.getElementById('withdrawalPopup').style.border = '1px black solid';
             } else {
-                document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
+                // document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
                 alert('You can only withdraw requests within 2 weeks backward and forward.');
 
             }
@@ -171,13 +171,13 @@ export default {
         confirmWithdrawal() {
             if (!this.withdrawalReason.trim()) {
                 console.log('error from popup: no error msg');
-                document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
+                // document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
-            axios.post('http://127.0.0.1:5000/api/wfh/requests/withdraw', {
+            axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/withdraw`, {
                 Request_ID: this.selectedRequest.Request_ID,
                 Rejection_Reason: this.withdrawalReason,
-                Staff_ID: this.staffId
+                Staff_ID: this.authStore.user.staff_id
             }).then((response) => {
                 this.isPopupVisible = false;
                 document.getElementById('withdrawalPopup').style.border = '';
@@ -228,12 +228,11 @@ export default {
     justify-content: flex-end;
 }
 
-    .withdrawal-success-message {
-    background-color: #dff0d8;
-    color: #3c763d;
-    padding: 15px;
-    margin-top: 20px;
-    border-radius: 5px;
-    }
-
+.withdrawal-success-message {
+background-color: #dff0d8;
+color: #3c763d;
+padding: 15px;
+margin-top: 20px;
+border-radius: 5px;
+}
 </style>

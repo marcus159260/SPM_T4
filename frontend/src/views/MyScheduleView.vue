@@ -1,9 +1,16 @@
 <template>
   <div>
+    <CalendarNavigation
+      :currentDate="startDate"
+      :earliestDate="earliestDate"
+      :latestDate="latestDate"
+      @dateChanged="onDateChanged"
+    />
     <myCalendar
       :events="events"
       :resources="resources"
-      @dateChanged="onDateChanged"
+      :startDate="startDate"
+      :days="days"
     />
   </div>
 </template>
@@ -13,10 +20,12 @@ import myCalendar from '../components/myCalendar.vue';
 import axios from 'axios';
 import { DayPilot } from 'daypilot-pro-vue';
 import { useAuthStore } from '@/stores/auth';
+import CalendarNavigation from '../components/CalendarNavigation.vue';
 
 export default {
   components: {
     myCalendar,
+    CalendarNavigation
   },
   computed: {
     authStore() {
@@ -24,15 +33,28 @@ export default {
     },
   },
   data() {
+    const today = DayPilot.Date.today();
+    const currentDayOfWeek = today.getDayOfWeek(); // 1 = Monday, 7 = Sunday
+    const daysToMonday = currentDayOfWeek - 1;
+    const startOfWeek = today.addDays(-daysToMonday);
     return {
-      events: [],
       resources: [],
+      events: [],
       startDate: DayPilot.Date.today(),
+      days: 7,
+      earliestDate: startOfWeek.addDays(-60),
+      latestDate: startOfWeek.addDays(90),
     };
   },
 
   mounted() {
-    var url = "http://127.0.0.1:5000/api/users/" + this.authStore.user.staff_id;
+    this.loadResources();
+    this.loadEvents();
+  },
+
+  methods: {
+    loadResources() {
+      var url = `${import.meta.env.VITE_API_BASE_URL}/api/users/` + this.authStore.user.staff_id;
       axios.get(url).then((response) => {
         const staffData = response.data.data;
         this.resources = [
@@ -46,11 +68,10 @@ export default {
       }).catch((error) => {
         console.error('Error fetching staff data:', error);
       });
-  },
+    },
 
-  methods: {
     loadEvents() {
-      var url = "http://127.0.0.1:5000/api/wfh/events/" + this.authStore.user.staff_id;
+      var url = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/events/` + this.authStore.user.staff_id;
       axios.get(url).then((response) => {
         this.events = response.data;
       }).catch((error) => {

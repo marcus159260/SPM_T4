@@ -3,27 +3,19 @@
     <!-- Tabs navs -->
     <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
       <li class="nav-item" role="presentation">
-        <a data-mdb-tab-init class="nav-link active" id="ex1-tab-1" href="#ex1-tabs-1" role="tab"
-          aria-controls="ex1-tabs-1" aria-selected="true">View My Schedule</a>
-      </li>
-      <li class="nav-item" role="presentation">
-        <a data-mdb-tab-init class="nav-link" id="ex1-tab-2" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
-          aria-selected="false">View My Team Schedule</a>
-      </li>
-      <li class="nav-item" role="presentation">
-        <a data-mdb-tab-init class="nav-link" id="ex1-tab-3" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
+        <a data-mdb-tab-init class="nav-link active" id="ex1-tab-1" href="#ex1-tabs-1" role="tab" aria-controls="ex1-tabs-1"
           aria-selected="false">Create Request</a>
       </li>
       <li class="nav-item" role="presentation">
-        <a data-mdb-tab-init class="nav-link" id="ex1-tab-4" href="#ex1-tabs-4" role="tab" aria-controls="ex1-tabs-4"
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-4" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
           aria-selected="false">Pending</a>
       </li>
       <li class="nav-item" role="presentation">
-        <a data-mdb-tab-init class="nav-link" id="ex1-tab-5" href="#ex1-tabs-5" role="tab" aria-controls="ex1-tabs-5"
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-5" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
           aria-selected="false">Approved</a>
       </li>
       <li class="nav-item" role="presentation">
-        <a data-mdb-tab-init class="nav-link" id="ex1-tab-6" href="#ex1-tabs-6" role="tab" aria-controls="ex1-tabs-6"
+        <a data-mdb-tab-init class="nav-link" id="ex1-tab-6" href="#ex1-tabs-4" role="tab" aria-controls="ex1-tabs-4"
           aria-selected="false">All Requests</a>
       </li>
     </ul>
@@ -32,18 +24,6 @@
     <!-- Tabs content -->
     <div class="tab-content" id="ex1-content">
 
-      <!--View My Schedule-->
-      <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <h1><MyCalendar /></h1>
-      </div>
-      <!-- End of View My Schedule-->
-
-      <!--View My Team Schedule-->
-      <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <h1><TeamCalendar /></h1>
-      </div>
-      <!--End of All Requests-->
-
       <!--View (M/D) My Team Schedule-->
       <!-- <div v-if="user && Number(user.role) === 3" class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
         <h1><TeamCalendarManager /></h1>
@@ -51,26 +31,26 @@
       <!--End of All Requests-->
 
       <!--Create Request-->
-      <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+      <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
         <ApplicationForm />
       </div>
       <!--End of All Requests-->
 
       <!--Pending WFH-->
-      <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+      <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
         <ViewPendingRequests />
       </div>
 
       <!--End of Pending WFH-->
 
       <!--Approved Requests-->
-      <div class="tab-pane fade" id="ex1-tabs-5" role="tabpanel" aria-labelledby="ex1-tab-5">
+      <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
         <ViewApprovedRequests />
       </div>
       <!--End of Approved Requests-->
 
       <!--All Requests-->
-      <div class="tab-pane fade" id="ex1-tabs-6" role="tabpanel" aria-labelledby="ex1-tab-6">
+      <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
         <ViewAllRequests2 />
       </div>
       <!--End of All Requests-->
@@ -91,7 +71,8 @@ import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vu
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
 import TeamCalendar from "@/components/StaffScheduleView/teamCalendar.vue";
 import MyCalendar from "@/components/myCalendar.vue";
-// import TeamCalendarManager from "@/components/teamCalendarManager.vue";
+import { useAuthStore } from '@/stores/auth';
+import TeamCalendarManager from "@/components/teamCalendarManager.vue";
 
 
 export default {
@@ -103,12 +84,13 @@ export default {
     rippleSurface.map(s => {
       return new MDCRipple(s)
     })
+    this.managerId = this.authStore.user.staff_id;
   },
 
   data() {
     return {
       employees: [], //initialize
-      managerId: 151408,
+      managerId:null,
       isLoading: true // Add loading state
     }
   },
@@ -118,8 +100,13 @@ export default {
     ViewAllRequests2,
     ApplicationForm,
     MyCalendar,
-    // TeamCalendarManager,
+    TeamCalendarManager,
     TeamCalendar
+  },
+  computed: {
+    authStore() {
+      return useAuthStore();
+    },
   },
 }
 

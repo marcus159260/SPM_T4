@@ -1,7 +1,6 @@
 import pytest
 import json
 from app import app 
-from unittest.mock import MagicMock
 from util.db import supabase
 
 @pytest.fixture
