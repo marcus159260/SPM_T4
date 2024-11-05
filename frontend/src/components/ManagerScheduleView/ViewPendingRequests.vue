@@ -61,7 +61,7 @@
           </td>
           <!--Approve/Reject buttons-->
           <td class="d-flex align-items-center">
-            <button v-if="staff.Status == 'Withdrawn-pending'" @click="approveWithdrawalRequest(staff.Request_ID)"
+            <button v-if="staff.Status == 'Withdrawn - Pending'" @click="approveWithdrawalRequest(staff.Request_ID)"
               class="icon-button mb-5" style="padding-top: 40px;">
               <img src="../../assets/checked.png" alt="Approve Withdrawal">
             </button>
@@ -102,7 +102,7 @@
                 <p id="errormsg" class="text-danger mx-0"></p>
                 <button v-if="selectedRequestStatus == 'Pending'" type="button" class="btn btn-primary"
                   @click="rejectRequest(selectedRequestId)">Submit</button>
-                <button v-if="selectedRequestStatus == 'Withdrawn-pending'" type="button" class="btn btn-primary"
+                <button v-if="selectedRequestStatus == 'Withdrawn - Pending'" type="button" class="btn btn-primary"
                   @click="rejectWithdrawalRequest(selectedRequestId)">Submit</button>
 
               </div>
@@ -167,7 +167,7 @@ export default {
 
           // Return true if the request is pending, matches managerId, and Start_Date is within range
           return (
-            (request.Status === 'Pending' || request.Status === 'Withdrawn-pending') &&
+            (request.Status === 'Pending' || request.Status === 'Withdrawn - Pending') &&
             request.Approver_ID === this.managerId &&
             isWithinRange
           );
