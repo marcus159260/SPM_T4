@@ -24,12 +24,6 @@
     <!-- Tabs content -->
     <div class="tab-content" id="ex1-content">
 
-      <!--View (M/D) My Team Schedule-->
-      <!-- <div v-if="user && Number(user.role) === 3" class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <h1><TeamCalendarManager /></h1>
-      </div> -->
-      <!--End of All Requests-->
-
       <!--Create Request-->
       <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
         <ApplicationForm />
@@ -69,10 +63,7 @@ import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequ
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
 import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vue';
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
-import TeamCalendar from "@/components/StaffScheduleView/teamCalendar.vue";
-import MyCalendar from "@/components/myCalendar.vue";
 import { useAuthStore } from '@/stores/auth';
-import TeamCalendarManager from "@/components/teamCalendarManager.vue";
 
 
 export default {
@@ -99,9 +90,6 @@ export default {
     ViewApprovedRequests,
     ViewAllRequests2,
     ApplicationForm,
-    MyCalendar,
-    TeamCalendarManager,
-    TeamCalendar
   },
   computed: {
     authStore() {
