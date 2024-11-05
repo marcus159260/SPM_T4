@@ -76,6 +76,8 @@ def get_user_req(user_id):
         return jsonify({"error": str(e)}), 500
     
 @wfh_bp.route('/requests/approver/<int:approver_id>', methods=['GET'])
+@login_required
+@role_required([1,3])
 def get_requests_by_approver(approver_id):
     try:
         # Call the Supabase RPC function
@@ -169,7 +171,6 @@ def create_request():
         print("Error:", str(e))
         return jsonify({'error': str(e)}), 500
 
-
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():
     data = request.get_json()
@@ -195,6 +196,8 @@ def cancel_request():
     return jsonify(result), result['status']
 
 @wfh_bp.route('/requests/approve', methods=['POST'])
+# @login_required
+# @role_required([1,3])
 def update_request():
     try:
         request_data = request.json
@@ -202,6 +205,7 @@ def update_request():
         request_id = request_data.get('Request_ID')
         status = request_data.get('request_Status')
         force_approval = request_data.get('force_approval', False) 
+        print(force_approval)
         
         if not request_id or not status:
             return jsonify({"error": "Missing request ID or status"}), 400

@@ -219,7 +219,7 @@ def approve_wfh_request(managerId, request_id, status, force_approval=False):
         request_data = response.data[0] if response.data else None
         # print(request_data)
         if not request_data:
-            return {'error': 'Request not found.', 'status': 404}
+            return {'error': 'Request not found.', 'status': 404}, 404
 
         requested_date = datetime.strptime(request_data['Application_Date'], "%Y-%m-%d").date()
         start_date = datetime.strptime(request_data['Start_Date'], "%Y-%m-%d").date()
@@ -307,12 +307,12 @@ def reject_wfh_request(request_id, reason):
         response = supabase.table('request').select("*").eq('Request_ID', request_id).execute()
 
         if not response.data:
-            return {'error': 'Request not found.', 'status': 404}
+            return {'error': 'Request not found.', 'status': 404}, 404
         
         request_data = response.data[0]
-        
-        if reason == '':
-            return {'error': 'Reason cannot be empty.', 'status': 404}
+        print(reason)
+        if reason == "":
+            return {'error': 'Reason cannot be empty.', 'status': 404}, 404
         
         # Handle adhoc vs recurring request
         update_response = supabase.table('request').update({
@@ -320,12 +320,12 @@ def reject_wfh_request(request_id, reason):
         'Rejection_Reason': reason
         }).eq('Request_ID', request_id).execute()
         
-        print(update_response)  # Check if update was successful
+        # print(update_response)  # Check if update was successful
 
-        return {'message': 'Request cancelled successfully.', 'status': 200}
+        return {'message': 'Request cancelled successfully.', 'status': 200}, 200
 
     except Exception as e:
-        return {'error': str(e), 'status': 500}
+        return {'error': str(e), 'status': 500}, 500
     
 def reject_wfh_withdrawal_request(request_id, reason):
     try:
