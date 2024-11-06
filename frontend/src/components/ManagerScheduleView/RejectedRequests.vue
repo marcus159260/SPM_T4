@@ -30,7 +30,7 @@
                         <th scope="col">Request Type</th>
                         <th scope="col">Request Reason</th>
                         <th scope="col" class="date-column">Application Date</th>
-                        <th scope="col">Reason of Application</th>
+                        <th scope="col">Rejection Reason</th>
                         <th scope="col">Withdrawal Reason</th>
                     </tr>
                 </thead>
@@ -40,7 +40,14 @@
                         <td>{{ staff.Staff_Name }}</td>
                         <td>{{ staff.Staff_Department }}</td>
                         <td>{{ staff.Staff_Position }}</td>
-                        <td>{{ staff.Status }}</td>
+                        <td>
+                            <span :class="{
+                                'badge rounded-pill text-bg-success': staff.Status === 'Approved',
+                                'badge rounded-pill text-bg-warning': staff.Status === 'Pending'|| staff.Status === 'Withdrawn - Pending',
+                                'badge rounded-pill text-bg-danger': staff.Status === 'Rejected',
+                                'badge rounded-pill text-bg-secondary': staff.Status === 'Withdrawn'
+                            }">{{ staff.Status }}</span>
+                        </td>
                         <td>{{ formatDate(staff.Start_Date) }}</td>
                         <td>{{ staff.Time }}</td>
                         <td>{{ staff.Request_Type }}</td>

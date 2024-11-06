@@ -71,6 +71,7 @@ export default {
         },
         params: params,
       }).then((response) => {
+        response.data.forEach(e => e.text = 'WFH');
         this.events = response.data;
       }).catch((error) => {
         console.error('Error fetching events:', error);

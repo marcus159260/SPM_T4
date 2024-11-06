@@ -73,6 +73,7 @@ export default {
     loadEvents() {
       var url = `http://127.0.0.1:5000/api/wfh/events/` + this.authStore.user.staff_id;
       axios.get(url).then((response) => {
+        response.data.forEach(e => e.text = 'WFH');
         this.events = response.data;
       }).catch((error) => {
         console.error('Error fetching events:', error);

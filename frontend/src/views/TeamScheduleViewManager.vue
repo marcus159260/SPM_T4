@@ -86,6 +86,7 @@ export default {
                     let bubbleHtml = `<ul><li>Date: `+new Date(e.start).toISOString().slice(0, 10)+`</li><li>Status: `+e.status+`</li></ul>`;
                   // console.log(bubbleHtml);
                     e.bubbleHtml = bubbleHtml;
+                    e.text = 'WFH'
                     this.events.push(e);
                 }
             }

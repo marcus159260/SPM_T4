@@ -22,7 +22,7 @@
               <th scope="col">Request Type</th>
               <th scope="col">Request Reason</th>
               <th scope="col" class="date-column">Application Date</th>
-              <th scope="col">Reason of Application</th>
+              <th scope="col">Rejection Reason</th>
               <th scope="col">Withdrawal Reason</th>
               <th scope="col" class="fixed-column">Approval</th>
           </tr>
@@ -33,7 +33,14 @@
             <td>{{ staff.Staff_Name }}</td>
             <td>{{ staff.Staff_Department }}</td>
             <td>{{ staff.Staff_Position }}</td>
-            <td>{{ staff.Status }}</td>
+            <td>
+                <span :class="{
+                    'badge rounded-pill text-bg-success': staff.Status === 'Approved',
+                    'badge rounded-pill text-bg-warning': staff.Status === 'Pending'|| staff.Status === 'Withdrawn - Pending',
+                    'badge rounded-pill text-bg-danger': staff.Status === 'Rejected',
+                    'badge rounded-pill text-bg-secondary': staff.Status === 'Withdrawn'
+                }">{{ staff.Status }}</span>
+            </td>
             <td>{{ formatDate(staff.Start_Date) }}</td>
             <td>{{ staff.Time }}</td>
             <td>{{ staff.Request_Type }}</td>
@@ -231,15 +238,12 @@ export default {
         .then(response => {
           // console.log('response.data', response.data);
           console.log('approveWithdrawalRequest');
-          if (response.data == 'error') {
-            alert(response.data);
-          }
-          else {
+            alert(response.data.message);
             this.fetchRequests();
-          }
         })
         .catch(error => {
           console.error('Error rejecting request:', error);
+          alert(error.response.data.error);
         });
     },
 
@@ -255,29 +259,31 @@ export default {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason, Manager_ID: this.managerId})
         .then(response => {
           console.log('response.data', response.data);
-          if (response.data == 'error') {
+            alert(response.data.message);
+            this.rejectionReason = '';
+            this.fetchRequests();
+            this.isPopupVisible = false; // Hide the popup after submission
+            document.getElementById('popup').style.border = '';
+
+          
+        })
+        .catch(error => {
+          console.error('Error rejecting request:', error);
+          if (error.response.data.error == 'Reason cannot be empty.') {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
             document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
 
           }
-          else {
-            this.fetchRequests();
-            this.isPopupVisible = false; // Hide the popup after submission
-            document.getElementById('popup').style.border = '';
-
-          }
-        })
-        .catch(error => {
-          console.error('Error rejecting request:', error);
         });
     },
     rejectWithdrawalRequest(requestId) {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason, Manager_ID: this.managerId })
         .then(response => {
           console.log('response.data', response.data);
-
+            alert(response.data.message);
             this.fetchRequests();
+            this.rejectionReason = '';
             this.isPopupVisible = false; // Hide the popup after submission
             document.getElementById('popup').style.border = '';
     
