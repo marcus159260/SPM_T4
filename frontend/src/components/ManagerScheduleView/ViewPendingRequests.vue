@@ -116,8 +116,17 @@ export default {
       withdrawalReason: '',
       selectedRequestStatus: '',
       selectedRequestId: null,
-      managerId: null
     };
+  },
+  props: {
+    managerId: {
+      type: Number,
+      required: true
+    },
+    role: {
+      type: Number,
+      required: true
+    }
   },
   components: {
     PopupWrapper
@@ -171,8 +180,8 @@ export default {
             const year = date.getFullYear();
             return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
         },
-    get_manager_details(managerId) {
-      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${managerId}`)
+    get_manager_details() {
+      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${this.managerId}`)
         .then(response => {
           this.managerDetails = response.data.data; // Store manager details
         })
@@ -300,18 +309,16 @@ export default {
 
   },
   mounted() {
-    // Fetch requests when the component is mounted
-    this.managerId = this.authStore.user.staff_id || null;
-    console.log(this.managerId);
-
+    // this.managerId = this.authStore.user.staff_id || null;
+    // console.log(this.managerId);
+    // console.log(this.role);
     this.fetchRequests();
-    this.get_manager_details(this.managerId);
+    this.get_manager_details();
   },
 };
 </script>
 
 <style scoped>
-/* Add your styles here */
 #pending-header span {
   color: green;
 }
