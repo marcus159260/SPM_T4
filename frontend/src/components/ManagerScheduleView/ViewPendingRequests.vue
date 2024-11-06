@@ -8,63 +8,62 @@
     </h6>
 
     <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
-    <table v-if="pendingRequests.length > 0" class="table align-middle mt-10 bg-white">
-      <thead class="bg-light">
-        <tr>
-            <th scope="col">Request ID</th>
-            <th scope="col">Staff Name</th>
-            <th scope="col">Department</th>
-            <th scope="col">Position</th>
-            <th scope="col">Status</th>
-            <th scope="col" class="date-column">Requested Date</th>
-            <th scope="col">Time</th>
-            <th scope="col">Request Type</th>
-            <th scope="col">Request Reason</th>
-            <th scope="col" class="date-column">Application Date</th>
-            <th scope="col">Reason of Application</th>
-            <th scope="col">Withdrawal Reason</th>
-            <th scope="col">Approval</th>
-        </tr>
-      </thead>
+    <div class="table-responsive">
+      <table v-if="pendingRequests.length > 0" class="table table-striped align-middle mt-10 bg-white">
+        <thead class="bg-light">
+          <tr>
+              <th scope="col">Request ID</th>
+              <th scope="col">Staff Name</th>
+              <th scope="col">Department</th>
+              <th scope="col">Position</th>
+              <th scope="col">Status</th>
+              <th scope="col" class="date-column">Requested Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Request Type</th>
+              <th scope="col">Request Reason</th>
+              <th scope="col" class="date-column">Application Date</th>
+              <th scope="col">Reason of Application</th>
+              <th scope="col">Withdrawal Reason</th>
+              <th scope="col" class="fixed-column">Approval</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="staff in pendingRequests" :key="staff.Staff_ID">
+            <th scope="row">{{ staff.Request_ID }}</th>
+            <td>{{ staff.Staff_Name }}</td>
+            <td>{{ staff.Staff_Department }}</td>
+            <td>{{ staff.Staff_Position }}</td>
+            <td>{{ staff.Status }}</td>
+            <td>{{ formatDate(staff.Start_Date) }}</td>
+            <td>{{ staff.Time }}</td>
+            <td>{{ staff.Request_Type }}</td>
+            <td>{{ staff.Reason }}</td>
+            <td>{{ formatDate(staff.Application_Date) }}</td>
+            <td>{{ staff.Rejection_Reason }}</td>
+            <td>{{ staff.Withdrawal_Reason }}</td>
+            
+            <!--Approve/Reject buttons-->
+            <td class="fixed-column d-flex align-items-center">
+              <button v-if="staff.Status == 'Withdrawn - Pending'" @click="approveWithdrawalRequest(staff.Request_ID)"
+                class="icon-button mb-5" style="padding-top: 40px;">
+                <img src="../../assets/checked.png" alt="Approve Withdrawal">
+              </button>
+              <button v-if="staff.Status == 'Pending'" @click="approveRequest(staff.Request_ID)" class="icon-button mb-5"
+                style="padding-top: 40px;">
+                <img src="../../assets/checked.png" alt="Approve">
+              </button>
 
-      <tbody v-for="staff in pendingRequests" :key="staff.Staff_ID">
-        <tr>
-          <th scope="row">{{ staff.Request_ID }}</th>
-          <td>{{ staff.Staff_Name }}</td>
-          <td>{{ staff.Staff_Department }}</td>
-          <td>{{ staff.Staff_Position }}</td>
-          <td>{{ staff.Status }}</td>
-          <td>{{ formatDate(staff.Start_Date) }}</td>
-          <td>{{ staff.Time }}</td>
-          <td>{{ staff.Request_Type }}</td>
-          <td>{{ staff.Reason }}</td>
-          <td>{{ formatDate(staff.Application_Date) }}</td>
-          <td>{{ staff.Rejection_Reason }}</td>
-          <td>{{ staff.Withdrawal_Reason }}</td>
-          
-          <!--Approve/Reject buttons-->
-          <td class="d-flex align-items-center">
-            <button v-if="staff.Status == 'Withdrawn - Pending'" @click="approveWithdrawalRequest(staff.Request_ID)"
-              class="icon-button mb-5" style="padding-top: 40px;">
-              <img src="../../assets/checked.png" alt="Approve Withdrawal">
-            </button>
-            <button v-if="staff.Status == 'Pending'" @click="approveRequest(staff.Request_ID)" class="icon-button mb-5"
-              style="padding-top: 40px;">
-              <img src="../../assets/checked.png" alt="Approve">
-            </button>
 
-
-            <button @click="rejectRequestPopup(staff.Request_ID, staff.Status)" class="icon-button mb-5"
-              style="padding-top: 40px;">
-              <img src="../../assets/x-button.png" alt="Reject">
-            </button>
-          </td>
-          <!--End of Approve/Reject buttons-->
-        </tr>
-          
-      </tbody>
-      
-    </table>
+              <button @click="rejectRequestPopup(staff.Request_ID, staff.Status)" class="icon-button mb-5"
+                style="padding-top: 40px;">
+                <img src="../../assets/x-button.png" alt="Reject">
+              </button>
+            </td>
+            <!--End of Approve/Reject buttons-->
+          </tr>   
+        </tbody>
+      </table>
+    </div>
 
     <div v-if="pendingRequests.length === 0" class="text-center mt-3">
       <p>No pending requests.</p>
@@ -339,4 +338,10 @@ export default {
 .date-column {
     min-width: 120px; /* Adjust width as needed */
 }
+
+.fixed-column {
+    position: sticky;
+    right: 0; 
+    z-index: 1; 
+  }
 </style>

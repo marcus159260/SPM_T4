@@ -17,7 +17,7 @@
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
 
         <div class="table-responsive">
-            <table v-if="rejectedRequests.length > 0" class="table align-middle mt-10 bg-white">
+            <table v-if="rejectedRequests.length > 0" class="table table-striped align-middle mt-10 bg-white">
                 <thead class="bg-light">
                     <tr>
                         <th scope="col">Request ID</th>
@@ -34,8 +34,8 @@
                         <th scope="col">Withdrawal Reason</th>
                     </tr>
                 </thead>
-                <tbody v-for="staff in rejectedRequests" :key="staff.Staff_ID">
-                    <tr>
+                <tbody>
+                    <tr v-for="staff in rejectedRequests" :key="staff.Staff_ID">
                         <th scope="row">{{ staff.Request_ID }}</th>
                         <td>{{ staff.Staff_Name }}</td>
                         <td>{{ staff.Staff_Department }}</td>

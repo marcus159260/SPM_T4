@@ -10,40 +10,42 @@
           &emsp;Position -> <span>{{ managerDetails.Position }}</span> -->
         </h6>
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
-        <table v-if="approvedRequests.length > 0" class="table align-middle mt-10 bg-white">
-            <thead class="bg-light">
-                <tr>
-                    <th scope="col">Request ID</th>
-                    <th scope="col">Staff Name</th>
-                    <th scope="col">Department</th>
-                    <th scope="col">Position</th>
-                    <th scope="col">Status</th>
-                    <th scope="col" class="date-column">Requested Date</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Request Type</th>
-                    <th scope="col">Request Reason</th>
-                    <th scope="col" class="date-column">Application Date</th>
-                    <th scope="col">Reason of Application</th>
-                    <th scope="col">Withdrawal Reason</th>
-                </tr>
-            </thead>
-            <tbody v-for="staff in approvedRequests" :key="staff.Staff_ID">
-                <tr>
-                    <th scope="row">{{ staff.Request_ID }}</th>
-                    <td>{{ staff.Staff_Name }}</td>
-                    <td>{{ staff.Staff_Department }}</td>
-                    <td>{{ staff.Staff_Position }}</td>
-                    <td>{{ staff.Status }}</td>
-                    <td>{{ formatDate(staff.Start_Date) }}</td>
-                    <td>{{ staff.Time }}</td>
-                    <td>{{ staff.Request_Type }}</td>
-                    <td>{{ staff.Reason }}</td>
-                    <td>{{ formatDate(staff.Application_Date) }}</td>
-                    <td>{{ staff.Rejection_Reason }}</td>
-                    <td>{{ staff.Withdrawal_Reason }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table v-if="approvedRequests.length > 0" class="table table-striped align-middle mt-10">
+                <thead>
+                    <tr>
+                        <th scope="col">Request ID</th>
+                        <th scope="col">Staff Name</th>
+                        <th scope="col">Department</th>
+                        <th scope="col">Position</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="date-column">Requested Date</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Request Type</th>
+                        <th scope="col">Request Reason</th>
+                        <th scope="col" class="date-column">Application Date</th>
+                        <th scope="col">Reason of Application</th>
+                        <th scope="col">Withdrawal Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="staff in approvedRequests" :key="staff.Staff_ID">
+                        <th scope="row">{{ staff.Request_ID }}</th>
+                        <td>{{ staff.Staff_Name }}</td>
+                        <td>{{ staff.Staff_Department }}</td>
+                        <td>{{ staff.Staff_Position }}</td>
+                        <td>{{ staff.Status }}</td>
+                        <td>{{ formatDate(staff.Start_Date) }}</td>
+                        <td>{{ staff.Time }}</td>
+                        <td>{{ staff.Request_Type }}</td>
+                        <td>{{ staff.Reason }}</td>
+                        <td>{{ formatDate(staff.Application_Date) }}</td>
+                        <td>{{ staff.Rejection_Reason }}</td>
+                        <td>{{ staff.Withdrawal_Reason }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <div v-if="approvedRequests.length === 0" class="text-center mt-3">
             <p>No Approved requests.</p>
         </div>

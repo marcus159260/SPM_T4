@@ -19,48 +19,50 @@
     </div>
 
     <div v-if="filteredRequests.length > 0">
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Request ID</th>
-            <th scope="col">Staff Name</th>
-            <th scope="col">Department</th>
-            <th scope="col">Position</th>
-            <th scope="col">Status</th>
-            <th scope="col">Requested Date</th>
-            <th scope="col">Time</th>
-            <th scope="col">Request Type</th>
-            <th scope="col">Request Reason</th>
-            <th scope="col">Application Date</th>
-            <th scope="col">Rejection Reason</th>
-            <th scope="col">Withdrawal Reason</th>
-          </tr>
-        </thead>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Request ID</th>
+              <th scope="col">Staff Name</th>
+              <th scope="col">Department</th>
+              <th scope="col">Position</th>
+              <th scope="col">Status</th>
+              <th scope="col">Requested Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Request Type</th>
+              <th scope="col">Request Reason</th>
+              <th scope="col">Application Date</th>
+              <th scope="col">Rejection Reason</th>
+              <th scope="col">Withdrawal Reason</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          <tr v-for="request in filteredRequests" :key="request.Request_ID">
-            <th scope="row">{{ request.Request_ID }}</th>
-            <td>{{ request.Staff_Name }}</td>
-            <td>{{ request.Staff_Department }}</td>
-            <td>{{ request.Staff_Position }}</td>
-            <td>
-              <span :class="{
-                  'badge rounded-pill text-bg-success': request.Status === 'Approved',
-                  'badge rounded-pill text-bg-warning': request.Status === 'Pending'|| request.Status === 'Withdrawn - Pending',
-                  'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
-                  'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
-              }">{{ request.Status }}</span>
-            </td>
-            <td>{{ formatDate(request.Start_Date) }}</td>
-            <td>{{ request.Time }}</td>
-            <td>{{ request.Request_Type }}</td>
-            <td>{{ request.Reason }}</td>
-            <td>{{ formatDate(request.Application_Date) }}</td>
-            <td>{{ request.Rejection_Reason }}</td>
-            <td>{{ request.Withdrawal_Reason }}</td>
-          </tr>
-        </tbody>
-      </table>
+          <tbody>
+            <tr v-for="request in filteredRequests" :key="request.Request_ID">
+              <th scope="row">{{ request.Request_ID }}</th>
+              <td>{{ request.Staff_Name }}</td>
+              <td>{{ request.Staff_Department }}</td>
+              <td>{{ request.Staff_Position }}</td>
+              <td>
+                <span :class="{
+                    'badge rounded-pill text-bg-success': request.Status === 'Approved',
+                    'badge rounded-pill text-bg-warning': request.Status === 'Pending'|| request.Status === 'Withdrawn - Pending',
+                    'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
+                    'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
+                }">{{ request.Status }}</span>
+              </td>
+              <td>{{ formatDate(request.Start_Date) }}</td>
+              <td>{{ request.Time }}</td>
+              <td>{{ request.Request_Type }}</td>
+              <td>{{ request.Reason }}</td>
+              <td>{{ formatDate(request.Application_Date) }}</td>
+              <td>{{ request.Rejection_Reason }}</td>
+              <td>{{ request.Withdrawal_Reason }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div v-else>
