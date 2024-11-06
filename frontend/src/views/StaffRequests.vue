@@ -32,26 +32,26 @@
 
       <!--Create Request-->
       <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <ApplicationForm :managerId="managerId"/>
+        <ApplicationForm :staffId="staffId" :role="role"/>
       </div>
       <!--End of All Requests-->
 
       <!--Pending WFH-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <ViewPendingRequests :managerId="managerId"/>
+        <ViewPendingRequests :staffId="staffId" :role="role"/>
       </div>
 
       <!--End of Pending WFH-->
 
       <!--Approved Requests-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        <ViewApprovedRequests :managerId="managerId"/>
+        <ViewApprovedRequests :staffId="staffId" :role="role"/>
       </div>
       <!--End of Approved Requests-->
 
       <!--All Requests-->
       <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-        <ViewAllRequests2 :managerId="managerId"/>
+        <ViewAllRequests :staffId="staffId" :role="role"/>
       </div>
       <!--End of All Requests-->
 
@@ -67,7 +67,7 @@ import 'jquery';
 
 import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequests.vue';
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
-import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vue';
+import ViewAllRequests from '../components/StaffScheduleView/ViewAllRequests.vue';
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
 import TeamCalendar from "@/components/StaffScheduleView/teamCalendar.vue";
 import MyCalendar from "@/components/myCalendar.vue";
@@ -90,13 +90,14 @@ export default {
     return {
       employees: [], //initialize
       isLoading: true, // Add loading state
-      managerId: null
+      staffId: null,
+      role: null
     }
   },
   components: {
     ViewPendingRequests,
     ViewApprovedRequests,
-    ViewAllRequests2,
+    ViewAllRequests,
     ApplicationForm,
     MyCalendar,
     TeamCalendarManager,
@@ -108,8 +109,10 @@ export default {
     },
   },
   created() {
-    this.managerId = this.authStore.user.staff_id || null;
-    // console.log('Parent managerId:', this.managerId);
+    this.staffId = this.authStore.user.staff_id || null;
+    this.role = this.authStore.user.role || null;
+    // console.log('Parent staffId:', this.staffId);
+    // console.log(this.role);
   }
 }
 

@@ -96,9 +96,13 @@ export default {
     },
 
     props: {
-        managerId: {
-        type: Number,
-        required: true
+        staffId: {
+            type: Number,
+            required: true
+        },
+        role: {
+            type: Number,
+            required: true
         }
     },
 
@@ -141,11 +145,11 @@ export default {
         async fetchRequests() {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:5000/api/wfh/requests/${this.managerId}`,
+                    `http://127.0.0.1:5000/api/wfh/requests/${this.staffId}`,
                     {
                         headers: {
-                        'X-Staff-ID': this.managerId,
-                        'X-Staff-Role': this.authStore.user.role,
+                        'X-Staff-ID': this.staffId,
+                        'X-Staff-Role': this.role,
                         },
                     }
                 );
@@ -170,7 +174,7 @@ export default {
             axios.post(`http://127.0.0.1:5000/api/wfh/requests/cancel`, {
                 Request_ID: selectedRequestId,
                 Withdrawal_Reason: this.cancellationReason,
-                Staff_id: this.authStore.user.staff_id
+                Staff_id: this.staffId
             })
 
             .then(response => {
@@ -196,7 +200,8 @@ export default {
     },
 
     mounted() {
-        // console.log(this.managerId);
+        // console.log(this.staffId);
+        // console.log(this.role);
         this.fetchRequests();
     }
 };

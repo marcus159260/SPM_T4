@@ -75,9 +75,13 @@ export default {
         }
     },
     props: {
-        managerId: {
-        type: Number,
-        required: true
+        staffId: {
+          type: Number,
+          required: true
+        },
+        role: {
+          type: Number,
+          required: true
         }
     },
     computed: {
@@ -104,11 +108,11 @@ export default {
     async fetchRequests() {
       try {
           // Get staffId from route params (if using Vue Router) or from a state
-          const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${this.managerId}`, 
+          const response = await axios.get(`http://127.0.0.1:5000/api/wfh/requests/${this.staffId}`, 
           {
             headers: {
-              'X-Staff-ID': this.managerId,
-              'X-Staff-Role': this.authStore.user.role,
+              'X-Staff-ID': this.staffId,
+              'X-Staff-Role': this.role,
             },
           }
           );
@@ -124,7 +128,8 @@ export default {
   }},
 
   mounted() {
-    // console.log(this.managerId);
+    // console.log(this.staffId);
+    // console.log(this.role);
     this.fetchRequests();
   }
 

@@ -85,7 +85,7 @@ export default{
         return{
             // staffId: 150076, 
             staff_name: "",
-            approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
+            // approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
             startDate: null,
             endDate: null,
             wfhTime: 'AM',
@@ -99,9 +99,13 @@ export default{
         }
     },
     props: {
-        managerId: {
-        type: Number,
-        required: true
+        staffId: {
+            type: Number,
+            required: true
+        },
+        role: {
+            type: Number,
+            required: true
         }
     },
     computed:{
@@ -126,11 +130,11 @@ export default{
     methods:{
         async getStaffApprover(){
             try{
-                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.managerId}`, 
+                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.staffId}`, 
                 {
                 headers: {
-                'X-Staff-ID': this.managerId,
-                'X-Staff-Role': this.authStore.user.role,
+                'X-Staff-ID': this.staffId,
+                'X-Staff-Role': this.role,
                 },
             }
         );
@@ -162,7 +166,7 @@ export default{
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
                 const payload = {
-                    staff_id: this.managerId,
+                    staff_id: this.staffId,
                     start_date: this.startDate,
                     end_date: formattedEndDate,  
                     time_of_day: this.wfhTime, 
@@ -209,7 +213,8 @@ export default{
 
     },
     mounted(){
-        // console.log(this.managerId);
+        // console.log(this.staffId);
+        // console.log(this.role);
         this.getStaffApprover();
     }
     

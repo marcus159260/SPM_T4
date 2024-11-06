@@ -88,9 +88,13 @@ export default {
         };
     },
     props: {
-        managerId: {
-        type: Number,
-        required: true
+        staffId: {
+            type: Number,
+            required: true
+        },
+        role: {
+            type: Number,
+            required: true
         }
     },
     components: {
@@ -133,11 +137,11 @@ export default {
                 // Get staffId from route params (if using Vue Router) or from a state
                 // const staffId = this.$route.params.staffId || 150076;
                 const response = await axios.get(
-                    `http://127.0.0.1:5000/api/wfh/requests/${this.managerId}`,
+                    `http://127.0.0.1:5000/api/wfh/requests/${this.staffId}`,
                     {
                         headers: {
-                            'X-Staff-ID': this.managerId,
-                            'X-Staff-Role': this.authStore.user.role,
+                            'X-Staff-ID': this.staffId,
+                            'X-Staff-Role': this.role,
                         }
                     }
                 );
@@ -183,7 +187,7 @@ export default {
             axios.post(`http://127.0.0.1:5000/api/wfh/requests/withdraw`, {
                 Request_ID: this.selectedRequest.Request_ID,
                 Rejection_Reason: this.withdrawalReason,
-                Staff_ID: this.authStore.user.staff_id
+                Staff_ID: this.staffId
             }).then((response) => {
                 this.isPopupVisible = false;
                 document.getElementById('withdrawalPopup').style.border = '';
@@ -201,7 +205,8 @@ export default {
 
     },
     mounted() {
-        // console.log(this.managerId);
+        // console.log(this.staffId);
+        // console.log(this.role);
         this.fetchRequests();
     }
 };
