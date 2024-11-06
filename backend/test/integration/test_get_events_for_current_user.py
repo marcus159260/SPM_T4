@@ -23,13 +23,19 @@ def test_get_current_user_events_success(client):
     assert response.status_code == 200
     
 def test_get_current_user_events_404(client):
-    response = client.get(f'/api/wfh/events')
+    staff_ID_value = None
+    response = client.get(f'/api/wfh/events/{staff_ID_value}')
+    response_json = response.get_json()
+
+    # assert response_json['error'] == 'Unauthorized'
     assert response.status_code == 404
+    
     
 @patch('routes.requests.get_staff_events_data')      
 def test_get_current_user_events_valid_user_but_no_events(mock, client):
     mock.return_value = None
     response = client.get(f'/api/wfh/events/{150076}')
     print(response.data)
+    assert response.get_json()['error'] =='Failed to fetch events data'
     assert response.status_code == 500
     

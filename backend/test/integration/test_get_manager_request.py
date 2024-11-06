@@ -62,12 +62,13 @@ def test_get_requests_per_approver_400(mock_rpc, client):
         'X-Staff-Role': 1
     }
     mock_rpc.return_value.execute.return_value = {
-        'data': [{'Error': 'Some error message'}]
+        'data': [{'Error': "'dict' object has no attribute 'data'"}]
     }
     response = client.get(f"/api/wfh/requests/approver/{test_ID}", headers=headers_data)
-    print("Response: " , response)
+    response_json = response.get_json()
     assert response.status_code == 500
-
+    assert response_json == {'error': mock_rpc.return_value.execute.return_value['data'][0]['Error']}
+    
 @patch('util.db.supabase.rpc') 
 def test_get_requests_per_approver_500(mock_rpc,client):
     test_ID = 151408    
@@ -75,6 +76,7 @@ def test_get_requests_per_approver_500(mock_rpc,client):
         'X-Staff_ID': test_ID,
         'X-Staff-Role': 1
     }
+
     mock_rpc.return_value.execute.side_effect = Exception('Database connection failed')
     response = client.get(f"/api/wfh/requests/approver/{test_ID}", headers=headers_data)
     print("Response: " , response)

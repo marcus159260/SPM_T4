@@ -53,8 +53,9 @@ def get_all_events():
 def get_events_for_current_user(staff_id):
     # print(staff_id)
     # staff_id = session.get('staff_id')
-    if not staff_id:
-        return jsonify({'error': 'Unauthorized'}), 404
+
+    # if not staff_id:
+    #     return jsonify({'error': 'Unauthorized'}), 404
 
     events = get_staff_events_data(staff_id)
     if events is None:
