@@ -79,11 +79,21 @@ export default {
   data() {
     return {
       selectedStatus: '', // Holds the value selected in the dropdown
-      approver_id: null, // Set this to the name you want to filter by
+      // managerId: null,
       allRequests: [], // All WFH requests fetched from the API
       filteredRequests: [], // The filtered WFH requests
       managerDetails: [],
     };
+  },
+  props: {
+      managerId: {
+      type: Number,
+      required: true
+      },
+      role: {
+        type: Number,
+        required: true
+      }
   },
   computed: {
     authStore() {
@@ -127,8 +137,8 @@ export default {
       });
     },
 
-    get_manager_details(approver_id) {
-      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${approver_id}`)
+    get_manager_details() {
+      axios.get(`http://127.0.0.1:5000/api/users/get-manager/${this.managerId}`)
         .then(response => {
           this.managerDetails = response.data.data; // Store manager details
         })
@@ -138,10 +148,10 @@ export default {
     },
     
     fetchRequests() {
-      axios.get(`http://127.0.0.1:5000/api/wfh/requests/approver/${this.approver_id}`, {
+      axios.get(`http://127.0.0.1:5000/api/wfh/requests/approver/${this.managerId}`, {
         headers: {
-          'X-Staff-ID': this.authStore.user.staff_id,
-          'X-Staff-Role': this.authStore.user.role,
+          'X-Staff-ID': this.managerId,
+          'X-Staff-Role': this.role,
         },
       })
         .then(response => {
@@ -173,9 +183,10 @@ export default {
     }
   },
   mounted() {
-    this.approver_id = this.authStore.user.staff_id || null;
-    console.log(this.approver_id) 
-    this.get_manager_details(this.approver_id);
+    // this.managerId = this.authStore.user.staff_id || null;
+    // console.log(this.managerId);
+    // console.log(this.role);
+    this.get_manager_details();
     this.fetchRequests(); // Fetch requests when component is mounted
 
   },

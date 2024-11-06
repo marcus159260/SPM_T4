@@ -26,25 +26,25 @@
 
       <!--Pending WFH-->
       <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <ViewPendingRequests />
+        <ViewPendingRequests :managerId="managerId" :role="role"/>
       </div>
       <!--End of Pending WFH-->
 
       <!--Approved WFH-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <ApprovedRequests />
+        <ApprovedRequests :managerId="managerId" :role="role"/>
       </div>
       <!--End of Approved WFH-->
 
       <!--Rejected WFH-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        <RejectedRequests />
+        <RejectedRequests :managerId="managerId" :role="role"/>
       </div>
       <!--End of Rejected WFH-->
 
       <!--All Requests-->
       <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-        <AllRequests />
+        <AllRequests :managerId="managerId" :role="role"/>
       </div>
       <!--End of All Requests-->
 
@@ -63,7 +63,7 @@ import AllRequests from '../components/ManagerScheduleView/AllRequests.vue';
 import ApprovedRequests from '@/components/ManagerScheduleView/ApprovedRequests.vue';
 import RejectedRequests from '@/components/ManagerScheduleView/RejectedRequests.vue';
 import PopupWrapper from '@/components/PopupWrapper.vue';
-
+import { useAuthStore } from '@/stores/auth';
 
 export default {
   name: "ManagerView",
@@ -75,6 +75,12 @@ export default {
       return new MDCRipple(s)
     })
   },
+  data() {
+    return {
+      managerId: null,
+      role: null
+    }
+  },
   components: {
     ViewPendingRequests,
     AllRequests,
@@ -82,6 +88,17 @@ export default {
     RejectedRequests,
     PopupWrapper
   },
+  created() {
+    this.managerId = this.authStore.user.staff_id || null;
+    this.role = this.authStore.user.role || null;
+    // console.log('Parent managerId:', this.managerId);
+    // console.log(this.role);
+  },
+  computed: {
+    authStore() {
+      return useAuthStore();
+    },
+  }
 }
 
 </script>
