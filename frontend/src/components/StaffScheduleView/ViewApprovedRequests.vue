@@ -87,6 +87,12 @@ export default {
             selectedRequestId: null
         };
     },
+    props: {
+        managerId: {
+        type: Number,
+        required: true
+        }
+    },
     components: {
         PopupWrapper
     },
@@ -127,10 +133,10 @@ export default {
                 // Get staffId from route params (if using Vue Router) or from a state
                 // const staffId = this.$route.params.staffId || 150076;
                 const response = await axios.get(
-                    `http://127.0.0.1:5000/api/wfh/requests/${this.authStore.user.staff_id}`,
+                    `http://127.0.0.1:5000/api/wfh/requests/${this.managerId}`,
                     {
                         headers: {
-                            'X-Staff-ID': this.authStore.user.staff_id,
+                            'X-Staff-ID': this.managerId,
                             'X-Staff-Role': this.authStore.user.role,
                         }
                     }
@@ -195,6 +201,7 @@ export default {
 
     },
     mounted() {
+        // console.log(this.managerId);
         this.fetchRequests();
     }
 };

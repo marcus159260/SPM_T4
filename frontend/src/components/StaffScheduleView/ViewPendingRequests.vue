@@ -95,6 +95,13 @@ export default {
         };
     },
 
+    props: {
+        managerId: {
+        type: Number,
+        required: true
+        }
+    },
+
     computed: {
         filteredRequests() {
             const currentDate = new Date();
@@ -134,10 +141,10 @@ export default {
         async fetchRequests() {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:5000/api/wfh/requests/${this.authStore.user.staff_id}`,
+                    `http://127.0.0.1:5000/api/wfh/requests/${this.managerId}`,
                     {
                         headers: {
-                        'X-Staff-ID': this.authStore.user.staff_id,
+                        'X-Staff-ID': this.managerId,
                         'X-Staff-Role': this.authStore.user.role,
                         },
                     }
@@ -189,6 +196,7 @@ export default {
     },
 
     mounted() {
+        // console.log(this.managerId);
         this.fetchRequests();
     }
 };

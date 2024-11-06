@@ -98,6 +98,12 @@ export default{
             responseMessage: ''
         }
     },
+    props: {
+        managerId: {
+        type: Number,
+        required: true
+        }
+    },
     computed:{
         canSubmit(){
             if(this.requestReason && this.requestReason.length > 0 && this.validPeriod && this.startEndDate == true){
@@ -120,10 +126,10 @@ export default{
     methods:{
         async getStaffApprover(){
             try{
-                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.authStore.user.staff_id}`, 
+                const response = await axios.get(`http://127.0.0.1:5000/api/users/${this.managerId}`, 
                 {
                 headers: {
-                'X-Staff-ID': this.authStore.user.staff_id,
+                'X-Staff-ID': this.managerId,
                 'X-Staff-Role': this.authStore.user.role,
                 },
             }
@@ -156,7 +162,7 @@ export default{
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
                 const payload = {
-                    staff_id: this.authStore.user.staff_id,
+                    staff_id: this.managerId,
                     start_date: this.startDate,
                     end_date: formattedEndDate,  
                     time_of_day: this.wfhTime, 
@@ -203,6 +209,7 @@ export default{
 
     },
     mounted(){
+        // console.log(this.managerId);
         this.getStaffApprover();
     }
     

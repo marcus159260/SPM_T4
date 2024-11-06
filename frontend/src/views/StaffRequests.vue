@@ -32,26 +32,26 @@
 
       <!--Create Request-->
       <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <ApplicationForm />
+        <ApplicationForm :managerId="managerId"/>
       </div>
       <!--End of All Requests-->
 
       <!--Pending WFH-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <ViewPendingRequests />
+        <ViewPendingRequests :managerId="managerId"/>
       </div>
 
       <!--End of Pending WFH-->
 
       <!--Approved Requests-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        <ViewApprovedRequests />
+        <ViewApprovedRequests :managerId="managerId"/>
       </div>
       <!--End of Approved Requests-->
 
       <!--All Requests-->
       <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-        <ViewAllRequests2 />
+        <ViewAllRequests2 :managerId="managerId"/>
       </div>
       <!--End of All Requests-->
 
@@ -84,14 +84,13 @@ export default {
     rippleSurface.map(s => {
       return new MDCRipple(s)
     })
-    this.managerId = this.authStore.user.staff_id;
   },
 
   data() {
     return {
       employees: [], //initialize
-      managerId:null,
-      isLoading: true // Add loading state
+      isLoading: true, // Add loading state
+      managerId: null
     }
   },
   components: {
@@ -108,6 +107,10 @@ export default {
       return useAuthStore();
     },
   },
+  created() {
+    this.managerId = this.authStore.user.staff_id || null;
+    // console.log('Parent managerId:', this.managerId);
+  }
 }
 
 
