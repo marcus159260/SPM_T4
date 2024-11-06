@@ -14,7 +14,7 @@
                             <th scope="col">Reason</th>
                             <th scope="col">Application Date</th>
                             <th scope="col">Approver</th>
-                            <th scope="col" class="fixed-column">Withdraw Request</th>
+                            <th scope="col">Withdraw Request</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -29,7 +29,7 @@
                             <td>{{ request.Reason }}</td>
                             <td>{{ formatDate(request.Application_Date) }}</td>
                             <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
-                            <td class="fixed-column"><button @click="attemptWithdrawal(request)">Withdraw</button></td>
+                            <td><button @click="attemptWithdrawal(request)">Withdraw</button></td>
                         </tr>
                     </tbody>
                 </table>

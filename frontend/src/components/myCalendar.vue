@@ -29,7 +29,7 @@ const emit = defineEmits(['dateChanged']);
 
 const config = reactive({
   timeHeaders: [{"groupBy":"Month"},{"groupBy":"Day","format":"d"},{"groupBy":"Cell","format":"tt"}],
-  scale: "CellDuration",
+  scale: "Manual",
   cellDuration: 720,
   days: props.days,
   startDate: props.startDate,
