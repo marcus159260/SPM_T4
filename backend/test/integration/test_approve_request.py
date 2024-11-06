@@ -2,6 +2,7 @@ import pytest
 import json
 from app import app 
 from util.db import supabase
+from unittest.mock import patch, MagicMock
 
 #NEED TO ADD LOGIN FIRST (not done)
 
@@ -35,6 +36,22 @@ def test_approve_request_no_request_status(client):
     }
     response = client.post('/api/wfh/requests/approve', json=request)
     assert response.status_code == 400  
+    
+    
+@patch('util.db.supabase.rpc')    
+def test_get_requests_500(mock_rpc, client):
+    mock_response = MagicMock()
+    mock_response.execute.side_effect = Exception("Internal Server Error")
+    
+    mock_rpc.return_value = mock_response
+    request = {
+        "managerId": 151408,
+        "Request_ID": 263,
+        "request_Status": "Approved"
+    }
+    response = client.post('/api/wfh/requests/approve', json=request)
+    print(response)
+    assert response.status_code == 500
     
 
     

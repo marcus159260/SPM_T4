@@ -16,6 +16,8 @@ def get_wfh_requests():
         
         # Call the function to fetch the data
         data, error = supabase.rpc('get_requests').execute()
+        print("DATA", data)
+        print("ERROR", error)
 
         if error[0] != 'count':
             return jsonify({"error": f"Error fetching data: {error}"}), 501
@@ -34,7 +36,7 @@ def get_staff_requests(user_id):
     if requests:
         return jsonify({"status": "success", "data": requests}), 200
     else:
-        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
+        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 404
     
 @wfh_bp.route('/all_events', methods=['GET'])
 # @login_required
@@ -52,7 +54,7 @@ def get_events_for_current_user(staff_id):
     # print(staff_id)
     # staff_id = session.get('staff_id')
     if not staff_id:
-        return jsonify({'error': 'Unauthorized'}), 401
+        return jsonify({'error': 'Unauthorized'}), 404
 
     events = get_staff_events_data(staff_id)
     if events is None:
@@ -86,7 +88,7 @@ def get_requests_by_approver(approver_id):
 
         # Check if there's an error in the SQL response
         if len(response.data) > 0 and response.data[0]['Error']:
-            return jsonify({'error': response.data[0]['Error']}), 400
+            return jsonify({'error': response.data[0]['Error']}), 500
 
         # Return the request data
         return jsonify(response.data), 200

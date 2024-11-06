@@ -14,10 +14,13 @@ def test_get_user_request_success(client):
     response = client.get(f"/api/wfh/requests/{test_ID}")
     assert response.status_code == 200
     
-# def test_get_user_request_fail(client):
-#     test_ID = 123654
-#     response = client.get(f"/api/wfh/requests/{test_ID}")
-#     print(response)
-#     assert response.status_code == 404
+def test_get_user_request_fail(client):
+    test_ID = 123654
+    response = client.get(f"/api/wfh/requests/{test_ID}")
+    print(response)
+    assert response.status_code == 500
+    
+
+    
     
     

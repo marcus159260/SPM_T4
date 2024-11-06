@@ -14,7 +14,7 @@ def test_get_user_data_valid_id(client):
     response = client.get(f"/api/users/{test_ID}")
     assert response.status_code == 200
     
-def test_get_user_data_valid_id(client):
+def test_get_user_data_invalid_id(client):
     test_ID = 000000
     response = client.get(f"/api/users/{test_ID}")
     assert response.status_code == 404    

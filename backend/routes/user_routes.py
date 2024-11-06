@@ -91,6 +91,7 @@ def get_department_counts():
     end_date = request.args.get('end_date')
 
     counts = get_department_wfh_wfo_counts(start_date, end_date)
+    # counts = None
     if counts is None:
         return jsonify({'error': 'Failed to fetch department counts'}), 500
     return jsonify(counts), 200

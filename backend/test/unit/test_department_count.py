@@ -170,6 +170,8 @@ def test_get_department_wfh_wfo_counts_exception(mocker):
 
     # Act: Call the function, which should handle the exception and return None
     result = get_department_wfh_wfo_counts()
+    
+    print(mock_fetch_all_employees.called)
 
     # Assert: Check if the result is None and the exception was caught
     assert result is None
