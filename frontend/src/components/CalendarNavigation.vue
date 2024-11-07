@@ -1,7 +1,8 @@
 <template>
+    <br>
     <div class="scheduler-container">
-      <button @click="goPreviousWeek" :disabled="isPreviousDisabled">Previous Week</button>
-      <button @click="goNextWeek" :disabled="isNextDisabled">Next Week</button>
+      <button class="btn-outline-dark btn" @click="goPreviousWeek" :disabled="isPreviousDisabled">Previous Week</button>
+      <button class="btn-outline-dark btn" @click="goNextWeek" :disabled="isNextDisabled">Next Week</button>
     </div>
   </template>
 

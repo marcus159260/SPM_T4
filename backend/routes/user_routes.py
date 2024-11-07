@@ -68,6 +68,13 @@ def get_resources_endpoint():
         return jsonify({'error': 'Failed to fetch employee data'}), 500
     return jsonify(resources)
 
+@user_bp.route('/all-staff-under-manager/<int:reporting_manager_id>', methods=['GET'])
+def get_all_staff_under_manager(reporting_manager_id):
+    resources = get_all_employees_below_reporting_manager(reporting_manager_id)
+
+    if resources is None:
+        return jsonify({'error': 'Failed to fetch employee data'}), 500
+    return jsonify(resources)
 
 @user_bp.route('/by-team-employees/<int:reporting_manager_id>', methods=['GET']) #test-case: 140894
 # @login_required

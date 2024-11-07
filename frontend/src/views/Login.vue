@@ -1,6 +1,7 @@
 <template>
   <div class="login-page d-flex justify-content-center align-items-center">
     <div class="card p-4">
+      <h3 class="mt-0 mb-4">Login</h3>
       <form @submit.prevent="handleLogin">
         <div class="form-group mb-3">
           <label for="staff_id">Staff ID:</label>
@@ -43,7 +44,7 @@ export default {
         // Redirect to home page after a short delay
         setTimeout(() => {
           router.push('/');
-        }, 1500);
+        }, 800);
       }
     };
 

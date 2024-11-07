@@ -2,6 +2,7 @@ from util.db import supabase
 from util.helpers import (
     group_employees_by_department,
     build_department_hierarchy,
+    create_employee_node
 )
 from datetime import datetime, timedelta
 
@@ -132,7 +133,7 @@ def get_resources():
     except Exception as e:
         print(f"Error fetching employee data: {e}")
         return None
-
+    print(data)
     resources = build_resource_tree(data)
     return resources
 
@@ -169,7 +170,6 @@ def get_employees_by_reporting_manager(reporting_manager_id: int):
         .execute()
     )
 
-   
     # Create a list to store the final result
     result = []
 
@@ -182,6 +182,33 @@ def get_employees_by_reporting_manager(reporting_manager_id: int):
         # Only add if the manager is not already in the result
         if not any(emp['Staff_ID'] == reporting_manager_id for emp in result):
             result.extend(manager_response.data)
+    
+    return result
+
+# get team members (same reporting manager)
+def get_all_employees_below_reporting_manager(reporting_manager_id: int):
+    # Query the employee table for employees with the specified Reporting_Manager
+    team_response = (
+        supabase.table('employee')
+        .select('*')
+        .eq('Reporting_Manager', reporting_manager_id)
+        .execute()
+    )
+    if team_response.data == []:
+        return []
+    
+    # Create a list to store the final result
+    result = []
+    
+    # Add team members if they exist
+    for staff in team_response.data:
+        staff['name'] = staff['Staff_FName'] + " " + staff['Staff_LName'] + "\n" + staff['Dept'] + " (" + staff['Position']+")"
+        staff['children'] = []
+        staff['id'] = "E_"+str(staff['Staff_ID'])
+        if staff['Staff_ID'] != reporting_manager_id and staff['Role'] != 2:
+            staff['children'].extend(get_all_employees_below_reporting_manager(staff['Staff_ID']))
+
+    result.extend(team_response.data)
     
     return result
 

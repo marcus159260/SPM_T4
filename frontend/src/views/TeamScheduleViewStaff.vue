@@ -114,8 +114,7 @@
   
       onDateChanged(newStartDate) {
         this.startDate = newStartDate;
-        // this.loadre();
-        // this.loadEvents();
+
       },
     }
   

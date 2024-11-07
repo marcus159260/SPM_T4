@@ -34,7 +34,7 @@ const config = reactive({
   // {"groupBy":"Cell","format":"tt"}
   { groupBy: "Cell", format: "tt" },
 ],
-  scale: "Manual",
+scale: "Manual",
   cellDuration: 720,
   startDate: props.startDate,
   days: props.days,
@@ -44,7 +44,8 @@ const config = reactive({
   resources: [],
   events: [],
   cellWidthSpec: "Auto",
-   heightSpec: "Full",
+  heightSpec: "Full",
+  rowHeight: 100,
   width: "100%",
   bubble: new DayPilot.Bubble({
       onLoad: function(args) {

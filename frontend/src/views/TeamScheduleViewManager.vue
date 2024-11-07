@@ -54,26 +54,31 @@ export default {
 
   methods: {
     loadResources() {
-      var teamurl = `http://127.0.0.1:5000/api/users/by-team-employees/` + this.authStore.user.staff_id;
-    // console.log(teamurl);
+      var teamurl = `http://127.0.0.1:5000/api/users/all-staff-under-manager/` + this.authStore.user.staff_id;
     axios
       .get(teamurl)
       .then((response) => {
-        // console.log(response);
         console.log(response);
       var temp = response.data;
-      var tempresources = [];
-      for(let emp of temp.data){
-        let resource = {id: "E_"+emp.id, name: emp.name+"\n"+emp.Dept+" ("+emp.Position+")",dept:emp.Dept,position:emp.Position};
-        tempresources.push(resource);
+      this.resources = temp;
+      
+      axios
+      .get(`http://127.0.0.1:5000/api/users/` + this.authStore.user.staff_id)
+      .then((r) => {
+        console.log(r);
+        let manager = {};
+        manager.id = "E_"+r.data.data['Staff_ID'];
+        manager.name = r.data.data['Staff_FName'] + " " + r.data.data['Staff_LName'] +"\n"+ r.data.data.Dept+ " ("+ r.data.data['Position']+")";
+        this.resources.unshift(manager);
       }
-      this.resources = tempresources;
+      )
+      .catch((error) => {
+          console.error('Error fetching manager details:', error);
+        });
+
       console.log("Loaded resources:", this.resources);  
       }
     )
-      .catch((error) => {
-        console.error('Error fetching requests:', error);
-      });
     },
 
     loadEvents() {
@@ -97,7 +102,6 @@ export default {
 
     onDateChanged(newStartDate) {
       this.startDate = newStartDate;
-      this.loadResources();
     },
   }
 
