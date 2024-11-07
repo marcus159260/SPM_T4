@@ -69,8 +69,10 @@ import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequ
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
 import ViewAllRequests from '../components/StaffScheduleView/ViewAllRequests.vue';
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
+import TeamCalendar from "@/components/teamCalendar.vue";
 import MyCalendar from "@/components/myCalendar.vue";
 import { useAuthStore } from '@/stores/auth';
+
 
 export default {
   name: "StaffView",
@@ -97,6 +99,7 @@ export default {
     ViewAllRequests,
     ApplicationForm,
     MyCalendar,
+    TeamCalendar
   },
   computed: {
     authStore() {
