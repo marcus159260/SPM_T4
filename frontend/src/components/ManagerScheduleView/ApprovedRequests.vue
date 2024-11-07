@@ -30,7 +30,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="staff in approvedRequests" :key="staff.Staff_ID">
-                        <td data-cell="request id">{{ staff.Request_ID }}</td>
+                        <td data-cell="request ID">{{ staff.Request_ID }}</td>
                         <td data-cell="staff name">{{ staff.Staff_Name }}</td>
                         <td data-cell="department">{{ staff.Staff_Department }}</td>
                         <td data-cell="position">{{ staff.Staff_Position }}</td>

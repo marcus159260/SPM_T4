@@ -3,7 +3,7 @@
         <div v-if="filteredRequests?.length > 0">
             <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped table-bordered align-middle mt-3">
                     <thead>
                         <tr>
                             <th scope="col">Request ID</th>
@@ -19,17 +19,17 @@
                     </thead>
                     <tbody>
                         <tr v-for="request in filteredRequests" :key="request.Request_ID">
-                            <th scope="row">{{ request.Request_ID }}</th>
-                            <td>{{ request.Request_Type}}</td>
-                            <td>
-                                <span class="badge rounded-pill text-bg-success">{{ request.Status }}</span>
+                            <td data-cell="request ID">{{ request.Request_ID }}</td>
+                            <td data-cell="request type">{{ request.Request_Type }}</td>
+                            <td data-cell="status">
+                                <span class="badge rounded-pill text-bg-warning">{{ request.Status }}</span>
                             </td>
-                            <td>{{ formatDate(request.Start_Date) }}</td>
-                            <td>{{ request.Time }}</td>
-                            <td>{{ request.Reason }}</td>
-                            <td>{{ formatDate(request.Application_Date) }}</td>
-                            <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
-                            <td><button @click="attemptWithdrawal(request)">Withdraw</button></td>
+                            <td data-cell="requested date">{{ formatDate(request.Start_Date) }}</td>
+                            <td data-cell="time">{{ request.Time }}</td>
+                            <td data-cell="reason">{{ request.Reason }}</td>
+                            <td data-cell="application date">{{ formatDate(request.Application_Date) }}</td>
+                            <td data-cell="approver">{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
+                            <td data-cell="withdraw"><button @click="attemptWithdrawal(request)">Withdraw</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -246,5 +246,38 @@ color: #3c763d;
 padding: 15px;
 margin-top: 20px;
 border-radius: 5px;
+}
+
+@media (max-width: 400px) {
+    .table-responsive {
+        max-width: 100%;
+        /* Increase this value to make the container wider */
+        margin: 0 auto;
+        /* Center the table container */
+    }
+
+    th {
+        display: none;
+    }
+
+    td {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 20ch auto;
+    }
+
+    td:first-child {
+        padding-top: 2rem;
+    }
+
+    td:last-child {
+        padding-top: 2rem;
+    }
+
+    td::before {
+        content: attr(data-cell) ": ";
+        font-weight: 700;
+        text-transform: capitalize;
+    }
 }
 </style>
