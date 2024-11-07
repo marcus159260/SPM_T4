@@ -1,10 +1,12 @@
 <template>
-  <DayPilotScheduler :config="config" ref="schedulerRef" />
+  <div class="scheduler-container">
+    <DayPilotScheduler :config="config" ref="schedulerRef" />
+  </div>
 </template>
 
 <script setup>
 import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
-import { ref, reactive, watch, defineProps, defineEmits } from 'vue';
+import { ref, reactive, watch, defineProps, defineEmits, onMounted } from 'vue';
 
 const props = defineProps({
   resources: {
@@ -42,6 +44,8 @@ const config = reactive({
   resources: [],
   events: [],
   cellWidthSpec: "Auto",
+  heightSpec: "Full",
+  width: "100%"
 });
 
 const schedulerRef = ref(null);
@@ -74,6 +78,20 @@ function generateTimeline(startDate, days) {
 
 config.timeline = generateTimeline(config.startDate, config.days);
 
+const updateConfigForScreenSize = () => {
+  if (window.innerWidth < 768) {
+    config.cellWidthSpec = "Fixed";
+    config.cellWidth = 50;
+  } else {
+    config.cellWidthSpec = "Auto";
+  }
+};
+
+onMounted(() => {
+  updateConfigForScreenSize();
+  window.addEventListener('resize', updateConfigForScreenSize);
+});
+
 watch(
   () => props.resources,
   (newResources) => {
@@ -100,3 +118,42 @@ watch(
 );
 
 </script>
+
+<style scoped>
+
+.scheduler-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.scrollbar-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding-top: 20px; /* Adjust as needed */
+}
+
+.scrollbar-container::-webkit-scrollbar {
+  height: 12px;
+}
+
+.scrollbar-container::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 6px;
+}
+
+.scrollbar-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-container {
+  direction: rtl;
+}
+
+.scrollbar-container > * {
+  direction: ltr;
+}
+
+</style>
