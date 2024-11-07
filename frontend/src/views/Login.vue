@@ -1,21 +1,22 @@
 <template>
-  <div class="login-page">
-    <form @submit.prevent="handleLogin">
-      <div>
-        <label>Staff ID:</label>
-        <input v-model="staff_id" type="text" required />
+  <div class="login-page d-flex justify-content-center align-items-center">
+    <div class="card p-4">
+      <form @submit.prevent="handleLogin">
+        <div class="form-group mb-3">
+          <label for="staff_id">Staff ID:</label>
+          <input v-model="staff_id" type="text" class="form-control" id="staff_id" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+      </form>
+      <div v-if="successMessage" class="alert alert-success mt-3">
+        {{ successMessage }}
       </div>
-      <button type="submit">Login</button>
-    </form>
-    <div v-if="successMessage" class="alert alert-success">
-      {{ successMessage }}
-    </div>
-    <div v-if="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
+      <div v-if="errorMessage" class="alert alert-danger mt-3">
+        {{ errorMessage }}
+      </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import { ref } from 'vue';
@@ -25,8 +26,6 @@ import { useRouter } from 'vue-router';
 export default {
   name: 'Login',
   setup() {
-    console.log(import.meta.env.VITE_API_BASE_URL)
-
     const staff_id = ref('');
     const errorMessage = ref('');
     const successMessage = ref('');
@@ -44,7 +43,7 @@ export default {
         // Redirect to home page after a short delay
         setTimeout(() => {
           router.push('/');
-        }, 1000); // 1-second delay to show success message
+        }, 1500);
       }
     };
 
@@ -55,23 +54,17 @@ export default {
       handleLogin,
     };
   },
-}
+};
 </script>
 
-<style>
-  .alert {
-    margin-top: 1em;
-    padding: 1em;
-    border-radius: 5px;
-  }
+<style scoped>
+.login-page {
+  height: 100vh;
+  background-color: #f8f9fa;
+}
 
-  .alert-success {
-    background-color: #d4edda;
-    color: #155724;
-  }
-
-  .alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-  }
+.card {
+  width: 100%;
+  max-width: 400px;
+}
 </style>
