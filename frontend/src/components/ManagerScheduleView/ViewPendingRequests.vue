@@ -262,7 +262,7 @@ export default {
       console.log(status);
       this.isPopupVisible = true; // Show the popup
       document.getElementById('popup').style.display = 'flex';
-      document.getElementById('popup').style.border = '1px black solid';
+      // document.getElementById('popup').style.border = '1px black solid';
     },
     rejectRequest(requestId) {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason, Manager_ID: this.managerId})
