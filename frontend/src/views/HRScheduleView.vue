@@ -105,7 +105,7 @@ export default {
         params: params,
       }).then((response) => {
         this.departmentCounts = response.data;
-        console.log('Department counts:', this.departmentCounts);
+        // console.log('Department counts:', this.departmentCounts);
       }).catch((error) => {
         console.error('Error fetching department counts:', error);
       });
