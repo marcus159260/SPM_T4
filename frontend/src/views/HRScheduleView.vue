@@ -47,6 +47,7 @@ export default {
       departmentCounts: [],
       earliestDate: startOfWeek.addDays(-60),
       latestDate: startOfWeek.addDays(90),
+      startOfWeek: startOfWeek,
     };
   },
 
@@ -92,19 +93,19 @@ export default {
     },
 
     async loadDepartmentCounts() {
+      // console.log('Start Date:', this.startOfWeek);
+      // console.log('End Date:', this.startOfWeek.addDays(this.days - 1));
+      // console.log('Days:', this.days);
       const params = {
-        start_date: this.startDate.toString('yyyy-MM-dd'),
-        end_date: this.startDate.addDays(this.days - 1).toString('yyyy-MM-dd'),
+        start_date: this.startOfWeek.toString('yyyy-MM-dd'),
+        end_date: this.startOfWeek.addDays(this.days - 1).toString('yyyy-MM-dd'),
       };
+
       return axios.get(`http://127.0.0.1:5000/api/users/department_counts`, {
-        headers: {
-          'X-Staff-ID': this.authStore.user.staff_id,
-          'X-Staff-Role': this.authStore.user.role,
-        },
         params: params,
       }).then((response) => {
         this.departmentCounts = response.data;
-        // console.log('Department counts:', this.departmentCounts);
+        console.log('Department counts:', this.departmentCounts);
       }).catch((error) => {
         console.error('Error fetching department counts:', error);
       });
@@ -119,8 +120,7 @@ export default {
           wfoCount: dept.wfo_count,
         };
       });
-
-      // Update department names in resources
+      // console.log(this.departmentCounts);
       this.resources.forEach(department => {
         const deptName = department.name.split(' (')[0]; // Remove existing counts
         const counts = countsMap[deptName];
@@ -134,6 +134,7 @@ export default {
     },
 
     onDateChanged(newStartDate) {
+      this.startOfWeek = newStartDate;
       this.startDate = newStartDate;
       Promise.all([this.loadEvents(), this.loadDepartmentCounts()])
       .then(() => {
