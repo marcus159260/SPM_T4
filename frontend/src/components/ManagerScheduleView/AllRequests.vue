@@ -40,7 +40,7 @@
 
           <tbody>
             <tr v-for="request in filteredRequests" :key="request.Request_ID">
-              <td data-cell="request id">{{ request.Request_ID }}</td>
+              <td data-cell="request ID">{{ request.Request_ID }}</td>
               <td data-cell="staff name">{{ request.Staff_Name }}</td>
               <td data-cell="department">{{ request.Staff_Department }}</td>
               <td data-cell="position">{{ request.Staff_Position }}</td>
