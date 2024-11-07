@@ -1,6 +1,11 @@
 <template>
   <div class="content-wrapper">
-    <h2 class="mt-4">{{ allRequests.length > 0 ? allRequests[0].Approver : 'Invalid Manager or Director' }}</h2>
+    <h6 id="pending-header" v-if="managerDetails" class="mt-10">
+      Manager Name: <span>{{ managerDetails.Full_Name }}</span> <br />
+      Manager ID: <span>{{ managerDetails.Staff_ID }}</span> <br>
+      Department: <span>{{ managerDetails.Department }}</span> <br />
+      Position: <span>{{ managerDetails.Position }}</span> <br />
+    </h6>
 
     <div class="filter-container mb-3">
       <label for="statusFilter" class="status-label">Status</label>
@@ -14,48 +19,50 @@
     </div>
 
     <div v-if="filteredRequests.length > 0">
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Request ID</th>
-            <th scope="col">Staff Name</th>
-            <th scope="col">Department</th>
-            <th scope="col">Position</th>
-            <th scope="col">Status</th>
-            <th scope="col">Requested Date</th>
-            <th scope="col">Time</th>
-            <th scope="col">Request Type</th>
-            <th scope="col">Request Reason</th>
-            <th scope="col">Application Date</th>
-            <th scope="col">Rejection Reason</th>
-            <th scope="col">Withdrawal Reason</th>
-          </tr>
-        </thead>
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle mt-3">
+          <thead>
+            <tr>
+              <th scope="col">Request ID</th>
+              <th scope="col">Staff Name</th>
+              <th scope="col">Department</th>
+              <th scope="col">Position</th>
+              <th scope="col">Status</th>
+              <th scope="col">Requested Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Request Type</th>
+              <th scope="col">Request Reason</th>
+              <th scope="col">Application Date</th>
+              <th scope="col">Rejection Reason</th>
+              <th scope="col">Withdrawal Reason</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          <tr v-for="request in filteredRequests" :key="request.Request_ID">
-            <th scope="row">{{ request.Request_ID }}</th>
-            <td>{{ request.Staff_Name }}</td>
-            <td>{{ request.Staff_Department }}</td>
-            <td>{{ request.Staff_Position }}</td>
-            <td>
-              <span :class="{
-                  'badge rounded-pill text-bg-success': request.Status === 'Approved',
-                  'badge rounded-pill text-bg-warning': request.Status === 'Pending'|| request.Status === 'Withdrawn - Pending',
-                  'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
-                  'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
-              }">{{ request.Status }}</span>
-            </td>
-            <td>{{ formatDate(request.Start_Date) }}</td>
-            <td>{{ request.Time }}</td>
-            <td>{{ request.Request_Type }}</td>
-            <td>{{ request.Reason }}</td>
-            <td>{{ formatDate(request.Application_Date) }}</td>
-            <td>{{ request.Rejection_Reason }}</td>
-            <td>{{ request.Withdrawal_Reason }}</td>
-          </tr>
-        </tbody>
-      </table>
+          <tbody>
+            <tr v-for="request in filteredRequests" :key="request.Request_ID">
+              <td data-cell="request ID">{{ request.Request_ID }}</td>
+              <td data-cell="staff name">{{ request.Staff_Name }}</td>
+              <td data-cell="department">{{ request.Staff_Department }}</td>
+              <td data-cell="position">{{ request.Staff_Position }}</td>
+              <td data-cell="status">
+                <span :class="{
+                    'badge rounded-pill text-bg-success': request.Status === 'Approved',
+                    'badge rounded-pill text-bg-warning': request.Status === 'Pending'|| request.Status === 'Withdrawn - Pending',
+                    'badge rounded-pill text-bg-danger': request.Status === 'Rejected',
+                    'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
+                }">{{ request.Status }}</span>
+              </td>
+              <td data-cell="requested date">{{ formatDate(request.Start_Date) }}</td>
+              <td data-cell="time">{{ request.Time }}</td>
+              <td data-cell="request type">{{ request.Request_Type }}</td>
+              <td data-cell="request reason">{{ request.Reason }}</td>
+              <td data-cell="application date">{{ formatDate(request.Application_Date) }}</td>
+              <td data-cell="rejection reason">{{ request.Rejection_Reason }}</td>
+              <td data-cell="withdrawal reason">{{ request.Withdrawal_Reason }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div v-else>
@@ -72,10 +79,26 @@ export default {
   data() {
     return {
       selectedStatus: '', // Holds the value selected in the dropdown
-      approver_id: 140008, // Set this to the name you want to filter by
+      // managerId: null,
       allRequests: [], // All WFH requests fetched from the API
       filteredRequests: [], // The filtered WFH requests
+      managerDetails: [],
     };
+  },
+  props: {
+      managerId: {
+      type: Number,
+      required: true
+      },
+      role: {
+        type: Number,
+        required: true
+      }
+  },
+  computed: {
+    authStore() {
+            return useAuthStore(); // Access the auth store
+        },
   },
   methods: {
     applyFilter() {
@@ -113,9 +136,24 @@ export default {
         return isWithinDateRange && matchesStatus;
       });
     },
+
+    get_manager_details() {
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${this.managerId}`)
+        .then(response => {
+          this.managerDetails = response.data.data; // Store manager details
+        })
+        .catch(error => {
+          console.error("Error fetching manager details:", error);
+        });
+    },
     
     fetchRequests() {
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approver/${this.approver_id}`)
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approver/${this.managerId}`, {
+        headers: {
+          'X-Staff-ID': this.managerId,
+          'X-Staff-Role': this.role,
+        },
+      })
         .then(response => {
           if (response.data.length > 0 && response.data[0].Error) {
             // If there is an error in the response, display the error message
@@ -145,7 +183,12 @@ export default {
     }
   },
   mounted() {
+    // this.managerId = this.authStore.user.staff_id || null;
+    // console.log(this.managerId);
+    // console.log(this.role);
+    this.get_manager_details();
     this.fetchRequests(); // Fetch requests when component is mounted
+
   },
 };
 </script>
@@ -190,4 +233,42 @@ export default {
     font-weight: bold;
     margin-left: 15px;
   }
+
+  #pending-header span {
+  color: green;
+}
+
+@media (max-width: 400px) {
+    .table-responsive {
+        max-width: 100%;
+        /* Increase this value to make the container wider */
+        margin: 0 auto;
+        /* Center the table container */
+    }
+
+    th {
+        display: none;
+    }
+
+    td {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 20ch auto;
+    }
+
+    td:first-child {
+        padding-top: 2rem;
+    }
+
+    td:last-child {
+        padding-top: 2rem;
+    }
+
+    td::before {
+        content: attr(data-cell) ": ";
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
+}
 </style>

@@ -32,26 +32,26 @@
 
       <!--Create Request-->
       <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-        <ApplicationForm />
+        <ApplicationForm :staffId="staffId" :role="role"/>
       </div>
       <!--End of All Requests-->
 
       <!--Pending WFH-->
       <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-        <ViewPendingRequests />
+        <ViewPendingRequests :staffId="staffId" :role="role"/>
       </div>
 
       <!--End of Pending WFH-->
 
       <!--Approved Requests-->
       <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-        <ViewApprovedRequests />
+        <ViewApprovedRequests :staffId="staffId" :role="role"/>
       </div>
       <!--End of Approved Requests-->
 
       <!--All Requests-->
       <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-        <ViewAllRequests2 />
+        <ViewAllRequests :staffId="staffId" :role="role"/>
       </div>
       <!--End of All Requests-->
 
@@ -67,12 +67,11 @@ import 'jquery';
 
 import ViewPendingRequests from '../components/StaffScheduleView/ViewPendingRequests.vue';
 import ViewApprovedRequests from '../components/StaffScheduleView/ViewApprovedRequests.vue';
-import ViewAllRequests2 from '../components/StaffScheduleView/ViewAllRequests.vue';
+import ViewAllRequests from '../components/StaffScheduleView/ViewAllRequests.vue';
 import ApplicationForm from '../components/StaffScheduleView/ApplicationForm.vue';
-import TeamCalendar from "@/components/StaffScheduleView/teamCalendar.vue";
+import TeamCalendar from "@/components/teamCalendar.vue";
 import MyCalendar from "@/components/myCalendar.vue";
 import { useAuthStore } from '@/stores/auth';
-import TeamCalendarManager from "@/components/teamCalendarManager.vue";
 
 
 export default {
@@ -84,23 +83,22 @@ export default {
     rippleSurface.map(s => {
       return new MDCRipple(s)
     })
-    this.managerId = this.authStore.user.staff_id;
   },
 
   data() {
     return {
       employees: [], //initialize
-      managerId:null,
-      isLoading: true // Add loading state
+      isLoading: true, // Add loading state
+      staffId: null,
+      role: null
     }
   },
   components: {
     ViewPendingRequests,
     ViewApprovedRequests,
-    ViewAllRequests2,
+    ViewAllRequests,
     ApplicationForm,
     MyCalendar,
-    TeamCalendarManager,
     TeamCalendar
   },
   computed: {
@@ -108,6 +106,12 @@ export default {
       return useAuthStore();
     },
   },
+  created() {
+    this.staffId = this.authStore.user.staff_id || null;
+    this.role = this.authStore.user.role || null;
+    // console.log('Parent staffId:', this.staffId);
+    // console.log(this.role);
+  }
 }
 
 
@@ -121,4 +125,12 @@ export default {
   margin-bottom: 200px;
 }
 
+@media(max-width: 400px) {
+  .manager-wrapper {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+}
 </style>

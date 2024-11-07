@@ -10,62 +10,49 @@
           &emsp;Position -> <span>{{ managerDetails.Position }}</span> -->
         </h6>
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
-        <table v-if="approvedRequests.length > 0" class="table align-middle mt-10 bg-white">
-            <thead class="bg-light">
-                <tr>
-                    <th>Request_ID</th>
-                    <th>Name & Staff_ID</th>
-                    <th>Department & Position</th>
-                    <th>Request_Type / Time of WFH requested days</th>
-                    <th>Application_Date</th>
-                    <th>WFH_Start_Date</th>
-                    <th>Reason of Application</th>
-                    <th>Status</th>
-                    <th>Withdrawal_Reason</th>
-                </tr>
-            </thead>
-            <tbody v-for="staff in approvedRequests" :key="staff.Staff_ID">
-                <tr>
-                    <td>
-                        <p class="mb-1">{{ staff.Request_ID }}</p>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="ms-3">
-                                <p class="fw-bold mb-1">{{ staff.Staff_Name }}</p>
-                                <p class="text-muted mb-0">{{ staff.Staff_ID }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="ms-3">
-                                <p class="fw-bold mb-1">{{ staff.Staff_Department }}</p>
-                                <p class="text-muted mb-0">{{ staff.Staff_Position }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Request_Type }} / {{ staff.Time }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Application_Date }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Start_Date }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Reason }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Status }}</p>
-                    </td>
-                    <td>
-                        <p class="mb-1">{{ staff.Withdrawal_Reason }}</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table v-if="approvedRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
+                <thead>
+                    <tr>
+                        <th scope="col">Request ID</th>
+                        <th scope="col">Staff Name</th>
+                        <th scope="col">Department</th>
+                        <th scope="col">Position</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="date-column">Requested Date</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Request Type</th>
+                        <th scope="col">Request Reason</th>
+                        <th scope="col" class="date-column">Application Date</th>
+                        <th scope="col">Rejection Reason</th>
+                        <th scope="col">Withdrawal Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="staff in approvedRequests" :key="staff.Staff_ID">
+                        <td data-cell="request ID">{{ staff.Request_ID }}</td>
+                        <td data-cell="staff name">{{ staff.Staff_Name }}</td>
+                        <td data-cell="department">{{ staff.Staff_Department }}</td>
+                        <td data-cell="position">{{ staff.Staff_Position }}</td>
+                        <td data-cell="status" class="table-cell">
+                            <span :class="{
+                                'badge rounded-pill text-bg-success': staff.Status === 'Approved',
+                                'badge rounded-pill text-bg-warning': staff.Status === 'Pending' || staff.Status === 'Withdrawn - Pending',
+                                'badge rounded-pill text-bg-danger': staff.Status === 'Rejected',
+                                'badge rounded-pill text-bg-secondary': staff.Status === 'Withdrawn'
+                            }">{{ staff.Status }}</span>
+                        </td>
+                        <td data-cell="requested date">{{ formatDate(staff.Start_Date) }}</td>
+                        <td data-cell="time">{{ staff.Time }}</td>
+                        <td data-cell="request type">{{ staff.Request_Type }}</td>
+                        <td data-cell="request reason">{{ staff.Reason }}</td>
+                        <td data-cell="application date">{{ formatDate(staff.Application_Date) }}</td>
+                        <td data-cell="rejection reason">{{ staff.Rejection_Reason }}</td>
+                        <td data-cell="withdrawal reason">{{ staff.Withdrawal_Reason }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <div v-if="approvedRequests.length === 0" class="text-center mt-3">
             <p>No Approved requests.</p>
         </div>
@@ -82,12 +69,29 @@ export default {
         return {
             allRequests: [], // Holds the data fetched from the API
             managerDetails: [],
-            managerId: null
+            // managerId: null
         };
     },
+    props: {
+        managerId: {
+            type: Number,
+            required: true
+        },
+        role: {
+            type: Number,
+            required: true
+        }
+    },
     methods: {
-        get_manager_details(managerId) {
-            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${managerId}`)
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
+        },
+        get_manager_details() {
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${this.managerId}`)
                 .then(response => {
                     this.managerDetails = response.data.data; // Store manager details
                 })
@@ -121,9 +125,10 @@ export default {
     },
     mounted() {
         // Fetch requests when the component is mounted
-        this.managerId = this.authStore.user.staff_id || null;
-        console.log(this.managerId)
-        this.get_manager_details(this.managerId);
+        // this.managerId = this.authStore.user.staff_id || null;
+        // console.log(this.managerId);
+        // console.log(this.role);
+        this.get_manager_details();
         this.fetchRequests();
 
     },
@@ -135,5 +140,45 @@ export default {
 /* Add your styles here */
 #pending-header span {
     color: green;
+}
+
+.date-column {
+    min-width: 120px;
+    /* Adjust width as needed */
+}
+
+
+@media (max-width: 400px) {
+    .table-responsive {
+        max-width: 100%;
+        /* Increase this value to make the container wider */
+        margin: 0 auto;
+        /* Center the table container */
+    }
+
+    th {
+        display: none;
+    }
+
+    td {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 20ch auto;
+    }
+
+    td:first-child {
+        padding-top: 2rem;
+    }
+
+    td:last-child {
+        padding-top: 2rem;
+    }
+
+    td::before {
+        content: attr(data-cell) ": ";
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
 }
 </style>

@@ -3,7 +3,7 @@
         <div v-if="filteredRequests?.length > 0">
             <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped table-bordered align-middle mt-3">
                     <thead>
                         <tr>
                             <th scope="col">Request ID</th>
@@ -14,22 +14,22 @@
                             <th scope="col">Reason</th>
                             <th scope="col">Application Date</th>
                             <th scope="col">Approver</th>
-                            <th scope="col" class="fixed-column">Withdraw Request</th>
+                            <th scope="col">Withdraw Request</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="request in filteredRequests" :key="request.Request_ID">
-                            <th scope="row">{{ request.Request_ID }}</th>
-                            <td>{{ request.Request_Type}}</td>
-                            <td>
-                                <span class="badge rounded-pill text-bg-success">{{ request.Status }}</span>
+                            <td data-cell="request ID">{{ request.Request_ID }}</td>
+                            <td data-cell="request type">{{ request.Request_Type }}</td>
+                            <td data-cell="status">
+                                <span class="badge rounded-pill text-bg-warning">{{ request.Status }}</span>
                             </td>
-                            <td>{{ formatDate(request.Start_Date) }}</td>
-                            <td>{{ request.Time }}</td>
-                            <td>{{ request.Reason }}</td>
-                            <td>{{ formatDate(request.Application_Date) }}</td>
-                            <td>{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
-                            <td class="fixed-column"><button @click="attemptWithdrawal(request)">Withdraw</button></td>
+                            <td data-cell="requested date">{{ formatDate(request.Start_Date) }}</td>
+                            <td data-cell="time">{{ request.Time }}</td>
+                            <td data-cell="reason">{{ request.Reason }}</td>
+                            <td data-cell="application date">{{ formatDate(request.Application_Date) }}</td>
+                            <td data-cell="approver">{{ request.Approver_FName }} {{ request.Approver_LName }}</td>
+                            <td data-cell="withdraw"><button @click="attemptWithdrawal(request)">Withdraw</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -87,6 +87,16 @@ export default {
             selectedRequestId: null
         };
     },
+    props: {
+        staffId: {
+            type: Number,
+            required: true
+        },
+        role: {
+            type: Number,
+            required: true
+        }
+    },
     components: {
         PopupWrapper
     },
@@ -127,11 +137,11 @@ export default {
                 // Get staffId from route params (if using Vue Router) or from a state
                 // const staffId = this.$route.params.staffId || 150076;
                 const response = await axios.get(
-                    `${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/${this.authStore.user.staff_id}`,
+                    `${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/${this.staffId}`,
                     {
                         headers: {
-                            'X-Staff-ID': this.authStore.user.staff_id,
-                            'X-Staff-Role': this.authStore.user.role,
+                            'X-Staff-ID': this.staffId,
+                            'X-Staff-Role': this.role,
                         }
                     }
                 );
@@ -162,7 +172,7 @@ export default {
                 document.getElementById('withdrawalPopup').style.display = 'flex';
                 document.getElementById('withdrawalPopup').style.border = '1px black solid';
             } else {
-                document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
+                // document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
                 alert('You can only withdraw requests within 2 weeks backward and forward.');
 
             }
@@ -171,13 +181,13 @@ export default {
         confirmWithdrawal() {
             if (!this.withdrawalReason.trim()) {
                 console.log('error from popup: no error msg');
-                document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
+                // document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
             axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/withdraw`, {
                 Request_ID: this.selectedRequest.Request_ID,
                 Rejection_Reason: this.withdrawalReason,
-                Staff_ID: this.authStore.user.staff_id
+                Staff_ID: this.staffId
             }).then((response) => {
                 this.isPopupVisible = false;
                 document.getElementById('withdrawalPopup').style.border = '';
@@ -195,6 +205,8 @@ export default {
 
     },
     mounted() {
+        // console.log(this.staffId);
+        // console.log(this.role);
         this.fetchRequests();
     }
 };
@@ -234,5 +246,38 @@ color: #3c763d;
 padding: 15px;
 margin-top: 20px;
 border-radius: 5px;
+}
+
+@media (max-width: 400px) {
+    .table-responsive {
+        max-width: 100%;
+        /* Increase this value to make the container wider */
+        margin: 0 auto;
+        /* Center the table container */
+    }
+
+    th {
+        display: none;
+    }
+
+    td {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 20ch auto;
+    }
+
+    td:first-child {
+        padding-top: 2rem;
+    }
+
+    td:last-child {
+        padding-top: 2rem;
+    }
+
+    td::before {
+        content: attr(data-cell) ": ";
+        font-weight: 700;
+        text-transform: capitalize;
+    }
 }
 </style>

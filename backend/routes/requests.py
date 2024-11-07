@@ -16,6 +16,8 @@ def get_wfh_requests():
         
         # Call the function to fetch the data
         data, error = supabase.rpc('get_requests').execute()
+        print("DATA", data)
+        print("ERROR", error)
 
         if error[0] != 'count':
             return jsonify({"error": f"Error fetching data: {error}"}), 501
@@ -34,11 +36,11 @@ def get_staff_requests(user_id):
     if requests:
         return jsonify({"status": "success", "data": requests}), 200
     else:
-        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 200
+        return jsonify({"status": "error", "message": f"Requests for {user_id} not found"}), 404
     
 @wfh_bp.route('/all_events', methods=['GET'])
-@login_required
-@role_required([1,3])
+# @login_required
+# @role_required([1,3])
 def get_all_events():
     events = get_all_events_data()
     if events is None:
@@ -51,8 +53,9 @@ def get_all_events():
 def get_events_for_current_user(staff_id):
     # print(staff_id)
     # staff_id = session.get('staff_id')
-    if not staff_id:
-        return jsonify({'error': 'Unauthorized'}), 401
+
+    # if not staff_id:
+    #     return jsonify({'error': 'Unauthorized'}), 404
 
     events = get_staff_events_data(staff_id)
     if events is None:
@@ -76,14 +79,17 @@ def get_user_req(user_id):
         return jsonify({"error": str(e)}), 500
     
 @wfh_bp.route('/requests/approver/<int:approver_id>', methods=['GET'])
+@login_required
+@role_required([1,3])
 def get_requests_by_approver(approver_id):
     try:
         # Call the Supabase RPC function
         response = supabase.rpc('get_requests_by_approver', {'approver_id': approver_id}).execute()
+        print(response)
 
         # Check if there's an error in the SQL response
         if len(response.data) > 0 and response.data[0]['Error']:
-            return jsonify({'error': response.data[0]['Error']}), 400
+            return jsonify({'error': response.data[0]['Error']}), 500
 
         # Return the request data
         return jsonify(response.data), 200
@@ -169,7 +175,6 @@ def create_request():
         print("Error:", str(e))
         return jsonify({'error': str(e)}), 500
 
-
 @wfh_bp.route('/requests/cancel', methods=['POST'])
 def cancel_request():
     data = request.get_json()
@@ -202,11 +207,23 @@ def update_request():
         request_id = request_data.get('Request_ID')
         status = request_data.get('request_Status')
         force_approval = request_data.get('force_approval', False) 
+        print(force_approval)
         
         if not request_id or not status:
             return jsonify({"error": "Missing request ID or status"}), 400
         
         result, status_code = approve_wfh_request(managerId, request_id, status, force_approval)
+
+        if status_code == 200:
+            log_activity(
+                request_id = request_id,
+                old_status = 'Pending',
+                new_status = 'Approved',
+                changed_by = managerId,
+                change_message = result['message'],
+                reason = '-'
+            )
+
         return jsonify(result), status_code
     
     except Exception as e:
@@ -223,7 +240,17 @@ def approve_withdrawal_request():
         if not request_id:
             return jsonify({"error": "Missing request ID"}), 400
         result, status_code = approve_withdrawal_wfh_request(request_id)
-     
+
+        if status_code == 200:
+            log_activity(
+                    request_id = request_data.get('Request_ID'),
+                    old_status = 'Withdrawn - Pending',
+                    new_status = 'Withdrawn',
+                    changed_by = request_data.get('Manager_ID'),
+                    change_message = result['message'],
+                    reason =  '-'
+                )
+
         return jsonify(result), status_code
     
     except Exception as e:
@@ -235,6 +262,17 @@ def reject_request():
     request_id = data.get('Request_ID')
     rejection_reason = data.get('Rejection_Reason')
     result, status_code = reject_wfh_request(request_id, rejection_reason)
+
+    if status_code == 200:
+            log_activity(
+                    request_id = data.get('Request_ID'),
+                    old_status = 'Pending',
+                    new_status = 'Rejected',
+                    changed_by = data.get('Manager_ID'),
+                    change_message = result['message'],
+                    reason =  data.get('Rejection_Reason')
+                )
+
     return jsonify(result), status_code
 
 @wfh_bp.route('/requests/rejectwithdrawal', methods=['POST'])
@@ -245,4 +283,13 @@ def reject_withdrawal_request():
     rejection_reason = data.get('Withdrawal_Reason')
     result, status_code = reject_wfh_withdrawal_request(request_id, rejection_reason)
     
+    if status_code == 200:
+            log_activity(
+                    request_id = data.get('Request_ID'),
+                    old_status = 'Withdrawn - Pending',
+                    new_status = 'Approved',
+                    changed_by = data.get('Manager_ID'),
+                    change_message = result['message'],
+                    reason =  data.get('Withdrawal_Reason')
+                )
     return jsonify(result), status_code

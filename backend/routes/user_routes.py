@@ -4,13 +4,13 @@ from util.auth_decorators import login_required, role_required
 
 user_bp = Blueprint('user_bp', __name__)
 
-@user_bp.route('/', methods=['GET'])
-def users():
-    users = get_all_users_names()
-    if users:
-        return jsonify(users)
-    else:
-        return jsonify({'error': 'Users not found'}), 404
+# @user_bp.route('/', methods=['GET'])
+# def users():
+#     users = get_all_users_names()
+#     if users:
+#         return jsonify(users)
+#     else:
+#         return jsonify({'error': 'Users not found'}), 404
 
 
 @user_bp.route('/', methods=['GET'])
@@ -84,13 +84,14 @@ def get_employees_by_team(reporting_manager_id):
         return jsonify({"status": "error", "message": "User not found"}), 404
     
 @user_bp.route('/department_counts', methods=['GET'])
-@login_required
-@role_required([1])
+# @login_required
+# @role_required([1])
 def get_department_counts():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
 
     counts = get_department_wfh_wfo_counts(start_date, end_date)
+    # counts = None
     if counts is None:
         return jsonify({'error': 'Failed to fetch department counts'}), 500
     return jsonify(counts), 200

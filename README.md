@@ -19,5 +19,13 @@ This helps ensure this Flask project won't affect others on the same machine wit
 `deactivate` to deactivate virtual environment if you want to stop using it
 
 ## Unit Testing
-1. For backend tests, put into tests_package folder
+1. For backend tests:
+    - `cd backend/test/integration` for integration tests
+    - `cd backend/test/unit` for unit tests
 2. To run, type `pytest [filename].py`
+3. To run all, type `pytest` either under integration or unit folder.
+4. To run coverage for all tests, type `cd backend`
+    - For integration tests: `pytest --cov=routes --cov=api --cov report=html:test/integration/coverage_html test/integration/`
+    - For unit tests: `pytest --cov=controllers --cov=api --cov report=html:test/unit/coverage_html test/unit/`
+
+5. To open up the coverage HTML report, be directly either under `backend/test/integration` or `backend/test/integration` and type `start index.html`

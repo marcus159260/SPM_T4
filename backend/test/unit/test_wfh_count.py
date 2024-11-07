@@ -1,57 +1,153 @@
 import pytest
 from unittest.mock import MagicMock
+from datetime import datetime
+from controllers.requests_controller import get_wfh_count  
 
-from controllers.requests_controller import get_wfh_count
+@pytest.fixture
+def mock_supabase(mocker):
+    return mocker.patch('controllers.requests_controller.supabase')
 
-def test_get_wfh_count_no_requests(mocker):
-    # Mock the Supabase client
-    mock_supabase = mocker.patch('controllers.requests_controller.supabase')
-
-    # Mock response for no approved requests
-    mock_response = MagicMock()
-    mock_response.data = []
-    mock_supabase.table.return_value.select.return_value.eq.return_value.lte.return_value.gte.return_value.execute.return_value = mock_response
-
-    # Run the function
-    count = get_wfh_count(requested_date='2024-10-28')
-
-    # Assertions
-    assert count == 0  # Expecting 0 when no requests are approved
-
-
-def test_get_wfh_count_all_approved(mocker):
-    # Mock the Supabase client
-    mock_supabase = mocker.patch('controllers.requests_controller.supabase')
-
-    # Mock response for some approved requests
+def test_get_wfh_count_with_valid_requests(mock_supabase):
+    # Mock response with approved requests for the specified date
     mock_response = MagicMock()
     mock_response.data = [
-        {'Request_ID': 4, 'Status': 'Approved', 'Start_Date': '2024-10-28', 'End_Date': '2024-10-28'},
-        {'Request_ID': 5, 'Status': 'Approved', 'Start_Date': '2024-10-28', 'End_Date': '2024-10-28'},
-        {'Request_ID': 7, 'Status': 'Approved', 'Start_Date': '2024-10-28', 'End_Date': '2024-10-28'},
-        {'Request_ID': 10, 'Status': 'Approved', 'Start_Date': '2024-10-28', 'End_Date': '2024-10-28'},
-        {'Request_ID': 13, 'Status': 'Approved', 'Start_Date': '2024-10-28', 'End_Date': '2024-10-28'}
+        {'Request_ID': 1, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 2, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
     ]
-    mock_supabase.table.return_value.select.return_value.eq.return_value.lte.return_value.gte.return_value.execute.return_value = mock_response
+    mock_supabase.table().select().eq().eq().eq().execute.return_value = mock_response
+    
+    count = get_wfh_count('123', '2023-11-05')
 
-    # Run the function
-    count = get_wfh_count(requested_date='2024-10-28')
+    # Verify that the count of approved requests matches the expected value
+    assert count == 2
 
-    # Assertions
-    assert count == 5  # Expecting 5 approved requests
+def test_get_wfh_count_no_approved_requests(mock_supabase):
+    # Mock response with no approved requests for the specified date
+    mock_response = MagicMock()
+    mock_response.data = []  # No matching requests
+    mock_supabase.table().select().eq().eq().eq().execute.return_value = mock_response
+    
+    count = get_wfh_count('123', '2023-11-05')
+
+    # Verify that the function returns 0 when there are no approved requests
+    assert count == 0
 
 
-def test_get_wfh_count_with_exception(mocker, capfd):
-    # Mock the Supabase client to raise an exception
-    mock_supabase = mocker.patch('controllers.requests_controller.supabase')
-    mock_supabase.table.return_value.select.return_value.eq.return_value.lte.return_value.gte.return_value.execute.side_effect = Exception("Database error")
+def test_get_wfh_count_exception_handling(mock_supabase):
+    # Simulate an exception being raised during the request
+    mock_supabase.table().select().eq().eq().eq().execute.side_effect = Exception("Database error")
 
-    # Run the function, which should now raise the mocked exception
-    count = get_wfh_count(requested_date='2024-10-28')
+    count = get_wfh_count('123', '2023-11-05')
 
-    # Capture the output
-    captured = capfd.readouterr()
+    # Verify that the function returns 0 on exception
+    assert count == 0
 
-    # Assertions
-    assert count == 0  # Expecting 0 because of the exception
-    assert "Error retrieving WFH count: Database error" in captured.out  # Check the printed output
+
+def test_get_wfh_count_with_multiple_start_dates(mock_supabase):
+    # Create a mock response with multiple start dates
+    mock_data = [
+        {'Request_ID': 1, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 2, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-06'},
+        {'Request_ID': 3, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-07'},
+        {'Request_ID': 4, 'Approver_ID': '123', 'Status': 'Rejected', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 5, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+    ]
+
+    # Mock the execute method to filter the mock data based on the function logic
+    def mock_execute():
+        return MagicMock(data=[request for request in mock_data
+                                if request['Approver_ID'] == '123' and
+                                request['Status'] == 'Approved' and
+                                request['Start_Date'] == '2023-11-05'])
+
+    # Set the mock execute function
+    mock_supabase.table().select().eq().eq().eq().execute.side_effect = mock_execute
+
+    count = get_wfh_count('123', '2023-11-05')
+    assert count == 2  # This should match the expected count based on the filtering logic
+
+def test_get_wfh_count_with_multiple_statuses(mock_supabase):
+    # Create a mock response with multiple statuses
+    mock_data = [
+        {'Request_ID': 1, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 2, 'Approver_ID': '123', 'Status': 'Rejected', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 3, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-06'},
+        {'Request_ID': 4, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 5, 'Approver_ID': '123', 'Status': 'Pending', 'Start_Date': '2023-11-05'},
+    ]
+
+    # Mock the execute method to filter the mock data based on the function logic
+    def mock_execute():
+        return MagicMock(data=[request for request in mock_data
+                                if request['Approver_ID'] == '123' and
+                                request['Status'] == 'Approved' and
+                                request['Start_Date'] == '2023-11-05'])
+
+    # Set the mock execute function
+    mock_supabase.table().select().eq().eq().eq().execute.side_effect = mock_execute
+
+    count = get_wfh_count('123', '2023-11-05')
+    assert count == 2  # This should match the expected count based on the filtering logic
+
+def test_get_wfh_count_no_requests_with_multiple_statuses(mock_supabase):
+    # Create a mock response with no matching requests
+    mock_data = [
+        {'Request_ID': 1, 'Approver_ID': '123', 'Status': 'Rejected', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 2, 'Approver_ID': '123', 'Status': 'Pending', 'Start_Date': '2023-11-06'},
+    ]
+
+    # Mock the execute method to filter the mock data
+    def mock_execute():
+        return MagicMock(data=[request for request in mock_data
+                                if request['Approver_ID'] == '123' and
+                                request['Status'] == 'Approved' and
+                                request['Start_Date'] == '2023-11-05'])
+
+    # Set the mock execute function
+    mock_supabase.table().select().eq().eq().eq().execute.side_effect = mock_execute
+
+    count = get_wfh_count('123', '2023-11-05')
+    assert count == 0  # No matching requests
+
+def test_get_wfh_count_with_different_dates(mock_supabase):
+    # Create a mock response with different dates
+    mock_data = [
+        {'Request_ID': 1, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 2, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-06'},
+        {'Request_ID': 3, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-07'},
+    ]
+
+    # Mock the execute method to filter the mock data
+    def mock_execute():
+        return MagicMock(data=[request for request in mock_data
+                                if request['Approver_ID'] == '123' and
+                                request['Status'] == 'Approved' and
+                                request['Start_Date'] == '2023-11-06'])
+
+    # Set the mock execute function
+    mock_supabase.table().select().eq().eq().eq().execute.side_effect = mock_execute
+
+    count = get_wfh_count('123', '2023-11-06')
+    assert count == 1  # Only one request matches the date and status criteria
+
+
+def test_get_wfh_count_with_different_managerid(mock_supabase):
+    # Create a mock response with different dates
+    mock_data = [
+        {'Request_ID': 1, 'Approver_ID': '123', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 2, 'Approver_ID': '12', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+        {'Request_ID': 3, 'Approver_ID': '1234', 'Status': 'Approved', 'Start_Date': '2023-11-05'},
+    ]
+
+    # Mock the execute method to filter the mock data
+    def mock_execute():
+        return MagicMock(data=[request for request in mock_data
+                                if request['Approver_ID'] == '123' and
+                                request['Status'] == 'Approved' and
+                                request['Start_Date'] == '2023-11-05'])
+
+    # Set the mock execute function
+    mock_supabase.table().select().eq().eq().eq().execute.side_effect = mock_execute
+
+    count = get_wfh_count('123', '2023-11-05')
+    assert count == 1  # Only one request matches the date and status criteria

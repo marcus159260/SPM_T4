@@ -40,7 +40,6 @@ export default {
     const daysToMonday = currentDayOfWeek - 1;
     const startOfWeek = today.addDays(-daysToMonday);
     return {
-      // employees: [],
       resources: [],
       events: [],
       startDate: DayPilot.Date.today(),
@@ -48,6 +47,7 @@ export default {
       departmentCounts: [],
       earliestDate: startOfWeek.addDays(-60),
       latestDate: startOfWeek.addDays(90),
+      startOfWeek: startOfWeek,
     };
   },
 
@@ -72,6 +72,7 @@ export default {
         },
         params: params,
       }).then((response) => {
+        response.data.forEach(e => e.text = 'WFH');
         this.events = response.data;
       }).catch((error) => {
         console.error('Error fetching events:', error);
@@ -92,15 +93,15 @@ export default {
     },
 
     async loadDepartmentCounts() {
+      // console.log('Start Date:', this.startOfWeek);
+      // console.log('End Date:', this.startOfWeek.addDays(this.days - 1));
+      // console.log('Days:', this.days);
       const params = {
-        start_date: this.startDate.toString('yyyy-MM-dd'),
-        end_date: this.startDate.addDays(this.days - 1).toString('yyyy-MM-dd'),
+        start_date: this.startOfWeek.toString('yyyy-MM-dd'),
+        end_date: this.startOfWeek.addDays(this.days - 1).toString('yyyy-MM-dd'),
       };
+
       return axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/department_counts`, {
-        headers: {
-          'X-Staff-ID': this.authStore.user.staff_id,
-          'X-Staff-Role': this.authStore.user.role,
-        },
         params: params,
       }).then((response) => {
         this.departmentCounts = response.data;
@@ -119,8 +120,7 @@ export default {
           wfoCount: dept.wfo_count,
         };
       });
-
-      // Update department names in resources
+      // console.log(this.departmentCounts);
       this.resources.forEach(department => {
         const deptName = department.name.split(' (')[0]; // Remove existing counts
         const counts = countsMap[deptName];
@@ -129,10 +129,12 @@ export default {
         } else {
           console.warn(`No counts found for department: ${deptName}`);
         }
+        // console.log(this.resources);
       });
     },
 
     onDateChanged(newStartDate) {
+      this.startOfWeek = newStartDate;
       this.startDate = newStartDate;
       Promise.all([this.loadEvents(), this.loadDepartmentCounts()])
       .then(() => {
@@ -143,4 +145,5 @@ export default {
   }
 
 };
+
 </script>

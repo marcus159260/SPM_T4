@@ -85,7 +85,7 @@ export default{
         return{
             // staffId: 150076, 
             staff_name: "",
-            approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
+            // approverId: "", //need to do some mounted function where we fetch staff_id + reporting mgr
             startDate: null,
             endDate: null,
             wfhTime: 'AM',
@@ -96,6 +96,16 @@ export default{
             isRequestReasonValid: true,
             showModal: false,
             responseMessage: ''
+        }
+    },
+    props: {
+        staffId: {
+            type: Number,
+            required: true
+        },
+        role: {
+            type: Number,
+            required: true
         }
     },
     computed:{
@@ -120,11 +130,11 @@ export default{
     methods:{
         async getStaffApprover(){
             try{
-                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/${this.authStore.user.staff_id}`, 
+                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/${this.staffId}`, 
                 {
                 headers: {
-                'X-Staff-ID': this.authStore.user.staff_id,
-                'X-Staff-Role': this.authStore.user.role,
+                'X-Staff-ID': this.staffId,
+                'X-Staff-Role': this.role,
                 },
             }
         );
@@ -156,7 +166,7 @@ export default{
             try {
                 const formattedEndDate = this.endDate ? `${this.endDate}` : `${this.startDate}`;
                 const payload = {
-                    staff_id: this.authStore.user.staff_id,
+                    staff_id: this.staffId,
                     start_date: this.startDate,
                     end_date: formattedEndDate,  
                     time_of_day: this.wfhTime, 
@@ -203,6 +213,8 @@ export default{
 
     },
     mounted(){
+        // console.log(this.staffId);
+        // console.log(this.role);
         this.getStaffApprover();
     }
     

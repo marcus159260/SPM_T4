@@ -1,23 +1,52 @@
 <template>
+  <div class="scheduler-container">
     <DayPilotScheduler :config="config" ref="schedulerRef" />
-  </template>
-  
-  <script setup>
-  import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
-  import { ref, reactive, onMounted } from 'vue';
-  import axios from 'axios';
-  
-  const config = reactive({
-    timeHeaders: [{"groupBy":"Month"},{"groupBy":"Day","format":"d"},{"groupBy":"Cell","format":"tt"}],
-    scale: "CellDuration",
-    cellDuration: 720,
-    days: DayPilot.Date.today().daysInMonth(),
-    startDate: DayPilot.Date.today().firstDayOfMonth(),
-    timeRangeSelectedHandling: "Disabled",
-    reporting_manager: 140894,
-    eventClickHandling: "Disabled",
-    eventHoverHandling: "Bubble",
-    bubble: new DayPilot.Bubble({
+  </div>
+</template>
+
+<script setup>
+import { DayPilot, DayPilotScheduler } from 'daypilot-pro-vue';
+import { ref, reactive, watch, defineProps, defineEmits, onMounted } from 'vue';
+
+const props = defineProps({
+  resources: {
+    type: Array,
+    required: true,
+  },
+  events: {
+    type: Array,
+    required: true,
+  },
+  startDate: {
+    type: Object, 
+    required: true,
+  },
+  days: {
+    type: Number,
+    required: true,
+  },
+});
+
+const emit = defineEmits(['dateChanged']);
+
+const config = reactive({
+  timeHeaders: [{"groupBy":"Month"},{"groupBy":"Day","format":"d"},
+  // {"groupBy":"Cell","format":"tt"}
+  { groupBy: "Cell", format: "tt" },
+],
+  scale: "Manual",
+  cellDuration: 720,
+  startDate: props.startDate,
+  days: props.days,
+  timeRangeSelectedHandling: "Disabled",
+  eventClickHandling: "Disabled",
+  treeEnabled: true,
+  resources: [],
+  events: [],
+  cellWidthSpec: "Auto",
+   heightSpec: "Full",
+  width: "100%",
+  bubble: new DayPilot.Bubble({
       onLoad: function(args) {
       var ev = args.source;
       console.log(ev.data);
@@ -29,112 +58,87 @@
           args.loaded();
       }, 500);
   }
-    }),
-    treeEnabled: true,
-  });
-  const schedulerRef = ref(null);
-  
-  const loadEvents = () => {
-    loadResources();
-    const events = [
-      { id: 1, start: "2024-10-01", end: "2024-10-05", text: "WFH", resource: "R" },
-      { id: 2, start: DayPilot.Date.today(), end: DayPilot.Date.today().addDays(5), text: "WFO", resource: "R2" }
-    ];
+    })
+});
 
-    var resources = config.resources;
-    console.log(resources);
+const schedulerRef = ref(null);
+const today = DayPilot.Date.today();
+const currentDayOfWeek = today.getDayOfWeek(); // 1 = Monday, 7 = Sunday
+const daysToMonday = currentDayOfWeek - 1; // Subtract to get back to Monday
+const startOfWeek = today.addDays(-daysToMonday);
 
-    for(emp of resources){
-      var requesturl = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/` + emp.id;
+config.startDate = startOfWeek;
 
-      axios
-        .get(requesturl)
-        .then((response) => {
-          data = response.data;
-          temp = [];
-          for(e of data){
-            let bubbleHtml = `<ul><li>Start Date: `+e.Start_Date+`</li><li>End Date: `+ e.End_Date+ `</li><li>Status: `+e.Status+`</li><li>Request Type: `+ e.Request_Type+`</li></ul>`;
-            console.log(bubbleHtml);
-            config.events.push({resource:e.Staff_ID,id:e.Request_ID,start: e.Start_Date, end:e.End_Date, time:e.Time, status:e.Status, text:"WFH", bubbleHtml:bubbleHtml});
-          }
-          
-          console.log("Loaded resources:", this.resources);
-        })
-        .catch((error) => {
-          console.error('Error fetching requests:', error);
-        });
+function generateTimeline(startDate, days) {
+  const timeline = [];
+  for (let i = 0; i < days; i++) {
+    const day = startDate.addDays(i);
+    const date = day.toString("yyyy-MM-dd");
+    timeline.push({
+      start: date + "T09:00:00",
+      end: date + "T13:00:00",
+      label: "AM",
+    });
+    timeline.push({
+      start: date + "T14:00:00",
+      end: date + "T18:00:00",
+      label: "PM",
+    });
+  }
+  return timeline;
+}
 
-    }
-    
-    // config.events = events;
-  };
-  
-  const loadResources = () => {
-    // const resources = [
-    //     {
-    //         "name": "Alice",
-    //         "test":123,
-    //         "id": "R"
-    //     },
-    //     {
-    //         "name": "Rachel",
-    //         "id": "R2"
-    //     }
-    // ];
-    var teamurl = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + config.reporting_manager;
-    // console.log(teamurl);
-    axios
-      .get(teamurl)
-      .then((response) => {
-        // console.log(response);
-        var temp = response.data;
-        config.resources = temp.data;
-        console.log("Loaded resources:", temp);
-        
-        for(let emp of temp.data){
-          var requesturl = `${import.meta.env.VITE_API_BASE_URL}/api/wfh/` + emp.id;
+const updateConfigForScreenSize = () => {
+  if (window.innerWidth < 768) {
+    config.cellWidthSpec = "Fixed";
+    config.cellWidth = 50;
+  } else {
+    config.cellWidthSpec = "Auto";
+  }
+};
 
-          axios
-            .get(requesturl)
-            .then((response) => {
-              var data = response.data;
-              
-              if (data.data){
-                // console.log(data.data);
-                for(let e of data.data){
-                  let bubbleHtml = `<ul><li>Start Date: `+e.Start_Date+`</li><li>End Date: `+ e.End_Date+ `</li><li>Status: `+e.Status+`</li><li>Request Type: `+ e.Request_Type+`</li><li>Department: `+emp.Dept+`</li><li>Position: `+emp.Position+`</li></ul>`;
-                  console.log(bubbleHtml);
-                  config.events.push({resource:e.Staff_ID,id:e.Request_ID,start: e.Start_Date, end:e.End_Date, time:e.Time, status:e.Status, text:"WFH", bubbleHtml:bubbleHtml});
-                }
+config.timeline = generateTimeline(config.startDate, config.days);
 
-              }
-              
+watch(
+  () => props.resources,
+  (newResources) => {
+    config.resources = newResources;
+  },
+  { immediate: true }
+);
 
-              // console.log("Loaded resources:", config.events);
-              
-          
-            })
-            .catch((error) => {
-              console.error('Error fetching requests:', error);
-            });
+watch(
+  () => props.events,
+  (newEvents) => {
+    config.events = newEvents;
+  },
+  { immediate: true }
+);
 
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching requests:', error);
-      });
-    
-    // console.log(config.resources);
+watch(
+  () => [props.startDate, props.days],
+  ([newStartDate, newDays]) => {
+    config.startDate = newStartDate;
+    config.days = newDays;
+    config.timeline = generateTimeline(newStartDate, newDays);
+  }
+);
+
+onMounted(() => {
+  updateConfigForScreenSize();
+  window.addEventListener('resize', updateConfigForScreenSize);
+});
 
 
-  };
-  
-  onMounted(() => {
-    config.events = [];
-    loadResources();
-    // loadEvents();
-    console.log(config.events);
-    console.log(config.resources);
-  });
-  </script>
-  
+</script>
+
+<style scoped>
+
+.scheduler-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+</style>
