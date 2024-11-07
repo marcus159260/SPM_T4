@@ -20,7 +20,7 @@
 
     <div v-if="filteredRequests.length > 0">
       <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped table-bordered align-middle mt-3">
           <thead>
             <tr>
               <th scope="col">Request ID</th>
@@ -40,11 +40,11 @@
 
           <tbody>
             <tr v-for="request in filteredRequests" :key="request.Request_ID">
-              <th scope="row">{{ request.Request_ID }}</th>
-              <td>{{ request.Staff_Name }}</td>
-              <td>{{ request.Staff_Department }}</td>
-              <td>{{ request.Staff_Position }}</td>
-              <td>
+              <td data-cell="request id">{{ request.Request_ID }}</td>
+              <td data-cell="staff name">{{ request.Staff_Name }}</td>
+              <td data-cell="department">{{ request.Staff_Department }}</td>
+              <td data-cell="position">{{ request.Staff_Position }}</td>
+              <td data-cell="status">
                 <span :class="{
                     'badge rounded-pill text-bg-success': request.Status === 'Approved',
                     'badge rounded-pill text-bg-warning': request.Status === 'Pending'|| request.Status === 'Withdrawn - Pending',
@@ -52,13 +52,13 @@
                     'badge rounded-pill text-bg-secondary': request.Status === 'Withdrawn'
                 }">{{ request.Status }}</span>
               </td>
-              <td>{{ formatDate(request.Start_Date) }}</td>
-              <td>{{ request.Time }}</td>
-              <td>{{ request.Request_Type }}</td>
-              <td>{{ request.Reason }}</td>
-              <td>{{ formatDate(request.Application_Date) }}</td>
-              <td>{{ request.Rejection_Reason }}</td>
-              <td>{{ request.Withdrawal_Reason }}</td>
+              <td data-cell="requested date">{{ formatDate(request.Start_Date) }}</td>
+              <td data-cell="time">{{ request.Time }}</td>
+              <td data-cell="request type">{{ request.Request_Type }}</td>
+              <td data-cell="request reason">{{ request.Reason }}</td>
+              <td data-cell="application date">{{ formatDate(request.Application_Date) }}</td>
+              <td data-cell="rejection reason">{{ request.Rejection_Reason }}</td>
+              <td data-cell="withdrawal reason">{{ request.Withdrawal_Reason }}</td>
             </tr>
           </tbody>
         </table>
@@ -236,5 +236,39 @@ export default {
 
   #pending-header span {
   color: green;
+}
+
+@media (max-width: 400px) {
+    .table-responsive {
+        max-width: 100%;
+        /* Increase this value to make the container wider */
+        margin: 0 auto;
+        /* Center the table container */
+    }
+
+    th {
+        display: none;
+    }
+
+    td {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 20ch auto;
+    }
+
+    td:first-child {
+        padding-top: 2rem;
+    }
+
+    td:last-child {
+        padding-top: 2rem;
+    }
+
+    td::before {
+        content: attr(data-cell) ": ";
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
 }
 </style>

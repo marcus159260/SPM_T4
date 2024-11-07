@@ -17,8 +17,8 @@
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
 
         <div class="table-responsive">
-            <table v-if="rejectedRequests.length > 0" class="table table-striped align-middle mt-10 bg-white">
-                <thead class="bg-light">
+            <table v-if="rejectedRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
+                <thead>
                     <tr>
                         <th scope="col">Request ID</th>
                         <th scope="col">Staff Name</th>
@@ -36,11 +36,11 @@
                 </thead>
                 <tbody>
                     <tr v-for="staff in rejectedRequests" :key="staff.Staff_ID">
-                        <th scope="row">{{ staff.Request_ID }}</th>
-                        <td>{{ staff.Staff_Name }}</td>
-                        <td>{{ staff.Staff_Department }}</td>
-                        <td>{{ staff.Staff_Position }}</td>
-                        <td>
+                        <td data-cell="request id">{{ staff.Request_ID }}</td>
+                        <td data-cell="staff name">{{ staff.Staff_Name }}</td>
+                        <td data-cell="department">{{ staff.Staff_Department }}</td>
+                        <td data-cell="position">{{ staff.Staff_Position }}</td>
+                        <td data-cell="status" class="table-cell">
                             <span :class="{
                                 'badge rounded-pill text-bg-success': staff.Status === 'Approved',
                                 'badge rounded-pill text-bg-warning': staff.Status === 'Pending'|| staff.Status === 'Withdrawn - Pending',
@@ -48,13 +48,13 @@
                                 'badge rounded-pill text-bg-secondary': staff.Status === 'Withdrawn'
                             }">{{ staff.Status }}</span>
                         </td>
-                        <td>{{ formatDate(staff.Start_Date) }}</td>
-                        <td>{{ staff.Time }}</td>
-                        <td>{{ staff.Request_Type }}</td>
-                        <td>{{ staff.Reason }}</td>
-                        <td>{{ formatDate(staff.Application_Date) }}</td>
-                        <td>{{ staff.Rejection_Reason }}</td>
-                        <td>{{ staff.Withdrawal_Reason }}</td>
+                        <td data-cell="requested date">{{ formatDate(staff.Start_Date) }}</td>
+                        <td data-cell="time">{{ staff.Time }}</td>
+                        <td data-cell="request type">{{ staff.Request_Type }}</td>
+                        <td data-cell="request reason">{{ staff.Reason }}</td>
+                        <td data-cell="application date">{{ formatDate(staff.Application_Date) }}</td>
+                        <td data-cell="rejection reason">{{ staff.Rejection_Reason }}</td>
+                        <td data-cell="withdrawal reason">{{ staff.Withdrawal_Reason }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -155,4 +155,39 @@ export default {
     min-width: 120px;
     /* Adjust width as needed */
 }
+
+@media (max-width: 400px) {
+    .table-responsive {
+        max-width: 100%;
+        /* Increase this value to make the container wider */
+        margin: 0 auto;
+        /* Center the table container */
+    }
+
+    th {
+        display: none;
+    }
+
+    td {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 20ch auto;
+    }
+
+    td:first-child {
+        padding-top: 2rem;
+    }
+
+    td:last-child {
+        padding-top: 2rem;
+    }
+
+    td::before {
+        content: attr(data-cell) ": ";
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
+}
+
 </style>

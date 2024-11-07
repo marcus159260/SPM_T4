@@ -9,54 +9,54 @@
 
     <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
     <div class="table-responsive">
-      <table v-if="pendingRequests.length > 0" class="table table-striped align-middle mt-10 bg-white">
-        <thead class="bg-light">
+      <table v-if="pendingRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
+        <thead>
           <tr>
-              <th scope="col">Request ID</th>
-              <th scope="col">Staff Name</th>
-              <th scope="col">Department</th>
-              <th scope="col">Position</th>
-              <th scope="col">Status</th>
-              <th scope="col" class="date-column">Requested Date</th>
-              <th scope="col">Time</th>
-              <th scope="col">Request Type</th>
-              <th scope="col">Request Reason</th>
-              <th scope="col" class="date-column">Application Date</th>
-              <th scope="col">Rejection Reason</th>
-              <th scope="col">Withdrawal Reason</th>
-              <th scope="col" class="fixed-column">Approval</th>
+            <th scope="col">Request ID</th>
+            <th scope="col">Staff Name</th>
+            <th scope="col">Department</th>
+            <th scope="col">Position</th>
+            <th scope="col">Status</th>
+            <th scope="col" class="date-column">Requested Date</th>
+            <th scope="col">Time</th>
+            <th scope="col">Request Type</th>
+            <th scope="col">Request Reason</th>
+            <th scope="col" class="date-column">Application Date</th>
+            <th scope="col">Rejection Reason</th>
+            <th scope="col">Withdrawal Reason</th>
+            <th scope="col" class="fixed-column">Approval</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="staff in pendingRequests" :key="staff.Staff_ID">
-            <th scope="row">{{ staff.Request_ID }}</th>
-            <td>{{ staff.Staff_Name }}</td>
-            <td>{{ staff.Staff_Department }}</td>
-            <td>{{ staff.Staff_Position }}</td>
-            <td>
-                <span :class="{
-                    'badge rounded-pill text-bg-success': staff.Status === 'Approved',
-                    'badge rounded-pill text-bg-warning': staff.Status === 'Pending'|| staff.Status === 'Withdrawn - Pending',
-                    'badge rounded-pill text-bg-danger': staff.Status === 'Rejected',
-                    'badge rounded-pill text-bg-secondary': staff.Status === 'Withdrawn'
-                }">{{ staff.Status }}</span>
+            <td data-cell="request id">{{ staff.Request_ID }}</td>
+            <td data-cell="staff name">{{ staff.Staff_Name }}</td>
+            <td data-cell="department">{{ staff.Staff_Department }}</td>
+            <td data-cell="position">{{ staff.Staff_Position }}</td>
+            <td data-cell="status" class="table-cell">
+              <span :class="{
+                'badge rounded-pill text-bg-success': staff.Status === 'Approved',
+                'badge rounded-pill text-bg-warning': staff.Status === 'Pending' || staff.Status === 'Withdrawn - Pending',
+                'badge rounded-pill text-bg-danger': staff.Status === 'Rejected',
+                'badge rounded-pill text-bg-secondary': staff.Status === 'Withdrawn'
+              }">{{ staff.Status }}</span>
             </td>
-            <td>{{ formatDate(staff.Start_Date) }}</td>
-            <td>{{ staff.Time }}</td>
-            <td>{{ staff.Request_Type }}</td>
-            <td>{{ staff.Reason }}</td>
-            <td>{{ formatDate(staff.Application_Date) }}</td>
-            <td>{{ staff.Rejection_Reason }}</td>
-            <td>{{ staff.Withdrawal_Reason }}</td>
-            
+            <td data-cell="requested date">{{ formatDate(staff.Start_Date) }}</td>
+            <td data-cell="time">{{ staff.Time }}</td>
+            <td data-cell="request type">{{ staff.Request_Type }}</td>
+            <td data-cell="request reason">{{ staff.Reason }}</td>
+            <td data-cell="application date">{{ formatDate(staff.Application_Date) }}</td>
+            <td data-cell="rejection reason">{{ staff.Rejection_Reason }}</td>
+            <td data-cell="withdrawal reason">{{ staff.Withdrawal_Reason }}</td>
+
             <!--Approve/Reject buttons-->
-            <td class="fixed-column d-flex align-items-center">
+            <td data-cell="approval" class="fixed-column d-flex align-items-center">
               <button v-if="staff.Status == 'Withdrawn - Pending'" @click="approveWithdrawalRequest(staff.Request_ID)"
                 class="icon-button mb-5" style="padding-top: 40px;">
                 <img src="../../assets/checked.png" alt="Approve Withdrawal">
               </button>
-              <button v-if="staff.Status == 'Pending'" @click="approveRequest(staff.Request_ID)" class="icon-button mb-5"
-                style="padding-top: 40px;">
+              <button v-if="staff.Status == 'Pending'" @click="approveRequest(staff.Request_ID)"
+                class="icon-button mb-5" style="padding-top: 40px;">
                 <img src="../../assets/checked.png" alt="Approve">
               </button>
 
@@ -67,7 +67,7 @@
               </button>
             </td>
             <!--End of Approve/Reject buttons-->
-          </tr>   
+          </tr>
         </tbody>
       </table>
     </div>
@@ -174,12 +174,12 @@ export default {
 
   methods: {
     formatDate(dateString) {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
-        },
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
+    },
     get_manager_details() {
       axios.get(`http://127.0.0.1:5000/api/users/get-manager/${this.managerId}`)
         .then(response => {
@@ -198,7 +198,7 @@ export default {
           //auto-reject pending requests comes in here
 
           // console.log(this.allRequests)
-        
+
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
@@ -225,8 +225,8 @@ export default {
               axios.post(`http://127.0.0.1:5000/api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved', force_approval: true })  // Adding a flag for forced approval
                 .then(response => {
                   if (response.status === 200) {
-                    alert(response.data.message); 
-                    this.fetchRequests(); 
+                    alert(response.data.message);
+                    this.fetchRequests();
                   }
                 })
                 .catch(forceError => {
@@ -247,8 +247,8 @@ export default {
         .then(response => {
           // console.log('response.data', response.data);
           console.log('approveWithdrawalRequest');
-            alert(response.data.message);
-            this.fetchRequests();
+          alert(response.data.message);
+          this.fetchRequests();
         })
         .catch(error => {
           console.error('Error rejecting request:', error);
@@ -265,16 +265,16 @@ export default {
       // document.getElementById('popup').style.border = '1px black solid';
     },
     rejectRequest(requestId) {
-      axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason, Manager_ID: this.managerId})
+      axios.post(`http://127.0.0.1:5000/api/wfh/requests/reject`, { Request_ID: requestId, Rejection_Reason: this.rejectionReason, Manager_ID: this.managerId })
         .then(response => {
           console.log('response.data', response.data);
-            alert(response.data.message);
-            this.rejectionReason = '';
-            this.fetchRequests();
-            this.isPopupVisible = false; // Hide the popup after submission
-            document.getElementById('popup').style.border = '';
+          alert(response.data.message);
+          this.rejectionReason = '';
+          this.fetchRequests();
+          this.isPopupVisible = false; // Hide the popup after submission
+          document.getElementById('popup').style.border = '';
 
-          
+
         })
         .catch(error => {
           console.error('Error rejecting request:', error);
@@ -290,12 +290,12 @@ export default {
       axios.post(`http://127.0.0.1:5000/api/wfh/requests/rejectwithdrawal`, { Request_ID: requestId, Withdrawal_Reason: this.rejectionReason, Manager_ID: this.managerId })
         .then(response => {
           console.log('response.data', response.data);
-            alert(response.data.message);
-            this.fetchRequests();
-            this.rejectionReason = '';
-            this.isPopupVisible = false; // Hide the popup after submission
-            document.getElementById('popup').style.border = '';
-    
+          alert(response.data.message);
+          this.fetchRequests();
+          this.rejectionReason = '';
+          this.isPopupVisible = false; // Hide the popup after submission
+          document.getElementById('popup').style.border = '';
+
         })
         .catch(error => {
           console.error('Error rejecting request:', error);
@@ -303,8 +303,8 @@ export default {
             // console.log(response.data.error);
             console.log('error from popup: no error msg');
             document.getElementById('errormsg').innerHTML = `Reason cannot be empty.<br>`;
-        }
-    });
+          }
+        });
     },
 
   },
@@ -349,12 +349,48 @@ export default {
 }
 
 .date-column {
-    min-width: 120px; /* Adjust width as needed */
+  min-width: 120px;
+  /* Adjust width as needed */
 }
 
 .fixed-column {
-    position: sticky;
-    right: 0; 
-    z-index: 1; 
+  position: sticky;
+  right: 0;
+  z-index: 1;
+}
+
+@media (max-width: 400px) {
+
+  .table-responsive {
+    max-width: 100%;
+    /* Increase this value to make the container wider */
+    margin: 0 auto;
+    /* Center the table container */
   }
+
+  th {
+    display: none;
+  }
+
+  td {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 20ch auto;
+  }
+
+  td:first-child {
+    padding-top: 2rem;
+  }
+
+  td:last-child {
+    padding-top: 2rem;
+  }
+
+  td::before {
+    content: attr(data-cell) ": ";
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+
+}
 </style>

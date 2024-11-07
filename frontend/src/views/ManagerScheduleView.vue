@@ -111,6 +111,15 @@ export default {
   margin-bottom: 200px;
 }
 
+@media(max-width: 400px) {
+  .manager-wrapper {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+}
+
 #popup {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   /* -webkit-font-smoothing: antialiased;
