@@ -1,7 +1,7 @@
 <template>
   <div class="home-view">
     <h1>Welcome to WFH Scheduler</h1>
-    <p class="intro-text">Manage your work-from-home schedule with ease! Navigate to the different sections based on your role.</p>
+    <p class="intro-text">Manage your work-from-home schedule with ease! Navigate to the different sections below.</p>
     <br>
     <div class="page-links">
       <!-- Link to view own requests (for all users) -->
