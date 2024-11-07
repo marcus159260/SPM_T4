@@ -1,7 +1,8 @@
 <template>
+  <div class="wrapper container-fluid">
   <div class="manager-wrapper">
     <!-- Tabs navs -->
-    <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+    <ul class="nav nav-tabs mb-3 mx-0" id="ex1" role="tablist">
       <li class="nav-item" role="presentation">
         <a data-mdb-tab-init class="nav-link active" id="ex1-tab-1" href="#ex1-tabs-1" role="tab" aria-controls="ex1-tabs-1"
           aria-selected="false">Create Request</a>
@@ -58,6 +59,7 @@
     </div>
     <!-- Tabs content -->
   </div>
+</div>
 </template>
 
 <script>
@@ -119,15 +121,19 @@ export default {
 
 <style>
 .manager-wrapper {
-  margin-top: 100px;
+  margin-top: 0px;
   margin-left: 100px;
   margin-right: 100px;
   margin-bottom: 200px;
 }
 
+.wrapper {
+  margin-top:-50px;
+}
+
 @media(max-width: 400px) {
   .manager-wrapper {
-    margin-top: 20px;
+    margin-top: 0px;
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 20px;

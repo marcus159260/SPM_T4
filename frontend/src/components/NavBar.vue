@@ -52,7 +52,7 @@
   
                 <li class="nav-item">
                   <a class="nav-link" href="#">
-                    <button @click="logout">Logout</button>                
+                    <button class="btn btn-outline-dark" @click="logout">Logout</button>                
                   </a>
                 </li>
               </ul>
@@ -98,16 +98,39 @@
       }
   
       .navbar {
+        display: flex;
           background-color: #f8f9fa;
       }
+
+      .navbar-nav {
+        display: flex;               /* Display list items in a row */
+        list-style: none;            /* Remove list-style */
+        padding-left: 0;             /* Remove left padding */
+        margin-bottom: 0;            /* Remove bottom margin */
+        }
   
       .nav-item {
-          display: inline-block;
+          display: flex;
           margin-right: 1em;
+          align-items: center;
+          
       }
       
       .nav-link {
           text-decoration: none;
+          display: flex;
       }
+
+      a {
+        display: block;
+        /* padding: 4px; */
+        text-decoration: none;
+        color: #272757;
+    }
+
+
+      .router-link-active {
+        font-weight: bold;
+        }
     </style>
     
