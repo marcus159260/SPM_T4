@@ -54,7 +54,7 @@
   
     methods: {
       find_manager_details(){ 
-        let url = `http://127.0.0.1:5000/api/users/find-manager/` + this.authStore.user.staff_id;
+        let url = `${import.meta.env.VITE_API_BASE_URL}/api/users/find-manager/` + this.authStore.user.staff_id;
         axios.get(url)
           .then(response => {
             this.reporting_manager = response.data.data.Reporting_Manager; // Store manager details
@@ -68,7 +68,7 @@
           });
       },
       loadResources() {
-        var teamurl = `http://127.0.0.1:5000/api/users/by-team-employees/` + this.reporting_manager;
+        var teamurl = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + this.reporting_manager;
       // console.log(teamurl);
       axios
         .get(teamurl)
@@ -94,7 +94,7 @@
   
       loadEvents() {
         axios
-            .get(`http://127.0.0.1:5000/api/wfh/all_events`)
+            .get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/all_events`)
             .then((r) => {
               if (r.data){
                   console.log('all_events',r.data);

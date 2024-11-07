@@ -54,7 +54,7 @@ export default {
 
   methods: {
     loadResources() {
-      var teamurl = `http://127.0.0.1:5000/api/users/by-team-employees/` + this.authStore.user.staff_id;
+      var teamurl = `${import.meta.env.VITE_API_BASE_URL}/api/users/by-team-employees/` + this.authStore.user.staff_id;
     // console.log(teamurl);
     axios
       .get(teamurl)
@@ -78,7 +78,7 @@ export default {
 
     loadEvents() {
       axios
-          .get(`http://127.0.0.1:5000/api/wfh/all_events`)
+          .get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/all_events`)
           .then((r) => {
             if (r.data){
                 console.log('all_events',r.data);

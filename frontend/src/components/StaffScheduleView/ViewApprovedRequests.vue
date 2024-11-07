@@ -137,7 +137,7 @@ export default {
                 // Get staffId from route params (if using Vue Router) or from a state
                 // const staffId = this.$route.params.staffId || 150076;
                 const response = await axios.get(
-                    `http://127.0.0.1:5000/api/wfh/requests/${this.staffId}`,
+                    `${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/${this.staffId}`,
                     {
                         headers: {
                             'X-Staff-ID': this.staffId,
@@ -184,7 +184,7 @@ export default {
                 // document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
-            axios.post(`http://127.0.0.1:5000/api/wfh/requests/withdraw`, {
+            axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/withdraw`, {
                 Request_ID: this.selectedRequest.Request_ID,
                 Rejection_Reason: this.withdrawalReason,
                 Staff_ID: this.staffId

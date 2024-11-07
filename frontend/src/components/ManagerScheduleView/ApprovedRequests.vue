@@ -91,7 +91,7 @@ export default {
             return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
         },
         get_manager_details() {
-            axios.get(`http://127.0.0.1:5000/api/users/get-manager/${this.managerId}`)
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/get-manager/${this.managerId}`)
                 .then(response => {
                     this.managerDetails = response.data.data; // Store manager details
                 })
@@ -101,7 +101,7 @@ export default {
         },
         fetchRequests() {
             // Fetch WFH requests using Axios
-            axios.get(`http://127.0.0.1:5000/api/wfh/requests?managerId=${this.managerId}`)
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
 
                 .then(response => {
                     this.allRequests = response.data;
