@@ -1,41 +1,4 @@
-<!-- <template>
-    <div>
-      <teamCalendar
-        :title="'My Team Schedule'"
-        :resources="resources"
-        @dateChanged="onDateChanged"
-
-      />
-    </div>
-  </template>
-  
-  <script>
-  import teamCalendar from '../components/StaffScheduleView/teamCalendar.vue';
-  import { useAuthStore } from '@/stores/auth';
-  
-  export default {
-    components: {
-      teamCalendar,
-    },
-    data() {
-      return {
-        teamEvents: [],
-        teamResources: [],
-        employees:[],
-        resources:[],
-        Staff_ID: useAuthStore().user.staff_id
-
-        
-      };
-    }
-    
-  };
-  
-  
-  </script> -->
-
-  <!-- ############################################################################################################################################################################ -->
-  <template>
+ <template>
     <div>
       <CalendarNavigation
         :currentDate="startDate"
@@ -43,7 +6,7 @@
         :latestDate="latestDate"
         @dateChanged="onDateChanged"
       />
-      <teamManagerCalendar
+      <teamCalendar
         :resources="resources"
         :events="events"
         :startDate="startDate"
@@ -52,7 +15,7 @@
     </div>
   </template>
   <script>
-  import teamManagerCalendar from '../components/teamCalendarManager.vue';
+  import teamCalendar from '../components/teamCalendar.vue';
   import axios from 'axios';
   import { useAuthStore } from '@/stores/auth';
   import { DayPilot } from 'daypilot-pro-vue';
@@ -60,7 +23,7 @@
   
   export default {
     components: {
-      teamManagerCalendar,
+      teamCalendar,
       CalendarNavigation
     },
   

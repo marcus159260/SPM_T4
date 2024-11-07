@@ -6,7 +6,7 @@
       :latestDate="latestDate"
       @dateChanged="onDateChanged"
     />
-    <teamManagerCalendar
+    <teamCalendar
       :resources="resources"
       :events="events"
       :startDate="startDate"
@@ -15,7 +15,7 @@
   </div>
 </template>
 <script>
-import teamManagerCalendar from '../components/teamCalendarManager.vue';
+import teamCalendar from '../components/teamCalendar.vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
 import { DayPilot } from 'daypilot-pro-vue';
@@ -23,7 +23,7 @@ import CalendarNavigation from '../components/CalendarNavigation.vue';
 
 export default {
   components: {
-    teamManagerCalendar,
+    teamCalendar,
     CalendarNavigation
   },
 
@@ -84,7 +84,6 @@ export default {
                 console.log('all_events',r.data);
                 for(let e of r.data){
                     let bubbleHtml = `<ul><li>Date: `+new Date(e.start).toISOString().slice(0, 10)+`</li><li>Status: `+e.status+`</li></ul>`;
-                  // console.log(bubbleHtml);
                     e.bubbleHtml = bubbleHtml;
                     e.text = 'WFH'
                     this.events.push(e);
@@ -99,7 +98,6 @@ export default {
     onDateChanged(newStartDate) {
       this.startDate = newStartDate;
       this.loadResources();
-      // this.loadEvents();
     },
   }
 
