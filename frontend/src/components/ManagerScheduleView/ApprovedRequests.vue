@@ -11,7 +11,7 @@
         </h6>
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
         <div class="table-responsive">
-            <table v-if="approvedRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
+            <table v-if="filteredRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
                 <thead>
                     <tr>
                         <th scope="col">Request ID</th>
@@ -29,7 +29,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="staff in approvedRequests" :key="staff.Staff_ID">
+                    <tr v-for="staff in filteredRequests" :key="staff.Staff_ID">
                         <td data-cell="request ID">{{ staff.Request_ID }}</td>
                         <td data-cell="staff name">{{ staff.Staff_Name }}</td>
                         <td data-cell="department">{{ staff.Staff_Department }}</td>
@@ -53,7 +53,7 @@
                 </tbody>
             </table>
         </div>
-        <div v-if="approvedRequests.length === 0" class="text-center mt-3">
+        <div v-if="filteredRequests.length === 0" class="text-center mt-3">
             <p>No Approved requests.</p>
         </div>
     </div>
@@ -69,6 +69,7 @@ export default {
         return {
             allRequests: [], // Holds the data fetched from the API
             managerDetails: [],
+            filteredRequests: [],
             // managerId: null
         };
     },
