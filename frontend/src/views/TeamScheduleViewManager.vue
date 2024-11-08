@@ -54,7 +54,7 @@ export default {
 
   methods: {
     loadResources() {
-      var teamurl = `http://127.0.0.1:5000/api/users/all-staff-under-manager/` + this.authStore.user.staff_id;
+      var teamurl = `${import.meta.env.VITE_API_BASE_URL}/api/users/all-staff-under-manager/` + this.authStore.user.staff_id;
     axios
       .get(teamurl)
       .then((response) => {
@@ -64,7 +64,7 @@ export default {
 
       if (!temp.some(emp => emp.Staff_ID === this.authStore.user.staff_id)){
         axios
-        .get(`http://127.0.0.1:5000/api/users/` + this.authStore.user.staff_id)
+        .get(`${import.meta.env.VITE_API_BASE_URL}/api/users/` + this.authStore.user.staff_id)
         .then((r) => {
           console.log(r);
           let manager = {};
