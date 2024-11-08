@@ -7,16 +7,14 @@
                     Manager ID: <span>{{ managerDetails.Staff_ID }}</span> <br>
                     Department: <span>{{ managerDetails.Department }}</span> <br />
                     Position: <span>{{ managerDetails.Position }}</span> <br />
-                    <!-- In charge of: <br>
-          &emsp;Dept -> <span>{{ managerDetails.Department }}</span> <br>
-          &emsp;Position -> <span>{{ managerDetails.Position }}</span> -->
                 </h6>
             </div>
         </div>
 
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
 
-        <div class="table-responsive">
+        <!-- Apply table-responsive conditionally based on the number of requests -->
+        <div :class="{'table-responsive': filteredRequests.length > 0}">
             <table v-if="filteredRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
                 <thead>
                     <tr>
@@ -58,16 +56,14 @@
                     </tr>
                 </tbody>
             </table>
+            <!-- Message when no requests are available -->
             <div v-if="filteredRequests.length === 0" class="text-center mt-3">
-            <p>No Rejected requests.</p>
+                <p>No Rejected requests.</p>
             </div>
         </div>
-
-        <!-- <div v-if="filteredRequests.length === 0" class="text-center mt-3">
-            <p>No Rejected requests.</p>
-        </div> -->
     </div>
 </template>
+
 
 <script>
 import axios from 'axios';
