@@ -157,6 +157,7 @@ export default {
                 );
                 if (response.data) {
                     this.requestsData = response.data;
+                    console.log(this.requestsData);
                 } else {
                     console.log("No data found for this staff ID");
                 }

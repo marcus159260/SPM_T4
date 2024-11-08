@@ -87,9 +87,26 @@ export default {
   },
   computed: {
     filteredRequests() {
+      const currentDate = new Date();
+      const minus61Days = new Date(currentDate);
+      minus61Days.setDate(currentDate.getDate() - 61);
+
+      const plus91Days = new Date(currentDate);
+      plus91Days.setDate(currentDate.getDate() + 91);
+
       if (Array.isArray(this.requestsData) && this.selectedStatus) {
         return this.requestsData.filter(
-          (request) => request.Status.includes(this.selectedStatus)
+          (request) => {
+            const endDate = new Date(request.End_Date);
+            if (this.selectedStatus === 'Withdrawn') {
+              return (request.Status === 'Withdrawn'&&
+                    endDate >= minus61Days &&
+                    endDate <= plus91Days)
+            }
+            return (request.Status.includes(this.selectedStatus)&&
+                    endDate >= minus61Days &&
+                    endDate <= plus91Days)
+          }
         );
       }
       return this.requestsData;
