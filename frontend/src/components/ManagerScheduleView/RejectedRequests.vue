@@ -58,11 +58,14 @@
                     </tr>
                 </tbody>
             </table>
+            <div v-if="filteredRequests.length === 0" class="text-center mt-3">
+            <p>No Rejected requests.</p>
+            </div>
         </div>
 
-        <div v-if="filteredRequests.length === 0" class="text-center mt-3">
+        <!-- <div v-if="filteredRequests.length === 0" class="text-center mt-3">
             <p>No Rejected requests.</p>
-        </div>
+        </div> -->
     </div>
 </template>
 
