@@ -1,4 +1,5 @@
 <template>
+  <div class="wrapper">
   <div class="manager-wrapper">
     <!-- Tabs navs -->
     <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
@@ -51,6 +52,7 @@
     </div>
     <!-- Tabs content -->
   </div>
+</div>
 
 </template>
 
@@ -150,6 +152,10 @@ export default {
   padding: 0px;
   /* align-items: center; Vertically center content */
   /* justify-content: center; Horizontally center content */
+}
+
+.wrapper {
+  margin-top:-50px;
 }
 
 
