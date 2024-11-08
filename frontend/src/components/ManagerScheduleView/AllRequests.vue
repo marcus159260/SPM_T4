@@ -200,7 +200,7 @@ export default {
   .filter-container {
     display: flex;
     align-items: center;
-    gap: 10px; /* Adds space between label and dropdown */
+    gap: 50px; /* Adds space between label and dropdown */
   }
 
   .status-label {
