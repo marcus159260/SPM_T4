@@ -17,7 +17,7 @@
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
 
         <div class="table-responsive">
-            <table v-if="rejectedRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
+            <table v-if="filteredRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
                 <thead>
                     <tr>
                         <th scope="col">Request ID</th>
@@ -35,7 +35,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="staff in rejectedRequests" :key="staff.Staff_ID">
+                    <tr v-for="staff in filteredRequests" :key="staff.Staff_ID">
                         <td data-cell="request ID">{{ staff.Request_ID }}</td>
                         <td data-cell="staff name">{{ staff.Staff_Name }}</td>
                         <td data-cell="department">{{ staff.Staff_Department }}</td>
@@ -60,7 +60,7 @@
             </table>
         </div>
 
-        <div v-if="rejectedRequests.length === 0" class="text-center mt-3">
+        <div v-if="filteredRequests.length === 0" class="text-center mt-3">
             <p>No Rejected requests.</p>
         </div>
     </div>
@@ -76,6 +76,7 @@ export default {
         return {
             allRequests: [], // Holds the data fetched from the API
             managerDetails: [],
+            filteredRequests: [],
             // managerId: null,
             // refreshInterval: null
         };
@@ -89,7 +90,12 @@ export default {
             type: Number,
             required: true
         }
-  },
+    },
+    computed: {
+            authStore() {
+                return useAuthStore(); // Access the auth store
+            },
+        },
     methods: {
         formatDate(dateString) {
             const date = new Date(dateString);
@@ -107,31 +113,58 @@ export default {
                     console.error("Error fetching manager details:", error);
                 });
         },
-        fetchRequests() {
-            // Fetch WFH requests using Axios
-            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
+        applyFilter() {
+            const today = new Date();
 
+            // Calculate two months back and three months ahead
+            const twoMonthsBack = new Date(today);
+            const threeMonthsAhead = new Date(today);
+
+            // Adjust for date range
+            twoMonthsBack.setDate(today.getDate() - 61);
+            threeMonthsAhead.setDate(today.getDate() + 91);
+
+            // Remove the time component for accurate date comparison
+            twoMonthsBack.setHours(0, 0, 0, 0);
+            threeMonthsAhead.setHours(0, 0, 0, 0);
+
+            // Filter the WFH requests
+            this.filteredRequests = this.allRequests.filter(request => {
+                const requestStartDate = new Date(request.Start_Date);
+
+                // Remove the time component from requestStartDate
+                requestStartDate.setHours(0, 0, 0, 0);
+
+                // Compare dates without time affecting the result
+                const isWithinDateRange = requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
+
+                // Check if the request status is 'Approved'
+                const matchesStatus = request.Status === 'Rejected';
+
+                return isWithinDateRange && matchesStatus;
+            });
+        },
+        fetchRequests() {
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approver/${this.managerId}`, {
+                headers: {
+                'X-Staff-ID': this.managerId,
+                'X-Staff-Role': this.role,
+                },
+            })
                 .then(response => {
+                if (response.data.length > 0 && response.data[0].Error) {
+                    // If there is an error in the response, display the error message
+                    alert(response.data[0].Error);
+                    this.allRequests = [];  // Clear the request list
+                } else {
                     this.allRequests = response.data;
-                    // console.log(this.allRequests)
+                }
+                this.applyFilter();  // Apply filters after fetching the requests
                 })
                 .catch(error => {
-                    console.error('Error fetching requests:', error);
+                console.error('Error fetching requests:', error);
                 });
-        },
-
-    },
-    computed: {
-        authStore() {
-            return useAuthStore(); // Access the auth store
-        },
-        rejectedRequests() {
-            // Filter for approved requests
-            return this.allRequests.filter(request =>
-                request.Status === 'Rejected' &&
-                request.Approver_ID === this.managerId
-            );
-        }
+            },
     },
     mounted() {
         // Fetch requests when the component is mounted
