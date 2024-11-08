@@ -89,7 +89,17 @@ export default {
     filteredRequests() {
       if (Array.isArray(this.requestsData) && this.selectedStatus) {
         return this.requestsData.filter(
-          (request) => request.Status.includes(this.selectedStatus)
+          (request) => {
+            const endDate = new Date(request.End_Date);
+            if (this.selectedStatus === 'Withdrawn') {
+              return (request.Status === 'Withdrawn'&&
+                    endDate >= minus61Days &&
+                    endDate <= plus91Days)
+            } 
+            return (request.Status.includes(this.selectedStatus)&&
+                    endDate >= minus61Days &&
+                    endDate <= plus91Days)
+          }
         );
       }
       return this.requestsData;
