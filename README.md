@@ -18,7 +18,11 @@ This helps ensure this Flask project won't affect others on the same machine wit
 7. Run `python3 app.py` or `python app.py`. The Flask server should be live.
 `deactivate` to deactivate virtual environment if you want to stop using it
 
-## Unit Testing
+## Automated testing
+
+1. For frontend tests:
+   - `cd frontend/test`
+   - To run tests: `npm test [test script].js`. `npm test` runs all the JS test scripts in test folder
 1. For backend tests:
     - `cd backend/test/integration` for integration tests
     - `cd backend/test/unit` for unit tests
