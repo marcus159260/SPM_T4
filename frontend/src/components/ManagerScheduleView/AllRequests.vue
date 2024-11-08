@@ -7,6 +7,8 @@
       Position: <span>{{ managerDetails.Position }}</span> <br />
     </h6>
 
+    <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
+
     <div class="filter-container mb-3">
       <label for="statusFilter" class="status-label">Status</label>
       <select id="statusFilter" v-model="selectedStatus" class="status-dropdown">
