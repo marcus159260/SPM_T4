@@ -62,19 +62,22 @@ export default {
       var temp = response.data;
       this.resources = temp;
       
-      axios
-      .get(`http://127.0.0.1:5000/api/users/` + this.authStore.user.staff_id)
-      .then((r) => {
-        console.log(r);
-        let manager = {};
-        manager.id = "E_"+r.data.data['Staff_ID'];
-        manager.name = r.data.data['Staff_FName'] + " " + r.data.data['Staff_LName'] +"\n"+ r.data.data.Dept+ " ("+ r.data.data['Position']+")";
-        this.resources.unshift(manager);
-      }
-      )
-      .catch((error) => {
-          console.error('Error fetching manager details:', error);
-        });
+      if (!temp.some(emp => emp.Staff_ID === this.authStore.user.staff_id)){
+        axios
+        .get(`http://127.0.0.1:5000/api/users/` + this.authStore.user.staff_id)
+        .then((r) => {
+          console.log(r);
+          let manager = {};
+          manager.id = "E_"+r.data.data['Staff_ID'];
+          manager.name = r.data.data['Staff_FName'] + " " + r.data.data['Staff_LName'] +"\n"+ r.data.data.Dept+ " ("+ r.data.data['Position']+")";
+          this.resources.unshift(manager);
+        }
+      
+        )
+        .catch((error) => {
+            console.error('Error fetching manager details:', error);
+          });
+        }
 
       console.log("Loaded resources:", this.resources);  
       }
