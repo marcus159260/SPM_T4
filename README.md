@@ -4,6 +4,7 @@
 
 1. Hve Node.js installed. I am using v20.17.0(LTS)
 2. Have Python 3 installed
+3. Have a Supabase account setup
 
 ## Setup Instructions
 
