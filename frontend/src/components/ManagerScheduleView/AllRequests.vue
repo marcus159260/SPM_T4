@@ -7,7 +7,7 @@
       Position: <span>{{ managerDetails.Position }}</span> <br />
     </h6>
 
-    <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
+    <button @click="fetchRequests" class="btn btn-primary mt-3" style="margin-bottom: 20px;">Refresh Requests</button>
 
     <div class="filter-container mb-3">
       <label for="statusFilter" class="status-label">Status</label>
