@@ -11,7 +11,7 @@
         </h6>
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
         <div class="table-responsive">
-            <table v-if="filteredRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
+            <table v-if="approvedRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
                 <thead>
                     <tr>
                         <th scope="col">Request ID</th>
@@ -29,7 +29,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="staff in filteredRequests" :key="staff.Staff_ID">
+                    <tr v-for="staff in approvedRequests" :key="staff.Staff_ID">
                         <td data-cell="request ID">{{ staff.Request_ID }}</td>
                         <td data-cell="staff name">{{ staff.Staff_Name }}</td>
                         <td data-cell="department">{{ staff.Staff_Department }}</td>
@@ -52,9 +52,9 @@
                     </tr>
                 </tbody>
             </table>
-            <div v-if="filteredRequests.length === 0" class="text-center mt-3">
-                <p>No Approved requests within the specified date range.</p>
-            </div>
+        </div>
+        <div v-if="approvedRequests.length === 0" class="text-center mt-3">
+            <p>No Approved requests.</p>
         </div>
     </div>
 </template>
@@ -63,12 +63,13 @@
 import axios from 'axios';
 import { useAuthStore } from '../../stores/auth';
 
+
 export default {
     data() {
         return {
             allRequests: [], // Holds the data fetched from the API
-            filteredRequests: [], // Holds requests within the date range
             managerDetails: [],
+            // managerId: null
         };
     },
     props: {
@@ -85,7 +86,7 @@ export default {
         formatDate(dateString) {
             const date = new Date(dateString);
             const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
             const year = date.getFullYear();
             return `${day}-${month}-${year}`; // Format to DD-MM-YYYY
         },
@@ -99,26 +100,11 @@ export default {
                 });
         },
         fetchRequests() {
+            // Fetch WFH requests using Axios
             axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
+
                 .then(response => {
-                    const today = new Date();
-                    const twoMonthsBack = new Date(today);
-                    const threeMonthsAhead = new Date(today);
-
-                    twoMonthsBack.setDate(today.getDate() - 61);
-                    threeMonthsAhead.setDate(today.getDate() + 91);
-
-                    // Remove time component for accurate date comparison
-                    twoMonthsBack.setHours(0, 0, 0, 0);
-                    threeMonthsAhead.setHours(0, 0, 0, 0);
-
-                    // Filter requests within the date range
                     this.allRequests = response.data;
-                    this.filteredRequests = this.allRequests.filter(request => {
-                        const requestStartDate = new Date(request.Start_Date);
-                        requestStartDate.setHours(0, 0, 0, 0);
-                        return requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
-                    });
                 })
                 .catch(error => {
                     console.error('Error fetching requests:', error);
@@ -130,20 +116,25 @@ export default {
             return useAuthStore(); // Access the auth store
         },
         approvedRequests() {
-            // Filter for approved requests from filteredRequests within the date range
-            return this.filteredRequests.filter(request =>
+            // Filter for approved requests
+            return this.allRequests.filter(request =>
                 request.Status === 'Approved' &&
                 request.Approver_ID === this.managerId
             );
         }
     },
     mounted() {
+        // Fetch requests when the component is mounted
+        // this.managerId = this.authStore.user.staff_id || null;
+        // console.log(this.managerId);
+        // console.log(this.role);
         this.get_manager_details();
         this.fetchRequests();
+
     },
+
 };
 </script>
-
 
 <style scoped>
 /* Add your styles here */

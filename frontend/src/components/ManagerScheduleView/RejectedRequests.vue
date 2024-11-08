@@ -126,27 +126,11 @@ export default {
             return useAuthStore(); // Access the auth store
         },
         rejectedRequests() {
-            const today = new Date();
-            const twoMonthsBack = new Date(today);
-            const threeMonthsAhead = new Date(today);
-
-            twoMonthsBack.setDate(today.getDate() - 61);
-            threeMonthsAhead.setDate(today.getDate() + 91);
-
-            twoMonthsBack.setHours(0, 0, 0, 0);
-            threeMonthsAhead.setHours(0, 0, 0, 0);
-
-            return this.allRequests.filter(request => {
-                const requestStartDate = new Date(request.Start_Date);
-                requestStartDate.setHours(0, 0, 0, 0);
-
-                return (
-                    request.Status === 'Rejected' &&
-                    request.Approver_ID === this.managerId &&
-                    requestStartDate >= twoMonthsBack &&
-                    requestStartDate <= threeMonthsAhead
-                );
-            });
+            // Filter for approved requests
+            return this.allRequests.filter(request =>
+                request.Status === 'Rejected' &&
+                request.Approver_ID === this.managerId
+            );
         }
     },
     mounted() {

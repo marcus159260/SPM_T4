@@ -136,8 +136,38 @@ export default {
       return useAuthStore(); // Access the auth store
     },
     pendingRequests() {
-      return this.filteredRequests
-        .filter(request => request.Approver_ID === this.managerId)
+      // Filter by status 'Pending' and Approver_ID matching managerId
+      return this.allRequests
+        .filter(request => {
+          const applicationDate = new Date(request.Application_Date + 'T00:00:00'); // Use Application_Date for filtering
+          const startDate = new Date(request.Start_Date + 'T00:00:00'); // Use Start_Date for filtering
+
+          //console.log("Request object:", request);
+
+          // Calculate the date 2 months before the Application_Date
+          const twoMonthsBeforeApplicationDate = new Date(applicationDate);
+          twoMonthsBeforeApplicationDate.setMonth(applicationDate.getMonth() - 2);
+          // console.log("twoMonthsBeforeApplicationDate: " + twoMonthsBeforeApplicationDate)
+
+          // Calculate the date 3 months after the Application_Date
+          const threeMonthsAfterApplicationDate = new Date(applicationDate);
+          threeMonthsAfterApplicationDate.setMonth(applicationDate.getMonth() + 3);
+          // console.log("threeMonthsAfterApplicationDate: " + threeMonthsAfterApplicationDate)
+
+
+          // Check if the Start_Date is within the range of 2 months before to 3 months after the Application_Date
+          const isWithinRange = (
+            startDate >= twoMonthsBeforeApplicationDate &&
+            startDate <= threeMonthsAfterApplicationDate
+          );
+
+          // Return true if the request is pending, matches managerId, and Start_Date is within range
+          return (
+            (request.Status === 'Pending' || request.Status === 'Withdrawn - Pending') &&
+            request.Approver_ID === this.managerId &&
+            isWithinRange
+          );
+        })
         .sort((a, b) => a.Request_ID - b.Request_ID); // Sort by Request_ID in ascending order
     },
   },
@@ -160,35 +190,15 @@ export default {
         });
     },
     fetchRequests() {
-      const today = new Date();
-
-      // Calculate two months back and three months ahead
-      const twoMonthsBack = new Date(today);
-      const threeMonthsAhead = new Date(today);
-
-      // Adjust for date range (61 days back and 91 days ahead)
-      twoMonthsBack.setDate(today.getDate() - 61);
-      threeMonthsAhead.setDate(today.getDate() + 91);
-
-      // Remove the time component for accurate date comparison
-      twoMonthsBack.setHours(0, 0, 0, 0);
-      threeMonthsAhead.setHours(0, 0, 0, 0);
-
-      // Fetch WFH requests
+      // Fetch WFH requests using Axios
       axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
         .then(response => {
           this.allRequests = response.data;
 
-          // Filter requests based on the date range
-          this.filteredRequests = this.allRequests.filter(request => {
-            const requestStartDate = new Date(request.Start_Date);
+          //auto-reject pending requests comes in here
 
-            // Remove the time component from requestStartDate
-            requestStartDate.setHours(0, 0, 0, 0);
+          // console.log(this.allRequests)
 
-            // Check if the request start date is within the 2 months back to 3 months ahead range
-            return requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
-          });
         })
         .catch(error => {
           console.error('Error fetching requests:', error);
