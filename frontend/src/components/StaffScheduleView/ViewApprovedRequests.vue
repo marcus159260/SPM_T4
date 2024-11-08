@@ -170,7 +170,7 @@ export default {
                 this.selectedRequest = request;
                 this.isPopupVisible = true; 
                 document.getElementById('withdrawalPopup').style.display = 'flex';
-                document.getElementById('withdrawalPopup').style.border = '1px black solid';
+                // document.getElementById('withdrawalPopup').style.border = '1px black solid';
             } else {
                 // document.getElementById('errormsg').innerHTML = `You can only withdraw requests within 2 weeks backward and forward.<br>`;                
                 alert('You can only withdraw requests within 2 weeks backward and forward.');
@@ -181,7 +181,7 @@ export default {
         confirmWithdrawal() {
             if (!this.withdrawalReason.trim()) {
                 console.log('error from popup: no error msg');
-                // document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
+                document.getElementById('errormsg').innerHTML = `Reason cannot be empty<br>`;                
                 return;
             }
             axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/withdraw`, {
