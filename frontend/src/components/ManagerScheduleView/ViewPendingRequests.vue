@@ -8,8 +8,8 @@
     </h6>
 
     <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
-    <div class="table-responsive">
-      <table v-if="pendingRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
+    <div :class="{'table-responsive': filteredRequests.length > 0}">
+      <table v-if="filteredRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
         <thead>
           <tr>
             <th scope="col">Request ID</th>
@@ -28,7 +28,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="staff in pendingRequests" :key="staff.Staff_ID">
+          <tr v-for="staff in filteredRequests" :key="staff.Staff_ID">
             <td data-cell="request id">{{ staff.Request_ID }}</td>
             <td data-cell="staff name">{{ staff.Staff_Name }}</td>
             <td data-cell="department">{{ staff.Staff_Department }}</td>
@@ -70,10 +70,9 @@
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <div v-if="pendingRequests.length === 0" class="text-center mt-3">
-      <p>No pending requests.</p>
+      <div v-if="filteredRequests.length === 0" class="text-center mt-3">
+                <p>No Pending Requests.</p>
+      </div>
     </div>
 
     <div>
@@ -111,6 +110,7 @@ export default {
     return {
       allRequests: [],     // All WFH requests fetched from the API
       managerDetails: [],
+      filteredRequests: [],
       isPopupVisible: false,
       rejectionReason: '',
       withdrawalReason: '',
@@ -135,41 +135,6 @@ export default {
     authStore() {
       return useAuthStore(); // Access the auth store
     },
-    pendingRequests() {
-      // Filter by status 'Pending' and Approver_ID matching managerId
-      return this.allRequests
-        .filter(request => {
-          const applicationDate = new Date(request.Application_Date + 'T00:00:00'); // Use Application_Date for filtering
-          const startDate = new Date(request.Start_Date + 'T00:00:00'); // Use Start_Date for filtering
-
-          //console.log("Request object:", request);
-
-          // Calculate the date 2 months before the Application_Date
-          const twoMonthsBeforeApplicationDate = new Date(applicationDate);
-          twoMonthsBeforeApplicationDate.setMonth(applicationDate.getMonth() - 2);
-          // console.log("twoMonthsBeforeApplicationDate: " + twoMonthsBeforeApplicationDate)
-
-          // Calculate the date 3 months after the Application_Date
-          const threeMonthsAfterApplicationDate = new Date(applicationDate);
-          threeMonthsAfterApplicationDate.setMonth(applicationDate.getMonth() + 3);
-          // console.log("threeMonthsAfterApplicationDate: " + threeMonthsAfterApplicationDate)
-
-
-          // Check if the Start_Date is within the range of 2 months before to 3 months after the Application_Date
-          const isWithinRange = (
-            startDate >= twoMonthsBeforeApplicationDate &&
-            startDate <= threeMonthsAfterApplicationDate
-          );
-
-          // Return true if the request is pending, matches managerId, and Start_Date is within range
-          return (
-            (request.Status === 'Pending' || request.Status === 'Withdrawn - Pending') &&
-            request.Approver_ID === this.managerId &&
-            isWithinRange
-          );
-        })
-        .sort((a, b) => a.Request_ID - b.Request_ID); // Sort by Request_ID in ascending order
-    },
   },
 
   methods: {
@@ -189,21 +154,58 @@ export default {
           console.error("Error fetching manager details:", error);
         });
     },
-    fetchRequests() {
-      // Fetch WFH requests using Axios
-      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests?managerId=${this.managerId}`)
-        .then(response => {
-          this.allRequests = response.data;
+    applyFilter() {
+      const today = new Date();
 
-          //auto-reject pending requests comes in here
+      // Calculate two months back and three months ahead
+      const twoMonthsBack = new Date(today);
+      const threeMonthsAhead = new Date(today);
 
-          // console.log(this.allRequests)
+      // Adjust for date range
+      twoMonthsBack.setDate(today.getDate() - 61);
+      threeMonthsAhead.setDate(today.getDate() + 91);
 
-        })
-        .catch(error => {
+      // Remove the time component for accurate date comparison
+      twoMonthsBack.setHours(0, 0, 0, 0);
+      threeMonthsAhead.setHours(0, 0, 0, 0);
+
+      // Filter the WFH requests
+      this.filteredRequests = this.allRequests.filter(request => {
+          const requestStartDate = new Date(request.Start_Date);
+
+          // Remove the time component from requestStartDate
+          requestStartDate.setHours(0, 0, 0, 0);
+
+          // Compare dates without time affecting the result
+          const isWithinDateRange = requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
+
+          // Check if the request status is 'Approved'
+          const matchesStatus = request.Status === 'Pending' || request.Status === 'Withdrawn - Pending';
+
+          return isWithinDateRange && matchesStatus;
+      });
+  },
+  fetchRequests() {
+      axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approver/${this.managerId}`, {
+          headers: {
+          'X-Staff-ID': this.managerId,
+          'X-Staff-Role': this.role,
+          },
+      })
+          .then(response => {
+          if (response.data.length > 0 && response.data[0].Error) {
+              // If there is an error in the response, display the error message
+              alert(response.data[0].Error);
+              this.allRequests = [];  // Clear the request list
+          } else {
+              this.allRequests = response.data;
+          }
+          this.applyFilter();  // Apply filters after fetching the requests
+          })
+          .catch(error => {
           console.error('Error fetching requests:', error);
-        });
-    },
+          });
+      },
     approveRequest(requestId) {
       // console.log("Request ID clicked:", requestId); 
       axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/wfh/requests/approve`, { managerId: this.managerId, Request_ID: requestId, request_Status: 'Approved' })

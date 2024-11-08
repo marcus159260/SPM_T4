@@ -66,7 +66,7 @@
     </div>
 
     <div v-else>
-      <p>No requests.</p>
+      <p>No Requests.</p>
     </div>
   </div>
 </template>

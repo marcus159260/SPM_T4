@@ -10,7 +10,7 @@
           &emsp;Position -> <span>{{ managerDetails.Position }}</span> -->
         </h6>
         <button @click="fetchRequests" class="btn btn-primary mt-3">Refresh Requests</button>
-        <div class="table-responsive">
+        <div :class="{'table-responsive': filteredRequests.length > 0}">
             <table v-if="filteredRequests.length > 0" class="table table-striped table-bordered align-middle mt-3">
                 <thead>
                     <tr>
@@ -52,9 +52,9 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
-        <div v-if="filteredRequests.length === 0" class="text-center mt-3">
-            <p>No Approved requests.</p>
+            <div v-if="filteredRequests.length === 0" class="text-center mt-3">
+                <p>No Approved Requests.</p>
+            </div>
         </div>
     </div>
 </template>

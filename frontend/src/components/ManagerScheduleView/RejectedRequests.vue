@@ -58,7 +58,7 @@
             </table>
             <!-- Message when no requests are available -->
             <div v-if="filteredRequests.length === 0" class="text-center mt-3">
-                <p>No Rejected requests.</p>
+                <p>No Rejected Requests.</p>
             </div>
         </div>
     </div>
