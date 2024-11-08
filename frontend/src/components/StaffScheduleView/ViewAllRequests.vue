@@ -86,66 +86,19 @@ export default {
     }
   },
   computed: {
-    // filteredRequests() {
-    //   const currentDate = new Date();
-    //   const minus61Days = new Date(currentDate);
-    //   minus61Days.setDate(currentDate.getDate() - 61);
-
-    //   const plus91Days = new Date(currentDate);
-    //   plus91Days.setDate(currentDate.getDate() + 91);
-    //   if (Array.isArray(this.requestsData) && this.selectedStatus) {
-    //     (request) =>{
-    //         if(this.selectedStatus === 'Pending'){
-    //           return request.Status === "Pending" && request.Status === "Withdrawn - Pending";
-    //         } else if(this.selectedStatus === "Withdrawn"){
-    //           return request.Status === "Withdrawn"
-    //         }else{
-    //           return request.Status === this.selectedStatus;
-    //         }
-    //       }
-    //   }
-    //   return this.requestsData;
-    // },
+    filteredRequests() {
+      if (Array.isArray(this.requestsData) && this.selectedStatus) {
+        return this.requestsData.filter(
+          (request) => request.Status.includes(this.selectedStatus)
+        );
+      }
+      return this.requestsData;
+    },
     authStore() {
       return useAuthStore();
     }
   },
   methods: {
-    applyFilter() {
-      const today = new Date();
-
-      // Calculate two months back and three months ahead
-      const twoMonthsBack = new Date(today);
-      const threeMonthsAhead = new Date(today);
-
-      // Adjust for date range (no change here)
-      twoMonthsBack.setDate(today.getDate() - 61);
-      threeMonthsAhead.setDate(today.getDate() + 91);
-
-      // Remove the time component for accurate date comparison
-      twoMonthsBack.setHours(0, 0, 0, 0);
-      threeMonthsAhead.setHours(0, 0, 0, 0);
-
-      // Filter the WFH requests
-      this.filteredRequests = this.allRequests.filter(request => {
-        const requestStartDate = new Date(request.Start_Date);
-
-        // Remove the time component from requestStartDate
-        requestStartDate.setHours(0, 0, 0, 0);
-
-        // Compare dates without time affecting the result
-        const isWithinDateRange = requestStartDate >= twoMonthsBack && requestStartDate <= threeMonthsAhead;
-
-        // Check if the request matches the selected status, include "Withdrawn - Pending" under "Pending"
-        const matchesStatus = this.selectedStatus === '' || 
-                              (request.Status && (
-                                request.Status.toLowerCase() === this.selectedStatus.toLowerCase() || 
-                                (this.selectedStatus.toLowerCase() === 'pending' && request.Status.toLowerCase() === 'withdrawn - pending')
-                              ));
-
-        return isWithinDateRange && matchesStatus;
-      });
-    },
     formatDate(dateString) {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, '0');
@@ -175,11 +128,7 @@ export default {
       }
     }
   },
-  watch: {
-    selectedStatus() {
-      this.applyFilter(); // Re-apply filter whenever status changes
-    }
-  },
+
   mounted() {
     // console.log(this.staffId);
     // console.log(this.role);
