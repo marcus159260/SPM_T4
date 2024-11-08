@@ -22,7 +22,7 @@
                             <td data-cell="request ID">{{ request.Request_ID }}</td>
                             <td data-cell="request type">{{ request.Request_Type }}</td>
                             <td data-cell="status">
-                                <span class="badge rounded-pill text-bg-warning">{{ request.Status }}</span>
+                                <span class="badge rounded-pill text-bg-success">{{ request.Status }}</span>
                             </td>
                             <td data-cell="requested date">{{ formatDate(request.Start_Date) }}</td>
                             <td data-cell="time">{{ request.Time }}</td>
