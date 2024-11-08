@@ -59,7 +59,7 @@ export default {
       .get(teamurl)
       .then((response) => {
         console.log(response);
-      var temp = response.data;
+      var temp = response.data.data;
       this.resources = temp;
 
       if (!temp.some(emp => emp.Staff_ID === this.authStore.user.staff_id)){
