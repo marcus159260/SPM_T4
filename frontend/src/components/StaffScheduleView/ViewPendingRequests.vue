@@ -2,6 +2,7 @@
     <div class="content-wrapper">
         <div v-if="filteredRequests?.length > 0">
             <h2 class="mt-5">{{ requestsData[0].Staff_Name }}</h2>
+            <button @click="fetchRequests" class="btn btn-primary mt-3" style="margin-bottom: 20px;">Refresh Requests</button>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered align-middle mt-3">
                     <thead>
